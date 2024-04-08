@@ -3,29 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
-    public function bestPlayerByVote($size) {
-        if($size < 0) {
-            $size *= -1;
-        }
+    public function playerProfil($playerName) {
+        $user = User::where('name', $playerName)->first();
 
-        if($size > 25) {
-            $size = 25;
-        }
-    
-        $topVoters = User::withCount('votes')
-        ->orderByDesc('votes_count')
-        ->limit($size)
-        ->get()
-        ->map(function ($user) {
-            return [
-                'name' => $user->name,
-                'vote_count' => $user->votes_count,
-            ];
-        });
+        if($user) {
+            return response()->json([
+                'money' => $user->money,
+                'vote_count' => $user->getVoteCount(),
+            ]);           
+        } 
 
-        return response()->json($topVoters);
+        return response()->json(['error' => 'player name not found.'], Response::HTTP_NOT_FOUND);
     }
 }
