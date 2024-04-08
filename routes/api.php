@@ -9,4 +9,4 @@ Route::get('/arffornia_v5/modlist', function () {
 });
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVote']);
-Route::get('profil/{playerName}', [UserController::class, 'playerProfil']);
+Route::get('profile/{playerName}', [UserController::class, 'playerProfile']);

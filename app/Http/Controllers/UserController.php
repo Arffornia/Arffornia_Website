@@ -7,7 +7,7 @@ use Illuminate\Http\Response;
 
 class UserController extends Controller
 {
-    public function playerProfil($playerName) {
+    public function playerProfile($playerName) {
         $user = User::where('name', $playerName)->first();
 
         if($user) {
