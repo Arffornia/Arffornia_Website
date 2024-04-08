@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function () {
+Route::get('/arffornia_v5/modlist', function () {
     return response()->file(public_path('files/ArfforniaV.5ModList.json'));
 });

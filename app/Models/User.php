@@ -44,4 +44,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function votes() {
+        return $this->belongsTo(Vote::class, 'id');
+    }
 }
