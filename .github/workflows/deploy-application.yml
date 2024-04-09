@@ -3,7 +3,7 @@ name: Deploy Arffornia
 on:
     push:
         branches:
-            - master
+            - main
 
 jobs:
     create-deployment-artifacts:
