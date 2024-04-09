@@ -46,10 +46,10 @@ class User extends Authenticatable
     }
 
     public function getVoteCount() {
-        return $this->getVotes()->count();
+        return $this->votes()->count();
     }
 
-    public function getVotes() {
+    public function votes() {
         return $this->hasMany(Vote::class);
     }
 }

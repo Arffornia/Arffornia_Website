@@ -1,0 +1,18 @@
+name: Arffornia Website
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    create-deployment-artifacts:
+        name: Create deployment artifacts
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions.checkout@v2
+
+            - name: Compile CSS and Javascript
+              run: 
+                npm install
+                npm run prod
