@@ -1,4 +1,4 @@
-name: Arffornia Website
+name: Deploy Arffornia
 
 on:
     push:
@@ -10,7 +10,7 @@ jobs:
         name: Create deployment artifacts
         runs-on: ubuntu-20.04
         steps:
-            - uses: actions.checkout@v2
+            - uses: actions/checkout@v2
 
             - name: Compile CSS and Javascript
               run: 
