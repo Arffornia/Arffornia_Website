@@ -40,7 +40,10 @@
 }
 
 .sloganLeftOverlay {
+    position: absolute;
     padding: 50px;
+    margin-left: 10%;
+    margin-top: 20%;
     width: fit-content;
     backdrop-filter: blur(4px);
     z-index: 0;
@@ -49,11 +52,12 @@
 }
 
 .sloganLeftContainer {
-    padding: 30%;
+    width: 100%;
+    height: 100%;
 }
 
 .sloganTextContainer {
-    font-size: 300%;
+    font-size: 250%;
     font-family: Montserrat, sans-serif;
     font-weight: 750;
     color: white;

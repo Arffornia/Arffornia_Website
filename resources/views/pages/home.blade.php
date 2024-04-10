@@ -7,9 +7,7 @@
 @section('content')
     
     <div class="globalContainer">
-        <div class="sloganContainer">
-            <img id="sloganBG" src="{{ asset("images/screenshots1920x1080/old_spawn.png") }}" alt="">
-            
+        <div class="sloganContainer" style="background-image: url({{ asset("images/screenshots1920x1080/old_spawn.png") }})">            
             <div class="sloganLeftContainer">
                 <div class="sloganLeftOverlay">
                     <div class="sloganTextContainer">
