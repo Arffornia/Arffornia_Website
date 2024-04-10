@@ -24,11 +24,12 @@
     padding-top: 15px;
     padding-left: 7%;
     padding-right: 7%;
+    font-family: Montserrat, sans-serif;
 }
 
 
-#sloganBG {
-    position: absolute;
+.imgBG {
+    position: relative;
     border-radius: 30px;
     width: 100%;
     z-index: -1;
@@ -52,17 +53,36 @@
 .sloganLeftContainer {
     padding-top: 20%;
     padding-left: 3%;
-    position: relative;
+    position: absolute;
     z-index: 1;
 }
 
 .sloganTextContainer {
     font-size: 250%;
-    font-family: Montserrat, sans-serif;
     font-weight: 750;
     color: white;
 }
 
 .sloganPlayBtnContainer {
     padding-top: 3%;
+}
+
+.palierContainer {
+    padding-top: 3%;
+}
+
+#palierTitle {
+    font-size: 300%;
+    font-weight: 750;
+    color: black;
+}
+
+.palierText {
+    font-size: 125%;
+    font-weight: 500;
+    color: black;
+}
+
+.palierTextContainer {
+    padding: 1% 0%;
 }
