@@ -26,24 +26,22 @@
     padding-right: 100px;
 }
 
-.sloganContainer {
-    position: relative;
-}
 
 #sloganBG {
+    position: absolute;
     border-radius: 30px;
     width: 100%;
-    position: absolute;
     z-index: -1;
     top: 0;
     left: 0;
 }
 
+.sloganContainer {
+    position: relative;
+}
+
 .sloganLeftOverlay {
-    position: absolute;
     padding: 50px;
-    margin-left: 10%;
-    margin-top: 20%;
     width: fit-content;
     backdrop-filter: blur(4px);
     z-index: 0;
@@ -52,8 +50,10 @@
 }
 
 .sloganLeftContainer {
-    width: 100%;
-    height: 100%;
+    padding-top: 20%;
+    padding-left: 3%;
+    position: relative;
+    z-index: 1;
 }
 
 .sloganTextContainer {
@@ -61,4 +61,8 @@
     font-family: Montserrat, sans-serif;
     font-weight: 750;
     color: white;
+}
+
+.sloganPlayBtnContainer {
+    padding-top: 3%;
 }

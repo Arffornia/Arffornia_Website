@@ -7,12 +7,14 @@
 @section('content')
     
     <div class="globalContainer">
-        <div class="sloganContainer" style="background-image: url({{ asset("images/screenshots1920x1080/old_spawn.png") }})">            
+        <div class="sloganContainer">
+            <img id="sloganBG" src="{{ asset("images/screenshots1920x1080/old_spawn.png") }}" alt="">          
             <div class="sloganLeftContainer">
                 <div class="sloganLeftOverlay">
                     <div class="sloganTextContainer">
+                        <p>Arffornia c'est:</p>
                         <p>+ 330 Mods</p>
-                        <p>+ 25 Palliers</p>
+                        <p>+ 25 Palliers de progression</p>
                         
                     </div>
                     <div class="sloganPlayBtnContainer">
@@ -23,6 +25,7 @@
 
             <div class="sloganStatueContainer"></div>
         </div>
+        <p>Test</p>
     </div>
 
 
