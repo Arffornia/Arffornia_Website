@@ -1,0 +1,60 @@
+.mediumPlayBtn{
+    height: 60px;
+    font-weight: 1000;
+    min-width: 300px;
+    font-size: 150%;
+    border-radius: 5px;
+    padding: 2px 10px;
+    transition: 0.3s all ease;
+    background-color: #ff7300;
+    display: block;
+    outline: none;
+    border: none;
+    width: fit-content;
+    color: white;
+}
+
+.mediumPlayBtn:hover {
+    font-size: 170%;
+    box-shadow: 0px 15px 20px #ff730097;
+    transform: translateY(-5px);
+}
+
+.globalContainer{
+    padding-top: 15px;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+
+.sloganContainer {
+    position: relative;
+}
+
+#sloganBG {
+    border-radius: 30px;
+    width: 100%;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 0;
+}
+
+.sloganLeftOverlay {
+    padding: 50px;
+    width: fit-content;
+    backdrop-filter: blur(4px);
+    z-index: 0;
+    border-radius: 30px;
+    background-color: #00000023;
+}
+
+.sloganLeftContainer {
+    padding: 30%;
+}
+
+.sloganTextContainer {
+    font-size: 300%;
+    font-family: Montserrat, sans-serif;
+    font-weight: 750;
+    color: white;
+}
