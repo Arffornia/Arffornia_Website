@@ -87,11 +87,11 @@
     padding: 1% 0%;
 }
 
-.infoSeparatorContainer {
+.info {
     padding-top: 3%;
 }
 
-.infoSeparatorContent {
+.info__content {
     
     display: flex;
     justify-content: center;
@@ -100,15 +100,34 @@
 
 }
 
-.infoDiscordContainer {
+.info__discord {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1em;
 }
 
-#playerStatText {
+#info__player-stat-text {
     font-size: 125%;
     font-weight: 500;
     color: black;
 }
+
+.discord__container {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 3%;
+}
+
+#dicord__title {
+    font-size: 300%;
+    font-weight: 750;
+    color: black;
+}
+
+.discord__text {
+    font-size: 125%;
+    font-weight: 500;
+    color: black;
+}
+

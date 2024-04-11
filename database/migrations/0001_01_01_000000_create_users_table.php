@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string("password");
             $table->string("email")->unique();
             $table->float("money");
+            $table->unsignedBigInteger("progress_point");
+            $table->unsignedBigInteger("stage_id");
             $table->rememberToken();
             $table->timestamps();
         });
