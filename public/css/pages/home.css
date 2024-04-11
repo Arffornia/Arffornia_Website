@@ -131,3 +131,56 @@
     color: black;
 }
 
+.discord__left-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#join-us-ing {
+    max-width: 80%;
+    margin-top: auto;
+    border-radius: 30px;
+}
+
+.player {
+    border: solid 5px #ff7300;
+    border-radius: 30px;
+    display: block;
+    background-color: #2C3239;
+    color: #fff;
+    max-width: fit-content;
+    align-items: center;
+    padding: 30px 50px;
+}
+
+.player-skin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.player-position {
+    font-weight: 800;
+    font-size: 400%;
+    text-align: center;
+}
+
+.player-name {
+    font-weight: 500;
+    font-size: 130%;
+    color: #d4af37;
+}
+
+.score {
+    font-weight: 500;
+}
+

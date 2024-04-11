@@ -29,16 +29,19 @@
         </div>
 
         <div class="discord__container">
-            <div class="discord__text-container">
+            <div class="discord__left-container">
                 <p id="dicord__title">Rejoins Notre Discord :</p>
                 <p class="discord__text"></p>
+
+                <img id=join-us-ing src="{{ asset("images/join_us.png") }}" alt="">
+
             </div>
+
+
             <div>
                 <discord-widget class="discord-widget" id="752121854923374614" height="490px" width="400px"></discord-widget>
             </div>
         </div>
-        
-
 
         <div class="palierContainer">
             <p id="palierTitle">Paliers de progression :</p>
@@ -50,7 +53,34 @@
             <img class="imgBG" src="{{ asset("images/palier_progres.png") }}" alt="">          
         </div>
 
-        
+        <div class="scoreboard">
+            <div class="all-time">
+                <p class="scoreboard__title">Meilleurs joueurs</p>
+                <div class="players-container">
+                    <div class="player">
+                        <p class="player-position">#1</p>
+                        <div class="player-skin">
+                            <img src="{{ asset("images/mc_skins/The_Gost_sniper_3D_MC_skin.png") }}" alt="">
+                        </div>
+                        <div class="player-info">
+                            <p class="player-name">The_Gost_sniper</p>
+                            <p class="score">15666 points</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vote">
+                <p class="scoreboard__title">Meilleurs voteurs</p>
+                <div class="players-container"></div>
+            </div>
+        </div>
+
+
+
+
+
+
 
         <!-- 
         <div class="info">
