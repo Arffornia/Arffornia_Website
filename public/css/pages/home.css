@@ -86,3 +86,29 @@
 .palierTextContainer {
     padding: 1% 0%;
 }
+
+.infoSeparatorContainer {
+    padding-top: 3%;
+}
+
+.infoSeparatorContent {
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15%;
+
+}
+
+.infoDiscordContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+}
+
+#playerStatText {
+    font-size: 125%;
+    font-weight: 500;
+    color: black;
+}
