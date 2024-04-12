@@ -41,6 +41,12 @@
     position: relative;
 }
 
+#slogan__title {
+    font-size: 250%;
+    font-weight: 750;
+    color: white;
+}
+
 .sloganLeftOverlay {
     padding: 50px;
     width: fit-content;
@@ -52,9 +58,16 @@
 
 .sloganLeftContainer {
     padding-top: 20%;
-    padding-left: 3%;
+    padding-left: 40%;
     position: absolute;
     z-index: 1;
+}
+
+.slogan__text-container {
+    padding-top: 2%;
+    font-size: 125%;
+    font-weight: 600;
+    color: rgb(239, 239, 239);
 }
 
 .sloganTextContainer {
@@ -143,15 +156,32 @@
     border-radius: 30px;
 }
 
+.scoreboard {
+    padding-top: 3%;
+    padding-bottom: 3%;
+}
+
+.scoreboard__title {
+    padding-bottom: 1.5%;
+    text-align: center;
+    font-size: 400%;
+    font-weight: 800;
+}
+
+.players-container {
+    display: flex;
+    justify-content: space-between;
+}
+
 .player {
     border: solid 5px #ff7300;
     border-radius: 30px;
     display: block;
     background-color: #2C3239;
     color: #fff;
-    max-width: fit-content;
+    width: 17%;
     align-items: center;
-    padding: 30px 50px;
+    padding: 30px 70px;
 }
 
 .player-skin {
@@ -182,5 +212,11 @@
 
 .score {
     font-weight: 500;
+}
+
+#copyright {
+    text-align: center;
+    padding: 3%;
+    padding-bottom: 1%;
 }
 

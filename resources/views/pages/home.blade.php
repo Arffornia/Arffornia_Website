@@ -57,27 +57,65 @@
             <div class="all-time">
                 <p class="scoreboard__title">Meilleurs joueurs</p>
                 <div class="players-container">
-                    <div class="player">
-                        <p class="player-position">#1</p>
-                        <div class="player-skin">
-                            <img src="{{ asset("images/mc_skins/The_Gost_sniper_3D_MC_skin.png") }}" alt="">
+                    @foreach ($bestVotePlayers as $index => $player)
+                        <div class="player">
+                            <p class="player-position">#{{ $index + 1 }}</p>
+                            <div class="player-skin">
+                                <img src="{{ asset("images/mc_skins/The_Gost_sniper_3D_MC_skin.png") }}" alt="">
+                            </div>
+                            <div class="player-info">
+                                <p class="player-name">{{ $player['name'] }}</p>
+                                <p class="score">{{ $player['vote_count'] }} votes</p>
+                            </div>
                         </div>
-                        <div class="player-info">
-                            <p class="player-name">The_Gost_sniper</p>
-                            <p class="score">15666 points</p>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
 
             <div class="vote">
                 <p class="scoreboard__title">Meilleurs voteurs</p>
-                <div class="players-container"></div>
+                <div class="players-container">
+                    @foreach ($bestAllTimePlayers as $index => $player)
+                        <div class="player">
+                            <p class="player-position">#{{ $index + 1 }}</p>
+                            <div class="player-skin">
+                                <img src="{{ asset("images/mc_skins/The_Gost_sniper_3D_MC_skin.png") }}" alt="">
+                            </div>
+                            <div class="player-info">
+                                <p class="player-name">{{ $player->name }}</p>
+                                <p class="score">{{ $player->progress_point }} points</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
+        
+        <div class="sloganContainer">
+            <div class="sloganLeftContainer">
+                <div class="sloganLeftOverlay">
+                    <div>
+                        <p id="slogan__title">A propos:</p>
+                        <div class="slogan__text-container">
+                            <p>Arffornia est un serveur survie moddé, orienté build.</p>
+                            <p>Construisiez votre nouvelle base, usine avec plus de 330 mods.</p>
+                        </div>
+                    </div>
+                    <div class="sloganPlayBtnContainer">
+                        <a href="#"><input class="mediumPlayBtn" type="button" value="Jouer"></a>
+                    </div>
+                </div>
+            </div>
 
+            <img class="imgBG" src="{{ asset("images/bg.png") }}" alt="">          
 
+            <div class="sloganStatueContainer"></div>
+        </div>
 
+        
+        <div id="copyright">
+            <p>© Arffornia - Tous droits réservés</p>
+        </div>
 
 
 

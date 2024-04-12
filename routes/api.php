@@ -8,5 +8,5 @@ Route::get('/arffornia_v5/modlist', function () {
     return response()->file(public_path('files/ArfforniaV.5ModList.json'));
 });
 
-Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVote']);
+Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('profile/{playerName}', [UserController::class, 'playerProfile']);
