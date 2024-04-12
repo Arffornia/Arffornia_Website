@@ -38,6 +38,12 @@
                         </div>
                     </form>
                 </div>
+                <div class="create-account">
+                    <a href="/register">
+                        <p id="creat">Create your Account ➡️</p>
+                    </a>
+                </div>
+                
                 
             </div>
         </div>

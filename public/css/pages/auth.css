@@ -59,3 +59,16 @@
     gap: 10px;
 }
 
+.create-account {
+    color: white;
+    position: absolute;
+    bottom: 0%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+.create-account:hover {
+    text-decoration: underline;
+}
+
