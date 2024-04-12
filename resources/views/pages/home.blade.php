@@ -7,7 +7,7 @@
 
 @section('content')
     
-    <div class="globalContainer">
+    <div class="standart-page">
         <div class="sloganContainer">
             <div class="sloganLeftContainer">
                 <div class="sloganLeftOverlay">
@@ -111,13 +111,6 @@
 
             <div class="sloganStatueContainer"></div>
         </div>
-
-        
-        <div id="copyright">
-            <p>© Arffornia - Tous droits réservés</p>
-        </div>
-
-
 
 
         <!-- 

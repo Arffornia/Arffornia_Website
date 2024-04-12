@@ -20,14 +20,6 @@
     transform: translateY(-5px);
 }
 
-.globalContainer{
-    padding-top: 15px;
-    padding-left: 7%;
-    padding-right: 7%;
-    font-family: Montserrat, sans-serif;
-}
-
-
 .imgBG {
     position: relative;
     border-radius: 30px;
@@ -214,9 +206,5 @@
     font-weight: 500;
 }
 
-#copyright {
-    text-align: center;
-    padding: 3%;
-    padding-bottom: 1%;
-}
+
 
