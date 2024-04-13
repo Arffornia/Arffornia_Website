@@ -72,6 +72,10 @@
     padding-top: 3%;
 }
 
+.APropos {
+    padding-top: 3%;
+}
+
 .palierContainer {
     padding-top: 3%;
 }
@@ -150,7 +154,6 @@
 
 .scoreboard {
     padding-top: 3%;
-    padding-bottom: 3%;
 }
 
 .scoreboard__title {
@@ -202,9 +205,102 @@
     color: #d4af37;
 }
 
-.score {
+.scoreboard .score {
     font-weight: 500;
 }
 
+.podium {
+    padding-top: 3%;
+}
 
+.podium .content {
+    
+    display: flex;
+    justify-content: center;
+    gap: 6%;
+}
 
+.podium .title {
+    width: 57%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.5%;
+
+    text-align: center;
+    color: #fff;
+    border-radius: 10px;
+    font-size: 300%;
+    font-weight: 700;
+    background-color: #2C3239;
+
+    border: solid 3px #ff7300;    
+}
+
+.p2, .p1, .p3 {
+    align-self: flex-end;
+    width: 15%;
+    
+}
+
+.podium .shape {
+    background-color: #2C3239;
+    border-radius: 10px;
+    border: solid 3px #ff7300;
+
+}
+
+.podium .shape {
+    position: relative;
+}
+
+.p2 .shape {
+    padding-top: 55%;
+}
+
+.p1 .shape {
+    padding-top: 75%; 
+}
+
+.p3 .shape {
+    padding-top: 40%;
+}
+
+.podium .textContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: white;
+}
+
+.podium .playerName {
+    font-weight: 700;
+    font-size: 150%;
+    color: #d4af37;
+    text-align: center;
+}
+
+.podium .p2 .rank {
+    font-weight: 650;
+    font-size: 325%;
+}
+
+.podium .p1 .rank {
+    font-weight: 700;
+    font-size: 400%;
+}
+
+.podium .p3 .rank {
+    font-weight: 600;
+    font-size: 250%;
+}
+
+.podium .score {
+    font-weight: 500;
+}
