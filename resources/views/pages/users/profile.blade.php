@@ -2,6 +2,7 @@
 
 @section('extraHead')
     <link rel="stylesheet" href="{{asset("css/pages/profile.css")}}">
+    <link rel="stylesheet" href="{{ asset('css/components/inputText/input01.css') }}">
 @endsection
 
 @section('content')
@@ -20,6 +21,15 @@
             <p class="Progress points"></p>
             <p class="Last connexion"></p>
             <p class="First join"></p>
+            
+            @if (auth()->check())
+                <div class="logout">
+                    <form action="/profile" method="POST">
+                        @csrf
+                        <x-inputSubmit01 value="Logout"></x-inputButton01>
+                    </form>
+                </div>                
+            @endif
         </div>
     </div>
 @endsection

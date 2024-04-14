@@ -90,7 +90,7 @@ class UserController extends Controller
         Log-out
     */
 
-    public function logout(Request $request) {
+    public function logoutUser(Request $request) {
         auth()->logout();
 
         $request->session()->invalidate();

@@ -15,4 +15,4 @@ Route::post('/login', [UserController::class, 'authenticateUser']);
 Route::get('/register', [UserController::class, 'registerView']);
 Route::post('/register', [UserController::class, 'createUser']);
 
-Route::post('/logout', [UserController::class, 'logoutUser']);
+Route::post('/profile', [UserController::class, 'logoutUser']);
