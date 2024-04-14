@@ -99,7 +99,9 @@
                     <p class="playerName">{{ $bestAllTimePlayers[1]->name }}</p>
                     
                     <div class="skin">
-                        <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&}" alt="">
+                        <a href="/profile/{{ $bestAllTimePlayers[1]->name }}" title="Show profile">
+                            <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&}" alt="">
+                        </a>
                     </div>
                     
                     <div class="shape">
@@ -114,7 +116,9 @@
                     <p class="playerName">{{ $bestAllTimePlayers[0]->name }}</p>
 
                     <div class="player-skin">
-                        <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&" alt="">
+                        <a href="/profile/{{ $bestAllTimePlayers[1]->name }}" title="Show profile">
+                            <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&" alt="">
+                        </a>
                     </div>
                     
                     <div class="shape">
@@ -128,7 +132,9 @@
                     <p class="playerName">{{ $bestAllTimePlayers[2]->name }}</p>
 
                     <div class="player-skin">
-                        <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&" alt="">
+                        <a href="/profile/{{ $bestAllTimePlayers[1]->name }}" title="Show profile">
+                            <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&" alt="">
+                        </a>
                     </div>
                     
                     <div class="shape">
