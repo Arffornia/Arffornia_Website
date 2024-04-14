@@ -16,11 +16,20 @@
         </div>
 
         <div class="info">
-            <p class="Pseudo">{{ $user->name }}</p>
-            <p class="Stages"></p>
-            <p class="Progress points"></p>
-            <p class="Last connexion"></p>
-            <p class="First join"></p>
+            <p class="Pseudo">Pseudo : {{ $user->name }}</p>
+            <p class="Stages">Stages : {{ $stage_number }}</p>
+            <p class="points">Progress points : {{ $user->progress_point }} </p>
+            <p class="First join">Account created date : {{ $user->created_at }}</p>
+            
+            <p class="lastConnexion">
+                Last connexion: 
+                @if ($user->last_connexion == null)
+                    Never connected
+                @else
+                    {{ $user->last_connexion }}
+                @endif
+            </p>
+            
             
             @if (auth()->check())
                 <div class="logout">

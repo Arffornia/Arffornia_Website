@@ -109,6 +109,12 @@ class UserController extends Controller
             return redirect('/')->with('message', '⚠ You are not logged !');
         }
 
-        return view('pages.users.profile', ['user' => auth()->user()]);
+        $user = auth()->user();
+
+        return view('pages.users.profile', 
+        [
+            'user' => $user,
+            'stage_number' => $this->stageController->getStageById($user->stage_id)->number
+        ]);
     }
 }
