@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->string("password");
-            $table->string("email")->unique();
+            $table->string("email")->unique()->nullable();
             $table->float("money");
             $table->unsignedBigInteger("progress_point");
-            $table->unsignedBigInteger("stage_id");
+            $table->unsignedBigInteger("stage_id"); 
+            $table->dateTime('last_connexion')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

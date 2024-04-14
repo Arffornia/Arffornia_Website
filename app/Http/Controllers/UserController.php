@@ -9,6 +9,13 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {   
+    protected $stageController;
+
+    public function __construct(StageController $stageController)
+    {
+        $this->stageController = $stageController;
+    }
+
 
     // [API] Get player profil
     public function playerProfile($playerName) {
@@ -56,11 +63,16 @@ class UserController extends Controller
     }
 
     public function createUser(Request $request) {
+        $startStageId = $this->stageController->getStartStage()->id;
+
         $formFields = $request->validate([
             'name' => ['required', 'min:3'],
-            'email' => ['required', 'email', Rule::unique('users', 'email')],
             'password' => 'required|confirmed|min:6'
         ]);
+
+        $formFields['money'] = 0;
+        $formFields['progress_point'] = 0;
+        $formFields['stage_id'] = $startStageId;
 
         // Hash Password
         $formFields['password'] = bcrypt($formFields['password']);
@@ -71,7 +83,7 @@ class UserController extends Controller
         // Login
         auth()->login($user);
 
-        return redirect('/')->with('message', 'User created and logged in');
+        return redirect('/')->with('message', 'User created and logged in !');
     }
 
     /*
@@ -84,7 +96,7 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('message', 'You have been logged out!');
+        return redirect('/')->with('message', 'You have been logged out !');
 
     }
 
@@ -94,9 +106,9 @@ class UserController extends Controller
 
     public function profileView() {
         if(!auth()->check()) {
-            return redirect('/')->with('message', 'You are not logged !');
+            return redirect('/')->with('message', '⚠ You are not logged !');
         }
 
-        return view('pages.users.profile');
+        return view('pages.users.profile', ['user' => auth()->user()]);
     }
 }

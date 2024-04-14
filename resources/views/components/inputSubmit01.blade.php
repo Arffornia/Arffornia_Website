@@ -2,7 +2,7 @@
 
 <input  
     class="inputButton01Container" 
-    type="button" 
+    type="submit" 
     value="{{ $value }}"
 >
 

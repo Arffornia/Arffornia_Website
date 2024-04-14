@@ -11,7 +11,7 @@
         <div class="overlay">
             <div class="overlay-content">
                 <div>
-                    <form action="/login" method="POST">
+                    <form action="/register" method="POST">
                         @csrf
                         <p class="overlay__title">Register:</p>
 
