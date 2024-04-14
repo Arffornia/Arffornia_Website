@@ -17,9 +17,14 @@ class UserController extends Controller
     }
 
 
+    public function getUserByName($username) {
+        return User::where('name', $username)->first();
+    }
+
+
     // [API] Get player profil
     public function playerProfile($playerName) {
-        $user = User::where('name', $playerName)->first();
+        $user = $this->getUserByName($playerName);
 
         if($user) {
             return response()->json([
@@ -104,17 +109,22 @@ class UserController extends Controller
         Profile
     */
 
-    public function profileView() {
-        if(!auth()->check()) {
-            return redirect('/')->with('message', '⚠ You are not logged !');
+    public function profileView($username = null) {
+        if($username) {
+            $user = $this->getUserByName($username);
+        } else {
+            if(!auth()->check()) {
+                return redirect('/')->with('message', '⚠ You are not logged !');
+            }
+    
+            $user = auth()->user();
         }
 
-        $user = auth()->user();
-
-        return view('pages.users.profile', 
-        [
-            'user' => $user,
-            'stage_number' => $this->stageController->getStageById($user->stage_id)->number
-        ]);
+        if($user != null) {
+            return view('pages.users.profile', [
+                'user' => $user,
+                'stage_number' => $this->stageController->getStageById($user->stage_id)->number
+            ]);
+        }
     }
 }
