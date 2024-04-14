@@ -14,6 +14,8 @@
 </head>
 
 <header>
+    <x-flash-message/>
+
     <div class="headerContainer">
         <div class="iconContainer">
             <a href="/"><img id=navBarIcon src="https://media.discordapp.net/attachments/704424365856391168/1228693208805150760/Crafting_Table100x100.png?ex=662cf8b8&is=661a83b8&hm=107e7b5496049ae2ab4c188328dc6a61cbdffc1ffbe54592fbe1e539ff75b88b&=&format=webp&quality=lossless&width=125&height=125" alt=""></a>

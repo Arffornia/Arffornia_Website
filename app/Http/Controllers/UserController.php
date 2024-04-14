@@ -87,4 +87,16 @@ class UserController extends Controller
         return redirect('/')->with('message', 'You have been logged out!');
 
     }
+
+    /*
+        Profile
+    */
+
+    public function profileView() {
+        if(!auth()->check()) {
+            return redirect('/')->with('message', 'You are not logged !');
+        }
+
+        return view('pages.users.profile');
+    }
 }
