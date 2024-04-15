@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 Route::get('/', [HomeController::class, 'homeView']);
 Route::get('/profile', [UserController::class, 'profileView']);
 Route::get('/profile/{username}', [UserController::class, 'profileView']);
+Route::get('/reglement', function() { return view('pages.reglement'); });
 
 
 // Authentification

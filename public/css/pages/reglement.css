@@ -1,0 +1,29 @@
+.content {
+    width: 100%;
+    border: solid 5px #ff7300;
+    border-radius: 30px;
+    background-color: #000000;
+}
+
+.text {
+    color: white;
+    padding: 5%;
+}
+
+.title {
+    font-size: 250%;
+    font-weight: 700;
+}
+
+.sectionTitle {
+    padding-top: 3%;
+
+    font-size: 150%;
+    font-weight: 650;
+}
+
+.paragraph {
+    padding-top: 10px;
+    font-size: 100%;
+    font-weight: 500;
+}

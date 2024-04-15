@@ -26,7 +26,7 @@
             <a href="#">News</a>
             <a href="#">Vote</a>
             <a href="#">Boutique</a>
-            <a href="#">Règlement</a>
+            <a href="/reglement">Règlement</a>
         </div>
 
         <div class="profileImageContainer">
