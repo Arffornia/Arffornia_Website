@@ -73,7 +73,8 @@ a {
     Body
 */
 
-#copyright {
+.copyright {
+    font-family: Montserrat, sans-serif;
     text-align: center;
     padding: 3%;
     padding-bottom: 1%;

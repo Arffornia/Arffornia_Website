@@ -45,7 +45,7 @@
 </body>
 
 <footer>
-    <div id="copyright">
+    <div class="copyright">
         <p>© Arffornia - Tous droits réservés</p>
     </div>    
 </footer>
