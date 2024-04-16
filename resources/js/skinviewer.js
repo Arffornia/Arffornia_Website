@@ -37,7 +37,7 @@ async function checkMinecraftUsername(username) {
       });
 
       viewer.animation = new skinview3d.WalkingAnimation();
-      viewer.animation.speed = rdFromRange(0.2, 0.5);
+      viewer.animation.speed = rdFromRange(0.35, 0.6);
       viewer.animation.progress = rdFromRange(0, 100);
       viewer.controls.enabled = false;
       // viewer.autoRotate = true;
