@@ -7,9 +7,6 @@
 
 @section('content')   
     <div class="standart-page">
-
-        <canvas id="canvas"></canvas>
-
         <div class="sloganContainer">
             <div class="sloganLeftContainer">
                 <div class="sloganLeftOverlay">
@@ -55,55 +52,14 @@
             <img class="imgBG" src="https://cdn.discordapp.com/attachments/704424365856391168/1228693209681629195/palier_progres.png?ex=662cf8b9&is=661a83b9&hm=53fd3823bcdf1205a670364cdeb13fb130cece56b9623af64c903230882139da&" alt="">          
         </div>
 
-        <!--
-        <div class="scoreboard">
-            <div class="all-time">
-                <p class="scoreboard__title">Meilleurs joueurs</p>
-                <div class="players-container">
-                    @foreach ($bestVotePlayers as $index => $player)
-                        <div class="player">
-                            <p class="player-position">#{{ $index + 1 }}</p>
-                            <div class="player-skin">
-                                <img src="{{ asset("images/mc_skins/The_Gost_sniper_3D_MC_skin.png") }}" alt="">
-                            </div>
-                            <div class="player-info">
-                                <p class="player-name">{{ $player['name'] }}</p>
-                                <p class="score">{{ $player['vote_count'] }} votes</p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <div class="vote">
-                <p class="scoreboard__title">Meilleurs voteurs</p>
-                <div class="players-container">
-                    @foreach ($bestAllTimePlayers as $index => $player)
-                        <div class="player">
-                            <p class="player-position">#{{ $index + 1 }}</p>
-                            <div class="player-skin">
-                                <img src="{{ asset("images/mc_skins/The_Gost_sniper_3D_MC_skin.png") }}" alt="">
-                            </div>
-                            <div class="player-info">
-                                <p class="player-name">{{ $player->name }}</p>
-                                <p class="score">{{ $player->progress_point }} points</p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-
-        -->
-
         <div class="podium">
             <div class="content">
                 <div class="p2">
                     <p class="playerName">{{ $bestAllTimePlayers[1]->name }}</p>
                     
-                    <div class="skin">
+                    <div class="player-skin">
                         <a href="/profile/{{ $bestAllTimePlayers[1]->name }}" title="Show profile">
-                            <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&}" alt="">
+                            <canvas class="skin_viewer" data-username="{{ $bestAllTimePlayers[1]->name }}"></canvas>
                         </a>
                     </div>
                     
@@ -119,8 +75,8 @@
                     <p class="playerName">{{ $bestAllTimePlayers[0]->name }}</p>
 
                     <div class="player-skin">
-                        <a href="/profile/{{ $bestAllTimePlayers[1]->name }}" title="Show profile">
-                            <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&" alt="">
+                        <a href="/profile/{{ $bestAllTimePlayers[0]->name }}" title="Show profile">
+                            <canvas class="skin_viewer" data-username="{{ $bestAllTimePlayers[0]->name }}"></canvas>
                         </a>
                     </div>
                     
@@ -135,8 +91,8 @@
                     <p class="playerName">{{ $bestAllTimePlayers[2]->name }}</p>
 
                     <div class="player-skin">
-                        <a href="/profile/{{ $bestAllTimePlayers[1]->name }}" title="Show profile">
-                            <img src="https://cdn.discordapp.com/attachments/704424365856391168/1228693242523160647/The_Gost_sniper_3D_MC_skin.png?ex=662cf8c1&is=661a83c1&hm=21474c5535ed8d8a1ed732e35df373fab7aedadd11643a1ad69d1e16bfa7869b&" alt="">
+                        <a href="/profile/{{ $bestAllTimePlayers[2]->name }}" title="Show profile">
+                            <canvas class="skin_viewer" data-username="{{ $bestAllTimePlayers[2]->name }}"></canvas>
                         </a>
                     </div>
                     
@@ -180,5 +136,5 @@
 
 @section('script')
     <script src="{{asset("js/discord_widget.js")}}"></script>
-    <script src="{{asset("js/skin-viewer.js")}}"></script>
+    @vite(['resources/js/skinviewer.js'])
 @endsection
