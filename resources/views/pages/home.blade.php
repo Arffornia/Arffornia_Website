@@ -7,6 +7,9 @@
 
 @section('content')   
     <div class="standart-page">
+
+        <canvas id="canvas"></canvas>
+
         <div class="sloganContainer">
             <div class="sloganLeftContainer">
                 <div class="sloganLeftOverlay">
@@ -177,4 +180,5 @@
 
 @section('script')
     <script src="{{asset("js/discord_widget.js")}}"></script>
+    <script src="{{asset("js/skin-viewer.js")}}"></script>
 @endsection

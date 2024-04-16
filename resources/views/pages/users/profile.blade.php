@@ -19,6 +19,7 @@
             <div class="overlay">
                 <div class="info">
                     <p> <span class="sectionTitle">Pseudo :</span> {{ $user->name }}</p>
+                    <p> <span class="sectionTitle">Argent :</span> {{ $user->money }}</p>
                     <p> <span class="sectionTitle">Stages :</span> {{ $stage_number }}</p>
                     <p> <span class="sectionTitle">Progress points :</span> {{ $user->progress_point }} </p>
                     <p> <span class="sectionTitle">Account created date :</span> {{ $user->created_at }}</p>
@@ -31,7 +32,6 @@
                             {{ $user->last_connexion }}
                         @endif
                     </p>
-                    
                     
                     @if (auth()->check())
                         <div class="logout">
