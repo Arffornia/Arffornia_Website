@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StagesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use Illuminate\Support\Facades\Route;
@@ -10,3 +11,6 @@ Route::get('/arffornia_v5/modlist', function () {
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('profile/{playerName}', [UserController::class, 'playerProfile']);
+
+Route::get('stages', [StagesController::class, 'stagesJson']);
+Route::get('stages/{playerName}', [StagesController::class, 'playerStagesJson']);

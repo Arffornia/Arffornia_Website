@@ -15,7 +15,6 @@ return new class extends Migration
             $table->unsignedBigInteger("milestone_id");
             $table->unsignedBigInteger("descendant_id");
             $table->boolean("is_root");
-            $table->timestamps();
         });
     }
 

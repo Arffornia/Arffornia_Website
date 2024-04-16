@@ -3,20 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Stage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {   
-    protected $stageController;
-
-    public function __construct(StageController $stageController)
-    {
-        $this->stageController = $stageController;
-    }
-
-
     public function getUserByName($username) {
         return User::where('name', $username)->first();
     }
@@ -68,7 +61,7 @@ class UserController extends Controller
     }
 
     public function createUser(Request $request) {
-        $startStageId = $this->stageController->getStartStage()->id;
+        $startStageId = Stage::where('number', 1)->first();
 
         $formFields = $request->validate([
             'name' => ['required', 'min:3'],
@@ -119,11 +112,11 @@ class UserController extends Controller
     
             $user = auth()->user();
         }
-
+        
         if($user != null) {
             return view('pages.users.profile', [
                 'user' => $user,
-                'stage_number' => $this->stageController->getStageById($user->stage_id)->number
+                'stage_number' => Stage::where('id', $user->stage_id)->first()->number
             ]);
         }
     }
