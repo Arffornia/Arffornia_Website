@@ -184,6 +184,9 @@
     align-items: center;
 }
 
+.skin_viewer {
+    justify-content: center;
+}
 
 .player-info {
     display: flex;
@@ -303,3 +306,4 @@
 .podium .score {
     font-weight: 500;
 }
+

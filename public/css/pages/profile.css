@@ -10,10 +10,14 @@
     position: relative;
 }
 
-.skin {
+.player-skin {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.skin_viewer {
+    justify-content: center;
 }
 
 .skinContainer {

@@ -12,12 +12,10 @@ class HomeController extends Controller
 
     public function homeView() {
         $voteController = new VoteController();
-        $bestVotePlayers = $voteController->bestPlayerByVote(3);
         $bestAllTimePlayers = $this->getBestAllTimePlayers(3);
 
         return view('pages.home', 
             [
-                'bestVotePlayers' => $bestVotePlayers,
                 'bestAllTimePlayers' => $bestAllTimePlayers,
             ]);
     }
