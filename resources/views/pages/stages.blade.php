@@ -21,7 +21,7 @@
                 </div>
             </div>
             
-            
+            <div class="layer_line"></div>
 
             <div id="layer_2" class="layer">
                 <div id="node_3" class="node">
