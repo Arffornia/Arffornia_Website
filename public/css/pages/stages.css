@@ -15,10 +15,31 @@
     position: absolute;
     height: 200px;
     width: 300px;
-    background-color: #ffffff99;
     border-radius: 10px;
     top: 50%;
     left: 0%; 
     transform: translateY(-50%); 
     cursor: pointer; 
+    display: grid;
+    gap: 5px;
+    background-color: #fff;
+    z-index: 2;
+}
+
+.node {
+    width: 70px;
+    height: 70px;
+    border-radius: 50px;
+    background-color: #ffffff;
+    border: solid 3px #ff7300;
+
+}
+
+.node .icon {
+    margin: 10px;
+}
+
+.line {
+    stroke: orange;
+    stroke-width: 5px;
 }
