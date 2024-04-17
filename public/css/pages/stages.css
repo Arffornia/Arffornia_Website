@@ -11,7 +11,8 @@
     overflow: hidden;
 }
 
-.window {
+.canvas {
+
     position: absolute;
     border-radius: 10px;
     top: 50%;

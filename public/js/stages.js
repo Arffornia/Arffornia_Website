@@ -1,18 +1,19 @@
+const canvas = document.querySelector(".canvas");
+
 document.addEventListener("DOMContentLoaded", function() {
-    var fenetre = document.querySelector(".window");
     var dragging = false;
     var offsetX, offsetY;
 
-    fenetre.addEventListener("mousedown", function(e) {
+    canvas.addEventListener("mousedown", function(e) {
         dragging = true;
-        offsetX = e.clientX - parseInt(window.getComputedStyle(fenetre).left);
-        offsetY = e.clientY - parseInt(window.getComputedStyle(fenetre).top);
+        offsetX = e.clientX - parseInt(window.getComputedStyle(canvas).left);
+        offsetY = e.clientY - parseInt(window.getComputedStyle(canvas).top);
     });
 
     document.addEventListener("mousemove", function(e) {
         if (dragging) {
-            fenetre.style.left = e.clientX - offsetX + "px";
-            fenetre.style.top = e.clientY - offsetY + "px";
+            canvas.style.left = e.clientX - offsetX + "px";
+            canvas.style.top = e.clientY - offsetY + "px";
         }
     });
 
@@ -24,10 +25,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function getCenterRelativeToWindow(div) {
     const rect = div.getBoundingClientRect();
-    const windowRect = document.querySelector('.window').getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
     return {
-        x: rect.left - windowRect.left + rect.width / 2,
-        y: rect.top - windowRect.top + rect.height / 2
+        x: rect.left - canvasRect.left + rect.width / 2,
+        y: rect.top - canvasRect.top + rect.height / 2
     };
 }
 
@@ -49,11 +50,41 @@ function linkNodes(node1, node2) {
     line.classList.add("line");
 
     svg.appendChild(line);
-    document.querySelector('.window').appendChild(svg);
+    canvas.appendChild(svg);
 }
 
-const node1 = document.getElementById('node_1');
-const node2 = document.getElementById('node_2');
-linkNodes(node1, node2);
+function createLayer(layerId) {
+    const newLayer = document.createElement("div");
+    
+    newLayer.classList.add("layer");
+    newLayer.id = layerId;
 
+    canvas.appendChild(newLayer);
+}
+
+function createNode(nodeId, layerId) {
+    const newNode = document.createElement("div");
+
+    newNode.classList.add("node");
+    newNode.id = nodeId;
+
+    const layer = document.getElementById(layerId);
+    layer.appendChild(newNode);
+}
+
+function createLayerLine() {
+    const newLayerLine = document.createElement("div");
+    newLayerLine.classList.add("layer_line");
+    canvas.appendChild(newLayerLine);
+}
+
+
+createLayer("layer_1");
+createLayerLine();
+createLayer("layer_2");
+
+createNode("node_1", "layer_1");
+createNode("node_2", "layer_1");
+
+createNode("node_3", "layer_2");
 
