@@ -12,21 +12,15 @@
 }
 
 .canvas {
-
     position: absolute;
     border-radius: 10px;
     top: 50%;
     left: 0%; 
     transform: translateY(-50%); 
     cursor: pointer; 
-    background-color: #fff;
-    display: flex;
-    gap: 50px;    
-}
-
-.layer {
+    background-color: #ffffff00;
     display: grid;
-    gap: 100px;
+    gap: 100px;    
 }
 
 .node {
@@ -34,7 +28,19 @@
     height: 70px;
     border-radius: 50px;
     background-color: #fff;
-    border: solid 3px #ff7300;
+    border: solid 5px #ff7300;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.nodeContainer {
+    display: flex;
+    gap: 50px;
+}
+
+.nodeChildren {
+    display: grid;
+    gap: 30px;
 }
 
 .layer_line {

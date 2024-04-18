@@ -17,6 +17,7 @@
         const milestone_closure = @json($milestone_closure);
     </script>
 
+    <script src="{{asset("js/mod_icons.js")}}"></script>
     <script src="{{asset("js/stages.js")}}"></script>
 
 @endsection

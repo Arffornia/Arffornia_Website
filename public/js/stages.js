@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
 function getCenterRelativeToWindow(div) {
     const rect = div.getBoundingClientRect();
     const canvasRect = canvas.getBoundingClientRect();
@@ -31,7 +30,6 @@ function getCenterRelativeToWindow(div) {
         y: rect.top - canvasRect.top + rect.height / 2
     };
 }
-
 
 function linkNodes(nodeId1, nodeId2) {
     const node1 = document.getElementById(nodeId1);
@@ -56,53 +54,55 @@ function linkNodes(nodeId1, nodeId2) {
     canvas.appendChild(svg);
 }
 
-function createLayer(layerId) {
-    const newLayer = document.createElement("div");
+function createNode(milestone) {
+    const node = document.createElement("div");   
+    node.classList.add("node");
+    node.id = `node_${milestone.id}`;
+    node.title = milestone.name;
+
+    const icon = document.createElement("div"); 
+    icon.classList.add("icon");
+    icon.innerHTML = getIconSvgByType(milestone.icon_type);
+
+    node.appendChild(icon);
+    return node;
+}
+
+function buildTree(milestone) {
+    const nodeContainer = document.createElement("div");   
+    const nodeChildren = document.createElement("div");  
     
-    newLayer.classList.add("layer");
-    newLayer.id = layerId;
+    nodeContainer.classList.add("nodeContainer");
+    nodeChildren.classList.add("nodeChildren");
 
-    canvas.appendChild(newLayer);
-}
-
-function createNode(nodeId, layerId) {
-    const newNode = document.createElement("div");
-
-    newNode.classList.add("node");
-    newNode.id = nodeId;
-
-    const layer = document.getElementById(layerId);
-    layer.appendChild(newNode);
-}
-
-function createLayerLine() {
-    const newLayerLine = document.createElement("div");
-    newLayerLine.classList.add("layer_line");
-    canvas.appendChild(newLayerLine);
-}
-
-function createStages() {
-    const sortedStages = stages.sort((a, b) => a.number - b.number);
-
-    sortedStages.forEach(stage => {
-        createLayer(`layer_${stage.id}`);
+    nodeContainer.appendChild(createNode(milestone));
+    
+    milestone_closure.forEach(closure => {
+        if(closure.milestone_id == milestone.id) {
+            nodeChildren.appendChild(buildTree(
+                milestones.find(x => x.id == closure.descendant_id)
+            ))
+        }
     });
+
+    nodeContainer.appendChild(nodeChildren);
+    
+    return nodeContainer;
 }
 
-function createNodes() {
+function buildTrees() {
     milestones.forEach(milestone => {
-        createNode(`node_${milestone.id}`, `layer_${milestone.stage_id}`);
-    });
-}
+        if(milestone.is_root) {
+            const tree = buildTree(milestone);
+            canvas.appendChild(tree);
+        }
+    })
 
-function createNodeLinks() {
     milestone_closure.forEach(closure => {
         linkNodes(`node_${closure.milestone_id}`, `node_${closure.descendant_id}`)
     })
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-    createStages();
-    createNodes();
-    createNodeLinks();
+    buildTrees();
 });

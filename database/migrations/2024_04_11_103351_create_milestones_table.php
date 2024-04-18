@@ -17,6 +17,8 @@ return new class extends Migration
             $table->text("description");
             $table->unsignedBigInteger("stage_id");
             $table->unsignedBigInteger("reward_progress_points");
+            $table->boolean("is_root");
+            $table->string("icon_type");
         });
     }
 
