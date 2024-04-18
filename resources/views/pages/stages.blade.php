@@ -11,5 +11,12 @@
     </div>   
 @endsection
 @section('script')
+    <script>
+        const stages = @json($stages);
+        const milestones = @json($milestones);
+        const milestone_closure = @json($milestone_closure);
+    </script>
+
     <script src="{{asset("js/stages.js")}}"></script>
+
 @endsection

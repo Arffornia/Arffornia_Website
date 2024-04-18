@@ -33,7 +33,10 @@ function getCenterRelativeToWindow(div) {
 }
 
 
-function linkNodes(node1, node2) {
+function linkNodes(nodeId1, nodeId2) {
+    const node1 = document.getElementById(nodeId1);
+    const node2 = document.getElementById(nodeId2);
+
     const center1 = getCenterRelativeToWindow(node1);
     const center2 = getCenterRelativeToWindow(node2);
 
@@ -78,13 +81,28 @@ function createLayerLine() {
     canvas.appendChild(newLayerLine);
 }
 
+function createStages() {
+    const sortedStages = stages.sort((a, b) => a.number - b.number);
 
-createLayer("layer_1");
-createLayerLine();
-createLayer("layer_2");
+    sortedStages.forEach(stage => {
+        createLayer(`layer_${stage.id}`);
+    });
+}
 
-createNode("node_1", "layer_1");
-createNode("node_2", "layer_1");
+function createNodes() {
+    milestones.forEach(milestone => {
+        createNode(`node_${milestone.id}`, `layer_${milestone.stage_id}`);
+    });
+}
 
-createNode("node_3", "layer_2");
+function createNodeLinks() {
+    milestone_closure.forEach(closure => {
+        linkNodes(`node_${closure.milestone_id}`, `node_${closure.descendant_id}`)
+    })
+}
 
+document.addEventListener("DOMContentLoaded", function() {
+    createStages();
+    createNodes();
+    createNodeLinks();
+});
