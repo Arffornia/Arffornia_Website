@@ -1,5 +1,13 @@
 const canvas = document.querySelector(".canvas");
 
+const milestoneInfo = document.querySelector(".info");
+const infoTitle = milestoneInfo.querySelector("#title");
+const infoDescription = milestoneInfo.querySelector("#description");
+const infoStageNumber = milestoneInfo.querySelector("#stageNumber");
+const infoPoints = milestoneInfo.querySelector("#reward_progress_points");
+const infoIcon = milestoneInfo.querySelector(".icon");
+const infoCloseBtnDiv = milestoneInfo.querySelector(".closeBtn")
+
 document.addEventListener("DOMContentLoaded", function() {
     var dragging = false;
     var offsetX, offsetY;
@@ -20,7 +28,39 @@ document.addEventListener("DOMContentLoaded", function() {
     document.addEventListener("mouseup", function() {
         dragging = false;
     });
+
+    infoCloseBtnDiv.addEventListener('click', function() {
+        hideMilestoneInfo();
+    });
+
+    canvas.addEventListener('click', function(event) {  
+        const node = event.target.closest('.node');
+        if (node) {
+            showNilestonesInfo(milestones.find(x => x.id == node.id));
+        } else {
+            hideMilestoneInfo();
+        }
+    });
 });
+
+function hideMilestoneInfo() {
+    milestoneInfo.classList.add("info-hidden");
+    milestoneInfo.classList.remove("info-show");
+}
+
+
+
+function showNilestonesInfo(milestone) {
+    infoTitle.textContent = milestone.name;
+    infoDescription.textContent = milestone.description;
+    infoStageNumber.textContent = milestone.id; // TODO query stage id to get truth stage number
+    infoPoints.textContent = milestone.reward_progress_points;
+    infoIcon.innerHTML = getIconSvgByType(milestone.icon_type);
+
+    milestoneInfo.classList.remove("info-hidden");
+    milestoneInfo.classList.add("info-show");
+}
+
 
 function getCenterRelativeToWindow(div) {
     const rect = div.getBoundingClientRect();
@@ -57,7 +97,7 @@ function linkNodes(nodeId1, nodeId2) {
 function createNode(milestone) {
     const node = document.createElement("div");   
     node.classList.add("node");
-    node.id = `node_${milestone.id}`;
+    node.id = milestone.id;
     node.title = milestone.name;
 
     const icon = document.createElement("div"); 
@@ -99,7 +139,7 @@ function buildTrees() {
     })
 
     milestone_closure.forEach(closure => {
-        linkNodes(`node_${closure.milestone_id}`, `node_${closure.descendant_id}`)
+        linkNodes(closure.milestone_id, closure.descendant_id)
     })
 }
 

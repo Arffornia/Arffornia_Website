@@ -1,7 +1,7 @@
 .bg {   
     height: 89vh;
     width: 94%;
-    background-color: #14003d;
+    background-color: #3e5a9d;
     border-radius: 15px;
     border: solid 5px #ff7300;
     box-sizing: border-box;
@@ -17,11 +17,18 @@
     top: 50%;
     left: 0%; 
     transform: translateY(-50%); 
-    cursor: pointer; 
+    cursor: -webkit-grabbing;
+    cursor: grab; 
     background-color: #ffffff00;
     display: grid;
     gap: 100px;    
 }
+
+.canvas:active {
+    cursor: grabbing; 
+}
+
+
 
 .node {
     width: 70px;
@@ -31,6 +38,7 @@
     border: solid 5px #ff7300;
     margin-top: auto;
     margin-bottom: auto;
+    cursor: pointer;
 }
 
 .nodeContainer {
@@ -53,11 +61,92 @@
     background-color: #959595;
 }
 
-.node .icon {
+.icon {
     margin: 10px;
 }
 
 .line {
     stroke: orange;
     stroke-width: 5px;
+}
+
+
+/*
+    Info Display
+*/
+
+.info {
+    color: #fff;
+    font-family: Montserrat, sans-serif;
+    font-weight: 500;
+    top: 4%;
+    right: 2%;
+    z-index: 3;
+    width: 350px;
+    
+    background-color: #000;
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.info-hidden {
+    position: none;
+    visibility: hidden;
+    
+}
+
+.info-show {
+    position: absolute;
+}
+
+.info .closeBtn {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+}
+
+.info .iconContainer {
+    width: 70px;
+    height: 70px;
+    background-color: #fff;
+    border-radius: 50px;
+}
+
+.info .titleContainer {
+    display: flex;
+    align-items: center;
+}
+
+.info #title {
+    padding-left: 10px;
+    font-size: 125%;
+    font-weight: 700;
+}
+
+.info .textContainer {
+    padding-top: 5%;
+    display: grid;
+    gap: 5px;
+}
+
+.info .textContainer .textTitle {
+    font-weight: 700;
+    font-size: 125%;
+}
+
+.info #description,
+.info #stageNumber,
+.info #stageNumber,
+.icon #itemsContainer
+{
+    transition: opacity 0.3s ease;
+
+    font-weight: 500;
+}
+
+.info .itemsContainer {
+    padding-top: 3%;
 }
