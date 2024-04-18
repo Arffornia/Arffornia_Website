@@ -27,6 +27,7 @@
             <a href="#">Vote</a>
             <a href="#">Boutique</a>
             <a href="/reglement">Règlement</a>
+            <a href="/stages">Paliers</a>
         </div>
 
         <div class="profileImageContainer">
