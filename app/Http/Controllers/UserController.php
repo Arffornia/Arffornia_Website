@@ -61,7 +61,7 @@ class UserController extends Controller
     }
 
     public function createUser(Request $request) {
-        $startStageId = Stage::where('number', 1)->first();
+        $startStageId = Stage::where('number', 1)->first()->id;
 
         $formFields = $request->validate([
             'name' => ['required', 'min:3'],
