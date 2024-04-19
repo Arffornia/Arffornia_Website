@@ -2,15 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\Milestone;
-use App\Models\MilestoneClosure;
-use App\Models\MilestoneUser;
-use App\Models\Stage;
+use App\Models\News;
 use App\Models\User;
 use App\Models\Vote;
+use App\Models\Stage;
+use App\Models\Milestone;
+use App\Models\MilestoneUser;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\MilestoneClosure;
 
 class DatabaseSeeder extends Seeder
 {
@@ -118,5 +119,26 @@ class DatabaseSeeder extends Seeder
         for($i = 0; $i < 10; $i++) {
             MilestoneUser::factory()->create();
         }
+
+        News::create([
+            'title' => "Un magnifique article 1 !",
+            'content' => "<h1>Salut je suis un titre de l'article 1</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
+            'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230794306781053000/406df7cc0a0eeaf367b53705a70f2e90.jpg?ex=66349d85&is=66222885&hm=106a3e568b25aae97c49bc2999ddb4b83ac6209fdfd89f75ffba3b3c22b73525&",
+        ]);
+        News::create([
+            'title' => "Un autre magnifique article 2 !",
+            'content' => "<h1>Salut je suis un titre de l'article 2</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
+            'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230795311082111026/Minecraft-cherry-blossom-2248584-wallhere.com.jpg?ex=66349e75&is=66222975&hm=4fe6dd56d9131775daf4bf9071dc841ece2df932de2457bbda21b462ffedd976&",
+        ]);
+        News::create([
+            'title' => "Un tres long titre pour voir ce que ca fait 3",
+            'content' => "<h1>Salut je suis un titre de l'article 3</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
+            'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230795311082111026/Minecraft-cherry-blossom-2248584-wallhere.com.jpg?ex=66349e75&is=66222975&hm=4fe6dd56d9131775daf4bf9071dc841ece2df932de2457bbda21b462ffedd976&",
+        ]);
+        News::create([
+            'title' => "je suis short 4",
+            'content' => "<h1>Salut je suis un titre de l'article 4</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
+            'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230794306781053000/406df7cc0a0eeaf367b53705a70f2e90.jpg?ex=66349d85&is=66222885&hm=106a3e568b25aae97c49bc2999ddb4b83ac6209fdfd89f75ffba3b3c22b73525&",
+        ]);
     }
 }

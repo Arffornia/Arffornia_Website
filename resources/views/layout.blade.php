@@ -23,7 +23,7 @@
 
         <div class="contentContainer">
             <a href="#">Map</a>
-            <a href="#">News</a>
+            <a href="/news">News</a>
             <a href="#">Vote</a>
             <a href="#">Boutique</a>
             <a href="/reglement">Règlement</a>
