@@ -13,7 +13,10 @@ class NewsController extends Controller
     }
 
     public function newsView($newsId) {
-        $news = News::findOrFail('id', $newsId);
-        return view('pages.news.news', compact('news'));
+        $news = News::where('id', $newsId)->first();
+
+        if($news){
+            return view('pages.news.news', compact('news'));
+        }
     }
 }

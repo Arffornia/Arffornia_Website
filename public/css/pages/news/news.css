@@ -1,0 +1,51 @@
+.imgBG {
+    border-radius: 30px;
+    width: 100%;
+    z-index: -1;
+    top: 0;
+    left: 0;
+}
+
+.news {
+    position: relative;
+}
+
+
+.info {
+    padding: 50px;
+    width: fit-content;
+    backdrop-filter: blur(4px);
+    z-index: 0;
+    border-radius: 15px;
+    background-color: #00000023;
+    color: #fff;
+}
+
+.overlay {
+    position: absolute;
+    z-index: 1;
+    bottom: 5%;
+    left: 0%;
+
+    padding-left: 15%;
+    padding-right: 15%;
+}
+
+.title {
+    font-size: 350%;
+    font-weight: 800;
+}
+
+.content {
+    padding-top: 1%;
+    color: #fff;
+    width: 100%;
+}
+
+#date {
+    text-align: right;
+}
+
+#text {
+    padding-top: 1%;
+}
