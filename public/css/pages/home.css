@@ -1,3 +1,7 @@
+.homeSection {
+    padding-top: 5%;
+}
+
 .mediumPlayBtn{
     height: 60px;
     font-weight: 1000;
@@ -71,13 +75,6 @@
     padding-top: 3%;
 }
 
-.APropos {
-    padding-top: 3%;
-}
-
-.palierContainer {
-    padding-top: 3%;
-}
 
 #palierTitle {
     font-size: 300%;
@@ -93,10 +90,6 @@
 
 .palierTextContainer {
     padding: 1% 0%;
-}
-
-.info {
-    padding-top: 3%;
 }
 
 .info__content {
@@ -124,7 +117,6 @@
 .discord__container {
     display: flex;
     justify-content: space-between;
-    padding-top: 3%;
 }
 
 #dicord__title {
@@ -149,10 +141,6 @@
     max-width: 80%;
     margin-top: auto;
     border-radius: 30px;
-}
-
-.scoreboard {
-    padding-top: 3%;
 }
 
 .scoreboard__title {
@@ -209,10 +197,6 @@
 
 .scoreboard .score {
     font-weight: 500;
-}
-
-.podium {
-    padding-top: 3%;
 }
 
 .podium .content {
@@ -307,3 +291,41 @@
     font-weight: 500;
 }
 
+.newsContent .title {
+    font-size: 300%;
+    font-weight: 750;
+    color: black;
+}
+
+.newsContent .seeMoreBtnContainer {
+    padding-top: 1.5%;
+}
+
+.newsContent .newsContainer {
+    padding-top: 1.5%;
+}
+
+.newsContent .seeMoreBtn {
+    height: 60px;
+    font-weight: 1000;
+    font-size: 150%;
+    border-radius: 5px;
+    padding: 2px 10px;
+    transition: 0.3s all ease;
+    background-color: #490085;
+    display: block;
+    outline: none;
+    border: none;
+    width: fit-content;
+    color: white;
+
+    width: 30%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.newsContent .seeMoreBtn:hover {
+    font-size: 170%;
+    box-shadow: 0px 15px 20px #49008597;
+    transform: translateY(-5px);
+}

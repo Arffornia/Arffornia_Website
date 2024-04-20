@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class NewsController extends Controller
 {
     public function allNewsView() {
-        $newsList = News::all();
+        $newsList = News::orderBy('created_at', 'desc')->get();
         return view('pages.news.allNews', compact('newsList'));
     }
 

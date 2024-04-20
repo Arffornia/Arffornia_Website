@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\News;
 use App\Models\User;
 
 class HomeController extends Controller
@@ -11,12 +12,9 @@ class HomeController extends Controller
     }
 
     public function homeView() {
-        $voteController = new VoteController();
         $bestAllTimePlayers = $this->getBestAllTimePlayers(3);
+        $newsList = News::orderBy("created_at", 'desc')->take(3)->get();
 
-        return view('pages.home', 
-            [
-                'bestAllTimePlayers' => $bestAllTimePlayers,
-            ]);
+        return view('pages.home', compact('bestAllTimePlayers', 'newsList'));
     }
 }

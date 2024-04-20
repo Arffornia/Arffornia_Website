@@ -3,6 +3,7 @@
 @section('extraHead')
     <link rel="stylesheet" href="{{asset("css/pages/home.css")}}">
     <link rel="stylesheet" href="{{asset("css/discord_widget.css")}}">
+    <link rel="stylesheet" href="{{asset("css/pages/news/allNews.css")}}">
 @endsection
 
 @section('content')   
@@ -14,7 +15,6 @@
                         <p>Arffornia c'est:</p>
                         <p>+ 330 Mods</p>
                         <p>+ 25 Paliers de progression</p>
-                        
                     </div>
                     <div class="sloganPlayBtnContainer">
                         <a href="#"><input class="mediumPlayBtn" type="button" value="Jouer"></a>
@@ -27,7 +27,7 @@
             <div class="sloganStatueContainer"></div>
         </div>
 
-        <div class="discord__container">
+        <div class="discord__container homeSection">
             <div class="discord__left-container">
                 <p id="dicord__title">Rejoins Notre Discord :</p>
                 <p class="discord__text"></p>
@@ -40,9 +40,26 @@
             <div>
                 <discord-widget class="discord-widget" id="752121854923374614" height="490px" width="400px"></discord-widget>
             </div>
+        </div>  
+        
+        <div class="newsContent homeSection">
+            <p class="title">News :</p>
+            <div class="newsContainer">
+                @foreach ($newsList as $news)
+                <a class="news" href="news/{{ $news->id }}" title="Show news">
+                    <img class="newsImg" src="{{ $news->imgUrl }}">
+                    <div class="textContainer">
+                        <p class="title">{{ $news->title }}</p>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+            <div class="seeMoreBtnContainer">
+                <a href="/news"><input class="seeMoreBtn" type="button" value="Voir plus"></a>
+            </div>
         </div>
 
-        <div class="palierContainer">
+        <div class="palierContainer homeSection">
             <p id="palierTitle">Paliers de progression :</p>
             <div class="palierTextContainer">
                 <p class="palierText">Débloquez 2/3 des jalons menant à un palier pour pouvoir débloquer un nouveau palier.</p>
@@ -52,7 +69,7 @@
             <img class="imgBG" src="https://cdn.discordapp.com/attachments/704424365856391168/1228693209681629195/palier_progres.png?ex=662cf8b9&is=661a83b9&hm=53fd3823bcdf1205a670364cdeb13fb130cece56b9623af64c903230882139da&" alt="">          
         </div>
 
-        <div class="podium">
+        <div class="podium homeSection">
             <div class="content">
                 <div class="p2">
                     <p class="playerName">{{ $bestAllTimePlayers[1]->name }}</p>
@@ -109,7 +126,7 @@
             </div>
         </div>
         
-        <div class="APropos">
+        <div class="APropos homeSection">
             <div class="sloganContainer">
                 <div class="sloganLeftContainer">
                     <div class="sloganLeftOverlay">
