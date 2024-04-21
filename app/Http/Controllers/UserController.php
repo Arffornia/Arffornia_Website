@@ -4,22 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Stage;
+use App\Services\StagesService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use App\Services\UserService;
 
+use Illuminate\Http\Response;
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
 class UserController extends Controller
 {   
-    public function getUserByName($username) {
-        return User::where('name', $username)->first();
-    }
+    private UserService $userService;
+    private StagesService $stageService;
 
+    public function __construct(UserService $userService, StagesService $stageService) {
+        $this->userService = $userService;
+        $this->stageService = $stageService;
+    }
 
     // [API] Get player profil
     public function playerProfile($playerName) {
-        $user = $this->getUserByName($playerName);
+        $user = $this->userService->getUserByName($playerName);
 
         if($user) {
             return response()->json([
@@ -106,7 +111,7 @@ class UserController extends Controller
 
     public function profileView($username = null) {
         if($username) {
-            $user = $this->getUserByName($username);
+            $user = $this->userService->getUserByName($username);
         } else {
             if(!auth()->check()) {
                 return redirect('/')->with('message', '⚠ You are not logged !');
@@ -114,11 +119,10 @@ class UserController extends Controller
     
             $user = auth()->user();
         }
-        
         if($user != null) {
             return view('pages.users.profile', [
                 'user' => $user,
-                'stage_number' => Stage::where('id', $user->stage_id)->first()->number
+                'stage_number' => $this->stageService->getStageById($user->stage_id)->number,
             ]);
         }
     }

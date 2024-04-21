@@ -15,16 +15,6 @@ class StagesService {
     }
 
     /**
-     * Get user by name
-     *
-     * @param  string  $name
-     * @return User
-     */
-    public function getUserByName(string $name) {
-        $this->repository->getUserByName($name);
-    }
-
-    /**
      * Get milestone by user
      *
      * @param  User  $user
@@ -33,4 +23,13 @@ class StagesService {
     public function getMilestoneByUsername(User $user) {
         return $this->repository->getMilestoneByUsername($user);
     }
+
+    public function getStageById(int $id) {
+        return $this->repository->getStageById($id);
+    }
+
+    public function getStartStage() {
+        return $this->repository->getStartStage();
+    }
+
 }

@@ -4,17 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\News;
 use App\Models\User;
+use App\Services\HomeService;
+use App\Services\NewsService;
+use App\Services\UserService;
 
 class HomeController extends Controller
 {
-    public function getBestAllTimePlayers($size) {
-        return User::orderBy('progress_point', 'desc')->take($size)->get();    
+    private HomeService $homeService;
+    private UserService $userService;
+    private NewsService $newsService;
+
+    public function __construct(HomeService $homeService, 
+                                UserService $userService,
+                                NewsService $newsService) 
+    {
+        $this->homeService = $homeService;
+        $this->userService = $userService;
+        $this->newsService = $newsService;
     }
 
     public function homeView() {
-        $bestAllTimePlayers = $this->getBestAllTimePlayers(3);
-        $newsList = News::orderBy("created_at", 'desc')->take(3)->get();
-
-        return view('pages.home', compact('bestAllTimePlayers', 'newsList'));
+        return view('pages.home', 
+            [
+                'bestAllTimePlayers' => $this->userService->getBestUsersByProgressPoints(3),
+                'newsList' => $this->newsService->getNewestNews(3),
+            ]);
     }
 }

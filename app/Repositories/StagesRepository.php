@@ -3,13 +3,9 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\MilestoneUser;
+use App\Models\Stage;
 
 class StagesRepository {
-
-    public function getUserByName($username) {
-        return User::where('name', $username)->first();
-    }
-
     
     /**
      * Get milestone by user
@@ -20,4 +16,13 @@ class StagesRepository {
     public function getMilestoneByUsername(User $user) {
         return MilestoneUser::where('user_id', $user->id)->get();;
     }
+
+    public function getStageById(int $id) {
+        return Stage::where('id', $id)->first();  
+    }
+
+    public function getStartStage() {
+        return Stage::where('number', 1)->first();
+    }
+
 }

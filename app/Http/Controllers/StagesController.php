@@ -2,39 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\playerInfoRequest;
-use App\Models\User;
 use App\Models\Stage;
 use App\Models\Milestone;
-use App\Models\MilestoneUser;
 use App\Services\StagesService;
 use App\Models\MilestoneClosure;
+use App\Services\UserService;
 
 class StagesController extends Controller
 {
-    private StagesService $service;
+    private StagesService $stagesService;
+    private UserService $userService;
 
-    public function __construct(StagesService $service) {
-        $this->service = $service;
+
+    public function __construct(StagesService $stagesService, UserService $userService) {
+        $this->stagesService = $stagesService;
+        $this->userService = $userService;
     }
 
-    public function getStartStage() {
-        return Stage::where('number', 1)->first();
-    }
-
-    public function getStageById(int $id) {
-        return Stage::where('id', $id)->first();  
-    }
-
-    private function stagesInfo() {
-        $stages = Stage::all();
-        $milestones = Milestone::all();
-        $milestone_closure = MilestoneClosure::all();
-
+    private function getStagesInfo() {
         return [
-            'stages' => $stages,
-            'milestones' => $milestones,
-            'milestone_closure' => $milestone_closure,
+            'stages' => Stage::all(),
+            'milestones' => Milestone::all(),
+            'milestone_closure' => MilestoneClosure::all(),
         ];
     }
 
@@ -45,8 +34,8 @@ class StagesController extends Controller
      * @return array
      */
     private function playerStagesInfo(string $playerName) {
-        $user = $this->service->getUserByName($playerName);
-        $playerProgress = $this->service->getMilestoneByUsername($user);
+        $user = $this->userService->getUserByName($playerName);
+        $playerProgress = $this->stagesService->getMilestoneByUsername($user);
 
         if($user) {
             return [
@@ -61,7 +50,7 @@ class StagesController extends Controller
     }
     
     public function stagesJson() {
-        return response()->json($this->stagesInfo());
+        return response()->json($this->getStagesInfo());
     }
 
     public function playerStagesJson($playerName) {
@@ -69,7 +58,7 @@ class StagesController extends Controller
     }
 
     public function loadStagesView() {
-        return view('pages.stages', $this->stagesInfo());
+        return view('pages.stages', $this->getStagesInfo());
     }
 
     public function loadPlayerStageView($playerName) {
