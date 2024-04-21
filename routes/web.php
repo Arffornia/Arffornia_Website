@@ -13,6 +13,9 @@ Route::get('/reglement', function() { return view('pages.reglement'); });
 
 
 // Authentification
+Route::get('/msLogin', [UserController::class, 'msAuth']);
+Route::get('/connect', [UserController::class, 'msAuthCallback']);
+
 Route::get('/login', [UserController::class, 'loginView']);
 Route::post('/login', [UserController::class, 'authenticateUser']);
 

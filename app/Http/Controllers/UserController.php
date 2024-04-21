@@ -6,7 +6,9 @@ use App\Models\User;
 use App\Models\Stage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Validation\Rule;
+
+use Arffornia\MinecraftOauth\MinecraftOauth;
+use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
 class UserController extends Controller
 {   
@@ -119,5 +121,40 @@ class UserController extends Controller
                 'stage_number' => Stage::where('id', $user->stage_id)->first()->number
             ]);
         }
+    }
+
+    public function msAuth()
+    {
+ 
+
+        $clientId = env('AZURE_OAUTH_CLIENT_ID');
+        $redirectUri = urlencode(env('AZURE_OAUTH_REDIRECT_URI'));
+
+        $authUrl = "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
+
+        return redirect()->away($authUrl);
+    }
+
+    public function msAuthCallback()
+    {   
+        $clientId = env('AZURE_OAUTH_CLIENT_ID');
+        $redirectUri = env('AZURE_OAUTH_REDIRECT_URI');
+        $clientSecret = env('AZURE_OAUTH_CLIENT_SECRET');
+        
+        try {
+            $profile = (new MinecraftOauth)->fetchProfile(
+                $clientId,
+                $clientSecret,
+                $_GET['code'],
+                $redirectUri,
+            );
+
+            dump('Minecraft UUID: ' . $profile->uuid());
+            dump( 'Minecraft Username: ' . $profile->username());
+            dump( 'Minecraft Skin URL: ' . $profile->skins()[0]->url());
+            dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
+        } catch (MinecraftOauthException $e) {
+            dump( $e->getMessage());
+        }        
     }
 }

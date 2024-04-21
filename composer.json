@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "arffornia/minecraft-oauth": "dev-main",
         "barryvdh/laravel-ide-helper": "^3.0",
         "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
@@ -63,6 +64,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
