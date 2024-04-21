@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LauncherController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
@@ -14,3 +15,6 @@ Route::get('profile/{playerName}', [UserController::class, 'playerProfile']);
 
 Route::get('stages', [StagesController::class, 'stagesJson']);
 Route::get('stages/{playerName}', [StagesController::class, 'playerStagesJson']);
+
+Route::get('launcherVersionInfo/{dev?}', [LauncherController::class,'getLauncherInfo'])->where('dev', 'dev');
+Route::get('launcherImages', [LauncherController::class,'getLauncherImages']);
