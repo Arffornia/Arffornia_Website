@@ -12,8 +12,14 @@ class LauncherService {
         $this->repository = $repository;
     }
 
-    public function getLauncherHash(bool $devVersion) {
-        return $this->repository->getLauncherInfo($devVersion)->hash;
+    public function getLauncherInfo(bool $devVersion) {
+        $launcherVersionInfo = $this->repository->getLauncherInfo($devVersion);
+
+        return 
+        [
+            'version'=> $launcherVersionInfo->version,
+            'hash' => $launcherVersionInfo->hash,
+        ];
     }
 
     public function getLauncherImages() {

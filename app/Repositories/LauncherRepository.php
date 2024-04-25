@@ -8,16 +8,15 @@ use App\Models\User;
 class LauncherRepository {
     public function getLauncherInfo(bool $devVersion) {
         if($devVersion){
-            if($devVersion){
-                $launhcerVersion = LauncherVersioning::orderBy("created_at","desc")->first();
-            } else {
-                $launhcerVersion = LauncherVersioning::where('in_prod', !$devVersion)
-                                    ->orderBy("created_at","desc")
-                                    ->first();
-            }
+            $launcherVersion = LauncherVersioning::orderBy("created_at","desc")->first();
+        } else {
+            $launcherVersion = LauncherVersioning::where('in_prod', !$devVersion)
+                                ->orderBy("created_at","desc")
+                                ->first();
         }
         
-        return $launhcerVersion;            
+        
+        return $launcherVersion;            
     }
 
     public function getLauncherImages() {

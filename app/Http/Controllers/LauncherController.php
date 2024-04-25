@@ -14,10 +14,17 @@ class LauncherController extends Controller
     }
 
     public function getLauncherInfo($dev = null) {
-        return response()->json($this->launcherService->getLauncherHash($dev === 'dev'));
+        return response()->json($this->launcherService->getLauncherInfo($dev === 'dev'));
     }
 
     public function getLauncherImages() {
         return response()->json($this->launcherService->getLauncherImages());
+    }
+
+    public function downloadBootstrap() {
+    }
+
+    public function downloadLauncher() {
+        return response()->download(public_path("files/ArfforniaLauncher.jar"));
     }
 }

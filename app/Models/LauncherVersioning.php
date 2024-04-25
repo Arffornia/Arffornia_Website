@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class LauncherVersioning extends Model
 {
     use HasFactory;
+
+    protected $table = 'launcher_versioning';
+
 }

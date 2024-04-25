@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\LauncherImage;
+use App\Models\LauncherVersioning;
 use App\Models\News;
 use App\Models\User;
 use App\Models\Vote;
@@ -139,6 +141,28 @@ class DatabaseSeeder extends Seeder
             'title' => "je suis short 4",
             'content' => "<h1>Salut je suis un titre de l'article 4</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
             'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230794306781053000/406df7cc0a0eeaf367b53705a70f2e90.jpg?ex=66349d85&is=66222885&hm=106a3e568b25aae97c49bc2999ddb4b83ac6209fdfd89f75ffba3b3c22b73525&",
+        ]);
+
+        LauncherImage::create([
+            'url' => 'https://cdn.discordapp.com/attachments/704424365856391168/1230794306781053000/406df7cc0a0eeaf367b53705a70f2e90.jpg?ex=66349d85&is=66222885&hm=106a3e568b25aae97c49bc2999ddb4b83ac6209fdfd89f75ffba3b3c22b73525&',
+            'in_prod' => true,
+        ]);
+
+        LauncherImage::create([
+            'url' => 'https://cdn.discordapp.com/attachments/704424365856391168/1230795311082111026/Minecraft-cherry-blossom-2248584-wallhere.com.jpg?ex=66349e75&is=66222975&hm=4fe6dd56d9131775daf4bf9071dc841ece2df932de2457bbda21b462ffedd976&',
+            'in_prod' => false,
+        ]);
+
+        LauncherVersioning::create([
+            'version' => '1.2',
+            'hash' => 'FAFrc!@fy5151vgbhnafFAjmlk4@3514e^rfytg!hiuhyfu!hYRTDFYV',
+            'in_prod' => true,
+        ]);
+
+        LauncherVersioning::create([
+            'version' => '1.3',
+            'hash' => 'tF46AFA64!ffg^fgja6mlk4@3514e^rfy44!ffg^fgja6mlk4@&d@$hf',
+            'in_prod' => false,
         ]);
     }
 }

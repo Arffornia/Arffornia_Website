@@ -18,3 +18,5 @@ Route::get('stages/{playerName}', [StagesController::class, 'playerStagesJson'])
 
 Route::get('launcherVersionInfo/{dev?}', [LauncherController::class,'getLauncherInfo'])->where('dev', 'dev');
 Route::get('launcherImages', [LauncherController::class,'getLauncherImages']);
+Route::get('download/bootstrap', [LauncherController::class,'downloadBootstrap']);
+Route::get('download/launcher', [LauncherController::class,'downloadLauncher']);

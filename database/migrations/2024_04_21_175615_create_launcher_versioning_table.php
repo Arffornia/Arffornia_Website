@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('launcher_versioning', function (Blueprint $table) {
             $table->id();
+            $table->string("version");
             $table->string("hash");
             $table->boolean("in_prod");
             $table->timestamps();
