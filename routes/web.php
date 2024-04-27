@@ -6,7 +6,7 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StagesController;
 
-// Home 
+// Home
 Route::get('/', [HomeController::class, 'homeView']);
 
 // Profile
@@ -37,4 +37,9 @@ Route::post('/register', [UserController::class, 'createUser']);
 
 Route::post('/profile', [UserController::class, 'logoutUser']);
 
+
+// Admin
+Route::group(['middleware'=> ['admin']], function() {
+    Route::get('/admin', [UserController::class,'adminPanelView']);
+});
 

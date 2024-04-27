@@ -163,4 +163,8 @@ class UserController extends Controller
             dump( $e->getMessage());
         }
     }
+
+    public function adminPanelView() {
+        return view('admin.admin_panel');
+    }
 }

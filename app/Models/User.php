@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -89,5 +89,9 @@ class User extends Authenticatable
 
     public function votes() {
         return $this->hasMany(Vote::class);
+    }
+
+    public function hasRole(string $role) : bool {
+        return $this->role == $role;
     }
 }
