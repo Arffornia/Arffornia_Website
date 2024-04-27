@@ -13,8 +13,8 @@ class VoteController extends Controller
     private UserService $userService;
 
 
-    public function __construct(VoteService $voteService, 
-                                UserService $userService) 
+    public function __construct(VoteService $voteService,
+                                UserService $userService)
     {
         $this->voteService = $voteService;
         $this->userService = $userService;
@@ -22,14 +22,6 @@ class VoteController extends Controller
 
     public function bestPlayerByVote($size): array
     {
-        if ($size < 0) {
-            $size *= -1;
-        }
-
-        if ($size > 25) {
-            $size = 25;
-        }
-
         $topVoters = $this->userService->getTopVoters($size)
             ->map(function ($user) {
                 return [

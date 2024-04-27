@@ -11,20 +11,28 @@ class UserService{
     }
 
     public function getBestUsersByProgressPoints($size) {
-        return $this->repository->getBestUsersByProgressPoints($size);    
+        return $this->repository->getBestUsersByProgressPoints($size);
     }
 
     /**
      * Get user by name
      *
      * @param  string  $name
-     * @return 
+     * @return
      */
     public function getUserByName(string $name) {
         return $this->repository->getUserByName($name);
     }
 
     public function getTopVoters(int $size) {
+        if ($size < 0) {
+            $size *= -1;
+        }
+
+        if ($size > 25) {
+            $size = 25;
+        }
+
         return $this->repository->getTopVoters($size);
     }
 

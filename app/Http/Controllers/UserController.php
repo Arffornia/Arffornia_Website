@@ -13,7 +13,7 @@ use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
 class UserController extends Controller
-{   
+{
     private UserService $userService;
     private StagesService $stageService;
 
@@ -30,8 +30,8 @@ class UserController extends Controller
             return response()->json([
                 'money' => $user->money,
                 'vote_count' => $user->getVoteCount(),
-            ]);           
-        } 
+            ]);
+        }
 
         return response()->json(['error' => 'player name not found.'], Response::HTTP_NOT_FOUND);
     }
@@ -66,6 +66,8 @@ class UserController extends Controller
     public function registerView() {
         return view('pages.users.register');
     }
+
+
 
     public function createUser(Request $request) {
         $startStageId = Stage::where('number', 1)->first()->id;
@@ -116,7 +118,7 @@ class UserController extends Controller
             if(!auth()->check()) {
                 return redirect('/')->with('message', '⚠ You are not logged !');
             }
-    
+
             $user = auth()->user();
         }
         if($user != null) {
@@ -129,7 +131,7 @@ class UserController extends Controller
 
     public function msAuth()
     {
- 
+
 
         $clientId = env('AZURE_OAUTH_CLIENT_ID');
         $redirectUri = urlencode(env('AZURE_OAUTH_REDIRECT_URI'));
@@ -140,11 +142,11 @@ class UserController extends Controller
     }
 
     public function msAuthCallback()
-    {   
+    {
         $clientId = env('AZURE_OAUTH_CLIENT_ID');
         $redirectUri = env('AZURE_OAUTH_REDIRECT_URI');
         $clientSecret = env('AZURE_OAUTH_CLIENT_SECRET');
-        
+
         try {
             $profile = (new MinecraftOauth)->fetchProfile(
                 $clientId,
@@ -159,6 +161,6 @@ class UserController extends Controller
             dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
         } catch (MinecraftOauthException $e) {
             dump( $e->getMessage());
-        }        
+        }
     }
 }
