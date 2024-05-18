@@ -1,12 +1,12 @@
 .homeSection {
-    padding-top: 5%;
+    padding-top: 30px;
 }
 
 .mediumPlayBtn{
-    height: 60px;
+    height: 50px;
     font-weight: 1000;
-    min-width: 300px;
-    font-size: 150%;
+    min-width: 250px;
+    font-size: 125%;
     border-radius: 5px;
     padding: 2px 10px;
     transition: 0.3s all ease;
@@ -19,9 +19,9 @@
 }
 
 .mediumPlayBtn:hover {
-    font-size: 170%;
+    font-size: 140%;
     box-shadow: 0px 15px 20px #ff730097;
-    transform: translateY(-5px);
+    transform: translateY(-3px);
 }
 
 .imgBG {
@@ -37,13 +37,13 @@
 }
 
 #slogan__title {
-    font-size: 250%;
-    font-weight: 750;
+    font-size: 200%;
+    font-weight: 700;
     color: white;
 }
 
 .sloganLeftOverlay {
-    padding: 50px;
+    padding: 30px;
     width: fit-content;
     backdrop-filter: blur(4px);
     z-index: 0;
@@ -59,15 +59,15 @@
 }
 
 .slogan__text-container {
-    padding-top: 2%;
-    font-size: 125%;
+    padding-top: 5%;
+    font-size: 100%;
     font-weight: 600;
     color: rgb(239, 239, 239);
 }
 
 .sloganTextContainer {
-    font-size: 250%;
-    font-weight: 750;
+    font-size: 175%;
+    font-weight: 700    ;
     color: white;
 }
 
@@ -77,13 +77,13 @@
 
 
 #palierTitle {
-    font-size: 300%;
+    font-size: 225%;
     font-weight: 750;
     color: black;
 }
 
 .palierText {
-    font-size: 125%;
+    font-size: 100%;
     font-weight: 500;
     color: black;
 }
@@ -93,7 +93,7 @@
 }
 
 .info__content {
-    
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -116,11 +116,11 @@
 
 .discord__container {
     display: flex;
-    justify-content: space-between;
+    align-items: flex-start;
 }
 
 #dicord__title {
-    font-size: 300%;
+    font-size: 225%;
     font-weight: 750;
     color: black;
 }
@@ -134,12 +134,25 @@
 .discord__left-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
-#join-us-ing {
-    max-width: 80%;
-    margin-top: auto;
+.discord__widget-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1; /* Make it grow to fill the container */
+    height: 100%; /* Make sure it fills the parent height */
+}
+
+.discord-widget {
+    flex-grow: 1; /* Make the widget grow to fill available space */
+    align-self: stretch; /* Stretch the widget to fit the container */
+}
+
+#join-us-img {
+    max-width: 90%;
+    margin-top: 20px;
     border-radius: 30px;
 }
 
@@ -200,13 +213,14 @@
 }
 
 .podium .content {
-    
+
     display: flex;
     justify-content: center;
     gap: 6%;
 }
 
 .podium .title {
+    padding: 15px;
     width: 57%;
     margin-left: auto;
     margin-right: auto;
@@ -215,17 +229,17 @@
     text-align: center;
     color: #fff;
     border-radius: 10px;
-    font-size: 300%;
+    font-size: 250%;
     font-weight: 700;
     background-color: #2C3239;
 
-    border: solid 3px #ff7300;    
+    border: solid 3px #ff7300;
 }
 
 .p2, .p1, .p3 {
     align-self: flex-end;
     width: 15%;
-    
+
 }
 
 .podium .shape {
@@ -237,6 +251,7 @@
 
 .podium .shape {
     position: relative;
+    padding: 15px;
 }
 
 .p2 .shape {
@@ -244,7 +259,7 @@
 }
 
 .p1 .shape {
-    padding-top: 75%; 
+    padding-top: 75%;
 }
 
 .p3 .shape {
@@ -274,17 +289,17 @@
 
 .podium .p2 .rank {
     font-weight: 650;
-    font-size: 325%;
+    font-size: 300%;
 }
 
 .podium .p1 .rank {
     font-weight: 700;
-    font-size: 400%;
+    font-size: 375%;
 }
 
 .podium .p3 .rank {
     font-weight: 600;
-    font-size: 250%;
+    font-size: 225%;
 }
 
 .podium .score {
@@ -292,7 +307,7 @@
 }
 
 .newsContent .title {
-    font-size: 300%;
+    font-size: 225%;
     font-weight: 750;
     color: black;
 }
@@ -306,9 +321,9 @@
 }
 
 .newsContent .seeMoreBtn {
-    height: 60px;
+    height: 50px;
     font-weight: 1000;
-    font-size: 150%;
+    font-size: 125%;
     border-radius: 5px;
     padding: 2px 10px;
     transition: 0.3s all ease;
@@ -325,7 +340,7 @@
 }
 
 .newsContent .seeMoreBtn:hover {
-    font-size: 170%;
+    font-size: 140%;
     box-shadow: 0px 15px 20px #49008597;
-    transform: translateY(-5px);
+    transform: translateY(-3px);
 }

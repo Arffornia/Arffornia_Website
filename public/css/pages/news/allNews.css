@@ -7,9 +7,9 @@
 
 .newsContainer .news {
     border: solid 5px #ff7300;
-    flex: 1 0 auto; 
-    max-width: calc((100% - 70px) / 3); 
-    margin-bottom: 10px; 
+    flex: 1 0 auto;
+    max-width: calc((100% - 70px) / 3);
+    margin-bottom: 10px;
     background-color: #490085;
     border-radius: 15px;
     overflow: hidden;
@@ -23,7 +23,7 @@
 
 @media (max-width: 768px) {
     .newsContainer .news {
-        max-width: calc((100% - 70px) / 2); 
+        max-width: calc((100% - 70px) / 2);
     }
 }
 
@@ -47,13 +47,13 @@
 
 
 .newsContainer .textContainer {
-    min-height: 200px;
+    min-height: 150%;
 }
 
 .newsContainer .title {
-    padding: 15px;
-    font-size: 200%;
+    padding: 20px;
+    font-size: 150%;
     font-weight: 700;
     color: #fff;
-    
+
 }

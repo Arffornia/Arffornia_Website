@@ -32,13 +32,12 @@
                 <p id="dicord__title">Rejoins Notre Discord :</p>
                 <p class="discord__text"></p>
 
-                <img id=join-us-ing src="{{ asset("images/join_us.png") }}" alt="">
-
+                <img id=join-us-img src="{{ asset("images/join_us.png") }}" alt="">
             </div>
 
 
-            <div>
-                <discord-widget class="discord-widget" id="752121854923374614" height="490px" width="400px"></discord-widget>
+            <div class="discord__widget-container">
+                <discord-widget class="discord-widget" id="752121854923374614"></discord-widget>
             </div>
         </div>
 
@@ -66,7 +65,7 @@
                 <p class="palierText">Chaque palier vous permet d'avancer un peu plus dans les mods.</p>
                 <p class="palierText">Le but, équilibré les mods entre eux, ainsi que de vous faire découvrir de nouveaux mods.</p>
             </div>
-            <img class="imgBG" src="{{ asset("images/palier_progres.png") }}" alt="">;
+            <img class="imgBG" src="{{ asset("images/palier_progres.png") }}" alt="">
         </div>
 
         <div class="podium homeSection">
@@ -133,8 +132,11 @@
                         <div>
                             <p id="slogan__title">A propos:</p>
                             <div class="slogan__text-container">
-                                <p>Arffornia est un serveur survie moddé, orienté build.</p>
-                                <p>Construisiez votre nouvelle base, usine avec plus de 330 mods.</p>
+                                <p>Arffornia est un serveur survie moddé,</p>
+                                <p> orienté build.</p>
+                                <br>
+                                <p>Construisiez votre nouvelle base,</p>
+                                <p>usine avec plus de 330 mods.</p>
                             </div>
                         </div>
                         <div class="sloganPlayBtnContainer">

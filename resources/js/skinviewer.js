@@ -8,21 +8,24 @@ function rdFromRange(min, max) {
 
 async function checkMinecraftUsername(username) {
   const url = `https://mineskin.eu/skin/${username}`;
-  
+
   try {
       const response = await fetch(url);
       return response.ok;
   } catch (error) {
       console.error("Erreur lors de la requête :", error);
-      return false; 
+      return false;
   }
-  
+
   return false;
 }
 
 (async () => {
   Array.from(elements).forEach(async element => {
       var username = element.getAttribute('data-username');
+      var isControl = element.getAttribute('data-control');
+
+
       const isValidUsername = await checkMinecraftUsername(username);
       if (!isValidUsername) {
         username = "Steve";
@@ -39,7 +42,7 @@ async function checkMinecraftUsername(username) {
       viewer.animation = new skinview3d.WalkingAnimation();
       viewer.animation.speed = rdFromRange(0.35, 0.6);
       viewer.animation.progress = rdFromRange(0, 100);
-      viewer.controls.enabled = false;
+      viewer.controls.enabled = isControl == "true";
       // viewer.autoRotate = true;
       // viewer.autoRotateSpeed = 0.5;
   });

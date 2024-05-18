@@ -12,7 +12,7 @@
 
             <div class="skinContainer">
                 <div class="player-skin">
-                    <canvas class="skin_viewer" data-username="{{ $user->name }}"></canvas>
+                    <canvas class="skin_viewer" data-control="true" data-username="{{ $user->name }}"></canvas>
                 </div>
             </div>
 
