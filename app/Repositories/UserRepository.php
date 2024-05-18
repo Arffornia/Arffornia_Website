@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Models\Stage;
 
 class UserRepository {
     public function getBestUsersByProgressPoints(int $size) {
@@ -21,5 +22,18 @@ class UserRepository {
                         ->orderByDesc('votes_count')
                         ->limit($size)
                         ->get();
+    }
+
+    public function createUser(string $name, string $uuid) {
+        $startStageId = Stage::where('number', 1)->first()->id;
+
+        $formFields['name'] = $name;
+        $formFields['uuid'] = $uuid;
+        $formFields['money'] = 0;
+        $formFields['progress_point'] = 0;
+        $formFields['stage_id'] = $startStageId;
+
+        // Create User
+        return User::create($formFields);
     }
 }

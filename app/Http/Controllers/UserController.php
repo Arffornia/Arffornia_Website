@@ -9,8 +9,7 @@ use Illuminate\Http\Request;
 use App\Services\UserService;
 
 use Illuminate\Http\Response;
-use Arffornia\MinecraftOauth\MinecraftOauth;
-use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
+
 
 class UserController extends Controller
 {
@@ -58,21 +57,6 @@ class UserController extends Controller
         return view('pages.users.register');
     }
 
-
-
-    public function createUser(string $name, string $uuid) {
-        $startStageId = Stage::where('number', 1)->first()->id;
-
-        $formFields['name'] = $name;
-        $formFields['uuid'] = $uuid;
-        $formFields['money'] = 0;
-        $formFields['progress_point'] = 0;
-        $formFields['stage_id'] = $startStageId;
-
-        // Create User
-        return User::create($formFields);
-    }
-
     /*
         Log-out
     */
@@ -111,56 +95,21 @@ class UserController extends Controller
 
     public function msAuth()
     {
-        $clientId = env('AZURE_OAUTH_CLIENT_ID');
-        $redirectUri = urlencode(env('AZURE_OAUTH_REDIRECT_URI'));
-
-        $authUrl = "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
-
-        return redirect()->away($authUrl);
+        return redirect()->away($this->userService->getMsAuthRedirectUrl());
     }
 
     public function msAuthCallback()
     {
-        $clientId = env('AZURE_OAUTH_CLIENT_ID');
-        $redirectUri = env('AZURE_OAUTH_REDIRECT_URI');
-        $clientSecret = env('AZURE_OAUTH_CLIENT_SECRET');
+        $user = $this->userService->getUserFromMsAuthCallback();
 
-        try {
-            $profile = (new MinecraftOauth)->fetchProfile(
-                $clientId,
-                $clientSecret,
-                $_GET['code'],
-                $redirectUri,
-            );
-
-            // dump('Minecraft UUID: ' . $profile->uuid());
-            // dump( 'Minecraft Username: ' . $profile->username());
-            // dump( 'Minecraft Skin URL: ' . $profile->skins()[0]->url());
-            // dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
-
-            $user = $this->userService->getUserByUuid($profile->uuid());
-
-            if(!$user) {
-                // register new player
-                $user =  $this->createUser($profile->username(), $profile->uuid());
-            }
-
-            // Login
-            auth()->login($user);
-
-            return redirect('/')->with('message', 'Welcome ' . $profile->username() . ' !');
-
-
-        } catch (MinecraftOauthException $e) {
-            dump( $e->getMessage());
-
-            /*
-                TODO:
-
-                Add a flash message, with e getmessage
-            */
-            return view('pages.users.login');
+        if($user) {
+            return redirect('/')->with('message', 'Welcome ' . $user->name . ' !');
         }
+
+
+        // TODO add message with error
+        return view('pages.users.login');
+
     }
 
     public function adminPanelView() {

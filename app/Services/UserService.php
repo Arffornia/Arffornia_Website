@@ -2,6 +2,8 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use Arffornia\MinecraftOauth\MinecraftOauth;
+use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
 class UserService{
     private UserRepository $repository;
@@ -48,5 +50,54 @@ class UserService{
         return $this->repository->getTopVoters($size);
     }
 
+    public function getMsAuthRedirectUrl() {
+        $clientId = env('AZURE_OAUTH_CLIENT_ID');
+        $redirectUri = urlencode(env('AZURE_OAUTH_REDIRECT_URI'));
 
+        return "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
+    }
+
+
+    public function getUserFromMsAuthCallback() {
+        $clientId = env('AZURE_OAUTH_CLIENT_ID');
+        $redirectUri = env('AZURE_OAUTH_REDIRECT_URI');
+        $clientSecret = env('AZURE_OAUTH_CLIENT_SECRET');
+
+        try {
+            $profile = (new MinecraftOauth)->fetchProfile(
+                $clientId,
+                $clientSecret,
+                $_GET['code'],
+                $redirectUri,
+            );
+
+            // dump('Minecraft UUID: ' . $profile->uuid());
+            // dump( 'Minecraft Username: ' . $profile->username());
+            // dump( 'Minecraft Skin URL: ' . $profile->skins()[0]->url());
+            // dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
+
+            $user = $this->getUserByUuid($profile->uuid());
+
+            if(!$user) {
+                // register new player
+                $user =  $this->repository->createUser($profile->username(), $profile->uuid());
+            }
+
+            // Login
+            auth()->login($user);
+
+            return $user;
+
+
+        } catch (MinecraftOauthException $e) {
+            dump($e->getMessage());
+
+            /*
+                TODO:
+
+                Add a flash message, with e getmessage
+            */
+            return null;
+        }
+    }
 }
