@@ -9,7 +9,7 @@
     <div class="newsContainer">
         @foreach ($newsList as $news)
         <a class="news" href="news/{{ $news->id }}" title="Show news">
-            <img class="newsImg" src="{{ $news->imgUrl }}">
+            <img class="newsImg" src="{{ asset($news->imgUrl) }} ">
             <div class="textContainer">
                 <p class="title">{{ $news->title }}</p>
             </div>

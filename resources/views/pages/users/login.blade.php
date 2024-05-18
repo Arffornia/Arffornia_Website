@@ -43,12 +43,12 @@
                         <p id="creat">Create your Account ➡️</p>
                     </a>
                 </div>
-                
-                
+
+
             </div>
         </div>
 
-        <img class="imgBG" src="https://cdn.discordapp.com/attachments/704424365856391168/1228693225615921265/old_spawn.png?ex=662cf8bd&is=661a83bd&hm=91edb78f11316299b58f0635225c9aca65806ca2e82c6334478f6d336528ffd9&" alt="">          
+        <img class="imgBG" src="{{ asset("images/screenshots1920x1080/old_spawn.png") }}" alt="">
     </div>
 </div>
 @endsection
