@@ -47,7 +47,7 @@
     width: fit-content;
     backdrop-filter: blur(4px);
     z-index: 0;
-    border-radius: 30px;
+    border-radius: 15px;
     background-color: #00000023;
 }
 
@@ -67,7 +67,7 @@
 
 .sloganTextContainer {
     font-size: 175%;
-    font-weight: 700    ;
+    font-weight: 700;
     color: white;
 }
 
@@ -153,7 +153,7 @@
 #join-us-img {
     max-width: 90%;
     margin-top: 20px;
-    border-radius: 30px;
+    border-radius: 15px;
 }
 
 .scoreboard__title {

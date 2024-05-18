@@ -29,7 +29,7 @@
     color: #fff;
     width: 17%;
     align-items: center;
-    padding: 30px 30px;
+    padding: 10px 30px;
 
     position: absolute;
     left: 15%;
@@ -38,11 +38,11 @@
 }
 
 .info {
-    padding: 50px;
+    padding: 25px;
     width: fit-content;
     backdrop-filter: blur(4px);
     z-index: 0;
-    border-radius: 30px;
+    border-radius: 15px;
     background-color: #00000023;
     color: #fff;
 }
@@ -57,7 +57,7 @@
     position: absolute;
     z-index: 1;
     top: 50%;
-    right: 15%;
+    right: 5%;
     transform: translateY(-50%);
 }
 

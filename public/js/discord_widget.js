@@ -1,6 +1,5 @@
 'use strict';
 window.addEventListener('load', () => {
-    // Function to adjust the height of the widget
     const adjustWidgetHeight = () => {
         const leftContainer = document.querySelector('.discord__left-container');
         const widgetContainer = document.querySelector('.discord__widget-container');
@@ -10,13 +9,10 @@ window.addEventListener('load', () => {
         }
     };
 
-    // Adjust the height initially
     adjustWidgetHeight();
 
-    // Adjust the height whenever the window is resized
     window.addEventListener('resize', adjustWidgetHeight);
 
-    // Observe changes to the .discord__left-container to adjust the widget height
     const leftContainer = document.querySelector('.discord__left-container');
     if (leftContainer) {
         const observer = new MutationObserver(adjustWidgetHeight);
@@ -26,7 +22,7 @@ window.addEventListener('load', () => {
     for (let widget of document.getElementsByTagName('discord-widget')) {
         let id = widget.getAttribute('id') ?? null;
         let width = widget.getAttribute('width') ?? '325px';
-        let height = widget.getAttribute('height') ?? '500px';  // Default height
+        let height = widget.getAttribute('height') ?? '500px';
         let footerText = widget.getAttribute('footerText') ?? '';
         let color = widget.getAttribute('color') ?? '#5865f2';
         let backgroundColor = widget.getAttribute('backgroundColor') ?? '#0c0c0d';
@@ -63,6 +59,8 @@ window.addEventListener('load', () => {
         joinButton.style.height = '40px';
         head.style.height = '20px';
 
+        widget.style.setProperty('border-radius', "15px");
+
 
         widget.append(head, body, footer);
         fetch(`https://discord.com/api/guilds/${id}/widget.json`).then((data) => {
@@ -79,11 +77,11 @@ window.addEventListener('load', () => {
                     let name = document.createElement('widget-member-name');
                     let statusText = document.createElement('widget-member-status-text');
                     avatarIMG.src = user.avatar_url;
-                    avatarIMG.style.width = '25px';  // Ajustez la taille en pixels selon vos besoins
-                    avatarIMG.style.height = '25px'; // Ajustez la taille en pixels selon vos besoins
+                    avatarIMG.style.width = '25px';
+                    avatarIMG.style.height = '25px';
                     status.classList.add('widget-member-status');
                     name.innerText = user.username;
-                    name.style.fontSize = '13px'; // Ajustez la taille de la police selon vos besoins
+                    name.style.fontSize = '13px';
                     if (user.game) {
                         statusText.innerText = user.game.name;
                     }
@@ -91,7 +89,6 @@ window.addEventListener('load', () => {
                     member.append(avatar, name, statusText);
                     body.append(member);
                 });
-                // Adjust the height of the widget again after data is fetched
                 adjustWidgetHeight();
             });
         });
