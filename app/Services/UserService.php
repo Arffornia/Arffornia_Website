@@ -24,6 +24,18 @@ class UserService{
         return $this->repository->getUserByName($name);
     }
 
+    /**
+     * Get user by uuid
+     *
+     * @param  string  $uuid
+     * @return
+     */
+    public function getUserByUuid(string $uuid) {
+        return $this->repository->getUserByUuid($uuid);
+    }
+
+
+
     public function getTopVoters(int $size) {
         if ($size < 0) {
             $size *= -1;

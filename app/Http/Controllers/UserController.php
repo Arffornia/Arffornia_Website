@@ -40,24 +40,15 @@ class UserController extends Controller
         Login
     */
 
-    public function loginView() {
-        return view('pages.users.login');
+    public function loginView()
+{
+    if (request()->has(['code', 'state'])) {
+        return $this->msAuthCallback();
     }
 
-    public function authenticateUser(Request $request) {
-        $formFields = $request->validate([
-            'name' => 'required',
-            'password' => 'required'
-        ]);
+    return view('pages.users.login');
+}
 
-        if(auth()->attempt($formFields)) {
-            $request->session()->regenerate();
-
-            return redirect('/')->with('message', 'You are now logged in!');
-        }
-
-        return back()->withErrors(['email' => 'Invalid Credentials'])->onlyInput('email');
-    }
 
     /*
         Register
@@ -69,28 +60,17 @@ class UserController extends Controller
 
 
 
-    public function createUser(Request $request) {
+    public function createUser(string $name, string $uuid) {
         $startStageId = Stage::where('number', 1)->first()->id;
 
-        $formFields = $request->validate([
-            'name' => ['required', 'min:3'],
-            'password' => 'required|confirmed|min:6'
-        ]);
-
+        $formFields['name'] = $name;
+        $formFields['uuid'] = $uuid;
         $formFields['money'] = 0;
         $formFields['progress_point'] = 0;
         $formFields['stage_id'] = $startStageId;
 
-        // Hash Password
-        $formFields['password'] = bcrypt($formFields['password']);
-
         // Create User
-        $user = User::create($formFields);
-
-        // Login
-        auth()->login($user);
-
-        return redirect('/')->with('message', 'User created and logged in !');
+        return User::create($formFields);
     }
 
     /*
@@ -131,8 +111,6 @@ class UserController extends Controller
 
     public function msAuth()
     {
-
-
         $clientId = env('AZURE_OAUTH_CLIENT_ID');
         $redirectUri = urlencode(env('AZURE_OAUTH_REDIRECT_URI'));
 
@@ -155,12 +133,33 @@ class UserController extends Controller
                 $redirectUri,
             );
 
-            dump('Minecraft UUID: ' . $profile->uuid());
-            dump( 'Minecraft Username: ' . $profile->username());
-            dump( 'Minecraft Skin URL: ' . $profile->skins()[0]->url());
-            dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
+            // dump('Minecraft UUID: ' . $profile->uuid());
+            // dump( 'Minecraft Username: ' . $profile->username());
+            // dump( 'Minecraft Skin URL: ' . $profile->skins()[0]->url());
+            // dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
+
+            $user = $this->userService->getUserByUuid($profile->uuid());
+
+            if(!$user) {
+                // register new player
+                $user =  $this->createUser($profile->username(), $profile->uuid());
+            }
+
+            // Login
+            auth()->login($user);
+
+            return redirect('/')->with('message', 'Welcome ' . $profile->username() . ' !');
+
+
         } catch (MinecraftOauthException $e) {
             dump( $e->getMessage());
+
+            /*
+                TODO:
+
+                Add a flash message, with e getmessage
+            */
+            return view('pages.users.login');
         }
     }
 

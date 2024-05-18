@@ -54,7 +54,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
-        'password',
+        'uuid',
         'money',
         'progress_point',
         'stage_id',
@@ -66,7 +66,6 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 
@@ -77,10 +76,7 @@ class User extends Authenticatable
      */
     protected function casts(): array
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return [];
     }
 
     public function getVoteCount() {

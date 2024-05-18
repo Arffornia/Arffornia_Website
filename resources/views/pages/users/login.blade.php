@@ -1,8 +1,7 @@
 @extends('layout')
 
 @section('extraHead')
-    <link rel="stylesheet" href="{{asset("css/pages/auth.css")}}">
-    <link rel="stylesheet" href="{{ asset('css/components/inputText/input01.css') }}">
+    <link rel="stylesheet" href="{{ asset("css/pages/auth.css") }}">
 @endsection
 
 @section('content')
@@ -11,40 +10,25 @@
         <div class="overlay">
             <div class="overlay-content">
                 <div>
-                    <form action="/login" method="POST">
-                        @csrf
-                        <p class="overlay__title">Login:</p>
+                    <p class="overlay__title">Login with Microsoft:</p>
+                    <div style="margin-top: 10%">
+                        <div class="overlay__btn-container">
 
-                        <div class="overlay__entries">
+                            <a href="/login/MS-Auth" class="msAuthBtn">
+                                <div class="content">
+                                    <svg class="msIcon" aria-hidden="true" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" itemprop="logo" itemscope="itemscope">
+                                        <path d="M11.5216 0.5H0V11.9067H11.5216V0.5Z" fill="#f25022"></path>
+                                        <path d="M24.2418 0.5H12.7202V11.9067H24.2418V0.5Z" fill="#7fba00"></path>
+                                        <path d="M11.5216 13.0933H0V24.5H11.5216V13.0933Z" fill="#00a4ef"></path>
+                                        <path d="M24.2418 13.0933H12.7202V24.5H24.2418V13.0933Z" fill="#ffb900"></path>
+                                    </svg>
 
-                            <div>
-                                <x-inputText01 id="name" name="name" placeholder="👤 Pseudo Minecraft" value="{{ old('Pseudo Minecraft') }}"></x-inputText01>
-                                @error('name')
-                                    <p>{{$message}}</p>
-                                @enderror
-                            </div>
-                            <div>
-                                <x-inputText01 id="password" name="password" placeholder="🔒 Password" value="{{ old('Password') }}"></x-inputText01>
-                                @error('password')
-                                    <p>{{$message}}</p>
-                                @enderror
-                            </div>
+                                    <p>Login !</p>
+                                </div>
+                            </a>
                         </div>
-
-                        <div style="margin-top: 10%">
-                            <div class="overlay__btn-container">
-                                <x-inputSubmit01 value="Login !"></x-inputButton01>
-                            </div>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-                <div class="create-account">
-                    <a href="/register">
-                        <p id="creat">Create your Account ➡️</p>
-                    </a>
-                </div>
-
-
             </div>
         </div>
 

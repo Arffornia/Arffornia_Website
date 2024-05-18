@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-    {   
+    {
         Stage::factory(3)->create();
 
         Milestone::create([
@@ -89,7 +89,7 @@ class DatabaseSeeder extends Seeder
             'icon_type' => 'magic',
 
         ]);
-        
+
         MilestoneClosure::create([
             'milestone_id' => 1,
             'descendant_id' => 2,
@@ -125,31 +125,31 @@ class DatabaseSeeder extends Seeder
         News::create([
             'title' => "Un magnifique article 1 !",
             'content' => "<h1>Salut je suis un titre de l'article 1</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
-            'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230794306781053000/406df7cc0a0eeaf367b53705a70f2e90.jpg?ex=66349d85&is=66222885&hm=106a3e568b25aae97c49bc2999ddb4b83ac6209fdfd89f75ffba3b3c22b73525&",
+            'imgUrl' => "images/screenshots1920x1080/caveBg1920x1080.jpg",
         ]);
         News::create([
             'title' => "Un autre magnifique article 2 !",
             'content' => "<h1>Salut je suis un titre de l'article 2</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
-            'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230795311082111026/Minecraft-cherry-blossom-2248584-wallhere.com.jpg?ex=66349e75&is=66222975&hm=4fe6dd56d9131775daf4bf9071dc841ece2df932de2457bbda21b462ffedd976&",
+            'imgUrl' => "images/screenshots1920x1080/Cherry-blossomBg1920x1080.png",
         ]);
         News::create([
             'title' => "Un tres long titre pour voir ce que ca fait 3",
             'content' => "<h1>Salut je suis un titre de l'article 3</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
-            'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230795311082111026/Minecraft-cherry-blossom-2248584-wallhere.com.jpg?ex=66349e75&is=66222975&hm=4fe6dd56d9131775daf4bf9071dc841ece2df932de2457bbda21b462ffedd976&",
+            'imgUrl' => "images/screenshots1920x1080/caveBg1920x1080.jpg",
         ]);
         News::create([
             'title' => "je suis short 4",
             'content' => "<h1>Salut je suis un titre de l'article 4</h1><p>Et moi je suis le paragraphe 1</p><p>Et moi je suis le paragraphe 2</p>",
-            'imgUrl' => "https://cdn.discordapp.com/attachments/704424365856391168/1230794306781053000/406df7cc0a0eeaf367b53705a70f2e90.jpg?ex=66349d85&is=66222885&hm=106a3e568b25aae97c49bc2999ddb4b83ac6209fdfd89f75ffba3b3c22b73525&",
+            'imgUrl' => "images/screenshots1920x1080/Cherry-blossomBg1920x1080.png",
         ]);
 
         LauncherImage::create([
-            'url' => 'https://cdn.discordapp.com/attachments/704424365856391168/1230794306781053000/406df7cc0a0eeaf367b53705a70f2e90.jpg?ex=66349d85&is=66222885&hm=106a3e568b25aae97c49bc2999ddb4b83ac6209fdfd89f75ffba3b3c22b73525&',
+            'url' => 'images/screenshots1920x1080/caveBg1920x1080.jpg',
             'in_prod' => true,
         ]);
 
         LauncherImage::create([
-            'url' => 'https://cdn.discordapp.com/attachments/704424365856391168/1230795311082111026/Minecraft-cherry-blossom-2248584-wallhere.com.jpg?ex=66349e75&is=66222975&hm=4fe6dd56d9131775daf4bf9071dc841ece2df932de2457bbda21b462ffedd976&',
+            'url' => 'images/screenshots1920x1080/Cherry-blossomBg1920x1080.png',
             'in_prod' => false,
         ]);
 

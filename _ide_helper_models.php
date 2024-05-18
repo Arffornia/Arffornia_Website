@@ -203,6 +203,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereStageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $uuid
+ * @property string|null $role
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereUuid($value)
  */
 	class User extends \Eloquent {}
 }

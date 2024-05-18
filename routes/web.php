@@ -26,16 +26,12 @@ Route::get('news/{newsId}', [NewsController::class, 'newsView']);
 
 
 // Authentification
-Route::get('/msLogin', [UserController::class, 'msAuth']);
-Route::get('/connect', [UserController::class, 'msAuthCallback']);
+Route::get('/login/MS-Auth', [UserController::class, 'msAuth']);
+Route::get('/login/connect', [UserController::class, 'msAuthCallback']);
 
 Route::get('/login', [UserController::class, 'loginView']);
-Route::post('/login', [UserController::class, 'authenticateUser']);
 
-Route::get('/register', [UserController::class, 'registerView']);
-Route::post('/register', [UserController::class, 'createUser']);
-
-Route::post('/profile', [UserController::class, 'logoutUser']);
+Route::post('/profile/logout', [UserController::class, 'logoutUser']);
 
 
 // Admin

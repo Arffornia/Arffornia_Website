@@ -35,7 +35,7 @@
 
                     @if (auth()->check())
                         <div class="logout">
-                            <form action="/profile" method="POST">
+                            <form action="/profile/logout" method="POST">
                                 @csrf
                                 <x-inputSubmit01 value="Logout"></x-inputButton01>
                             </form>
