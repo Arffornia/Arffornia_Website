@@ -27,6 +27,23 @@ class UserController extends Controller
 
         if($user) {
             return response()->json([
+                'name' => $user->name,
+                'uuid' => $user->uuid,
+                'money' => $user->money,
+                'vote_count' => $user->getVoteCount(),
+            ]);
+        }
+
+        return response()->json(['error' => 'player name not found.'], Response::HTTP_NOT_FOUND);
+    }
+
+    public function playerProfileByUuid(string $playerUuid) {
+        $user = $this->userService->getUserByUuid($playerUuid);
+
+        if($user) {
+            return response()->json([
+                'name' => $user->name,
+                'uuid' => $user->uuid,
                 'money' => $user->money,
                 'vote_count' => $user->getVoteCount(),
             ]);

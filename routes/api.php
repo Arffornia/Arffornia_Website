@@ -12,6 +12,7 @@ Route::get('/arffornia_v5/modlist', function () {
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('profile/{playerName}', [UserController::class, 'playerProfile']); // Get the profile of a player
+Route::get('profile/uuid/{playerUuid}/', [UserController::class, 'playerProfileByUuid']); // Get the profile of a player
 Route::get('checkNewPlayer/{playerUuid}', [UserController::class,'checkNewPlayer']);
 
 Route::get('stages', [StagesController::class, 'stagesJson']);

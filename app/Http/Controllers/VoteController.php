@@ -26,6 +26,7 @@ class VoteController extends Controller
             ->map(function ($user) {
                 return [
                     'name' => $user->name,
+                    'uuid' => $user->uuid,
                     'vote_count' => $user->votes_count,
                 ];
             });
