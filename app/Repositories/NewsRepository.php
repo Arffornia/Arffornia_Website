@@ -13,6 +13,6 @@ class NewsRepository {
     }
 
     public function getNews(int $id) {
-        return News::where('id', $id)->findOrFail();
+        return News::findOrFail($id);
     }
 }

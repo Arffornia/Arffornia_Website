@@ -12,7 +12,7 @@
 
 
 .info {
-    padding: 50px;
+    padding: 30px;
     width: fit-content;
     backdrop-filter: blur(4px);
     z-index: 0;
@@ -25,15 +25,13 @@
     position: absolute;
     z-index: 1;
     bottom: 5%;
-    left: 0%;
-
-    padding-left: 15%;
-    padding-right: 15%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .title {
-    font-size: 350%;
-    font-weight: 800;
+    font-size: 225%;
+    font-weight: 750;
 }
 
 .content {

@@ -7,7 +7,7 @@
 @section('content')
 <div class="standart-page">
     <div class="news">
-        <img class="imgBG" src="{{ $news->imgUrl }}" alt="">          
+        <img class="imgBG" src="{{ asset($news->imgUrl) }}" alt="">
 
         <div class="overlay">
             <div class="info">
@@ -22,7 +22,7 @@
         <p id="text">{!! $news->content !!} </p>
     </div>
 
-    
+
 </div>
 @endsection
 @section('script')
