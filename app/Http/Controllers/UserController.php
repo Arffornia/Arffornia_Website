@@ -22,7 +22,7 @@ class UserController extends Controller
     }
 
     // [API] Get player profil
-    public function playerProfile($playerName) {
+    public function playerProfile(string $playerName) {
         $user = $this->userService->getUserByName($playerName);
 
         if($user) {
@@ -33,6 +33,20 @@ class UserController extends Controller
         }
 
         return response()->json(['error' => 'player name not found.'], Response::HTTP_NOT_FOUND);
+    }
+
+    // [API] Check new player
+    public function checkNewPlayer(string $playerUuid) {
+        $playerUuid = $this->userService->getCleanPlayerUuid($playerUuid);
+        $user = $this->userService->getUserByUuid($playerUuid);
+
+        if(!$user) {
+            // check if name and uuid is valid
+            $pseudo = $this->userService->getPlayerNameFromUuid($playerUuid);
+            if($pseudo) {
+                $this->userService->createUser($pseudo, $playerUuid);
+            }
+        }
     }
 
     /*

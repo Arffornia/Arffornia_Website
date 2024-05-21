@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Http;
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
@@ -10,6 +11,27 @@ class UserService{
 
     public function __construct(UserRepository $repository) {
         $this->repository = $repository;
+    }
+
+
+    /*
+        Mojang api
+    */
+
+    public function getPlayerNameFromUuid(string $uuid) {
+        $rep = Http::get('https://minecraft-api.com/api/pseudo/' . $uuid);
+        if($rep->successful()) {
+            $pseudo = $rep->body();
+            if($pseudo != "Player not found !") {
+                return $pseudo;
+            }
+        }
+
+        return null;
+    }
+
+    public function getCleanPlayerUuid(string $uuid) {
+        return str_replace('-','', $uuid);
     }
 
     public function getBestUsersByProgressPoints($size) {
@@ -50,6 +72,10 @@ class UserService{
         return $this->repository->getTopVoters($size);
     }
 
+    public function createUser(string $name, string $uuid) {
+        return $this->repository->createUser($name, $uuid);
+    }
+
     public function getMsAuthRedirectUrl() {
         $clientId = env('AZURE_OAUTH_CLIENT_ID');
         $redirectUri = urlencode(env('AZURE_OAUTH_REDIRECT_URI'));
@@ -76,11 +102,12 @@ class UserService{
             // dump( 'Minecraft Skin URL: ' . $profile->skins()[0]->url());
             // dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
 
-            $user = $this->getUserByUuid($profile->uuid());
+            $cleanUuid = $this->getCleanPlayerUuid($profile->uuid());
+            $user = $this->getUserByUuid($cleanUuid);
 
             if(!$user) {
                 // register new player
-                $user =  $this->repository->createUser($profile->username(), $profile->uuid());
+                $user =  $this->repository->createUser($profile->username(), $cleanUuid);
             }
 
             // Login

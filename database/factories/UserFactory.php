@@ -22,7 +22,7 @@ class UserFactory extends Factory
 
         return [
             'name' => $this->faker->name(),
-            'uuid' => $this->faker->uuid(),
+            'uuid' => str_replace('-', '', $this->faker->uuid()),
             'money' => random_int(0, 500000),
             'progress_point' => random_int(0, 10000000),
             'stage_id' => $stageId,
