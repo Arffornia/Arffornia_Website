@@ -110,6 +110,14 @@ class UserService{
                 $user =  $this->repository->createUser($profile->username(), $cleanUuid);
             }
 
+            // Check of the player has change his Minecraft pseudo
+            $tempPseudo = $this->getPlayerNameFromUuid($cleanUuid);
+
+            if($tempPseudo != null && $user->name != $tempPseudo) {
+                $user->name = $tempPseudo;
+                $user->save();
+            }
+
             // Login
             auth()->login($user);
 
