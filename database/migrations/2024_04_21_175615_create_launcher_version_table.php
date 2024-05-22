@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('launcher_versioning', function (Blueprint $table) {
+        Schema::create('launcher_version', function (Blueprint $table) {
             $table->id();
             $table->string("version");
             $table->string("hash");
             $table->boolean("in_prod");
+            $table->string("path");
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('launcher_versioning');
+        Schema::dropIfExists('launcher_version');
     }
 };

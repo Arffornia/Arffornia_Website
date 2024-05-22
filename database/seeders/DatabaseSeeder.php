@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\LauncherImage;
-use App\Models\LauncherVersioning;
 use App\Models\News;
 use App\Models\User;
 use App\Models\Vote;
@@ -150,18 +149,6 @@ class DatabaseSeeder extends Seeder
 
         LauncherImage::create([
             'url' => 'images/screenshots1920x1080/Cherry-blossomBg1920x1080.png',
-            'in_prod' => false,
-        ]);
-
-        LauncherVersioning::create([
-            'version' => '1.2',
-            'hash' => 'FAFrc!@fy5151vgbhnafFAjmlk4@3514e^rfytg!hiuhyfu!hYRTDFYV',
-            'in_prod' => true,
-        ]);
-
-        LauncherVersioning::create([
-            'version' => '1.3',
-            'hash' => 'tF46AFA64!ffg^fgja6mlk4@3514e^rfy44!ffg^fgja6mlk4@&d@$hf',
             'in_prod' => false,
         ]);
     }

@@ -40,19 +40,21 @@ namespace App\Models{
  * @property string $version
  * @property string $hash
  * @property int $in_prod
+ * @property string $path
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning query()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning whereHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning whereInProd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersioning whereVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion query()
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereInProd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereVersion($value)
  */
-	class LauncherVersioning extends \Eloquent {}
+	class LauncherVersion extends \Eloquent {}
 }
 
 namespace App\Models{

@@ -20,23 +20,26 @@ class AdminPanelManager extends Controller
     public function launcherVersionsView() {
         return view('admin.launcher_versions');
     }
-    public function uploadNewLauncherVersion(Request $request) {
 
+    public function uploadNewLauncherVersion(Request $request) {
         $request->validate([
+            'launcher_version' => 'required',
             'file_upload' => 'required|mimes:jar|max:2048',
         ]);
 
-        // Store the file in storage\app\public folder
+        $version = $request->string("launcher_version");
+        $in_prod = $request->has("in_prod");
         $file = $request->file('file_upload');
-        $fileName = $file->getClientOriginalName();
-        $fileName = str_replace(' ', '_', $fileName);
-        $filePath = $file->storeAs('uploads/launcherVersions', $fileName, 'public');
 
+        $this->adminPanelService->uploadNewLauncherVersion($version, $in_prod, $file);
 
+        return back()->with('message', 'Success to upload: ' . $file->getClientOriginalName() . ' !');;
     }
+
     public function launcherImagesView() {
         return view('admin.launcher_images');
     }
+
     public function uploadNewLauncherImage() {
     }
 }
