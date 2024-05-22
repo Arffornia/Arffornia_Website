@@ -34,7 +34,7 @@
             @if(auth()->check())
                 <a href="/profile"><img id=profileImage src="https://minotar.net/avatar/{{ auth()->user()->name }}/50" alt=""></a>
             @else
-                <a href="/login"><img id=profileImage src="https://minotar.net/avatar/The_Gost_sniper/50" alt=""></a>
+                <a href="/login"><img id=profileImage src="https://minotar.net/avatar/Steve/50" alt=""></a>
             @endif
 
         </div>
