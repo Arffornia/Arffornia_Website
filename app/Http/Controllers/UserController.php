@@ -142,8 +142,4 @@ class UserController extends Controller
         return view('pages.users.login');
 
     }
-
-    public function adminPanelView() {
-        return view('admin.admin_panel');
-    }
 }

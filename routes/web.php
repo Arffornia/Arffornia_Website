@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StagesController;
+use App\Http\Controllers\AdminPanelManager;
 
 // Home
 Route::get('/', [HomeController::class, 'homeView']);
@@ -36,6 +37,13 @@ Route::post('/profile/logout', [UserController::class, 'logoutUser']);
 
 // Admin
 Route::group(['middleware'=> ['admin']], function() {
-    Route::get('/admin', [UserController::class,'adminPanelView']);
+    Route::get('/admin', [AdminPanelManager::class,'adminPanelView']);
+
+    Route::get('/admin/launcherVersions', [AdminPanelManager::class,'launcherVersionsView'])->name("launcherVersions");
+    Route::post('/admin/launcherVersions', [AdminPanelManager::class,'uploadNewLauncherVersion'])->name("launcherVersions.upload");
+
+    Route::get('/admin/launcherImages', [AdminPanelManager::class,'launcherImagesView'])->name("launcherImages");
+    Route::post('/admin/launcherImages', [AdminPanelManager::class,'uploadNewLauncherImage'])->name("launcherImages.upload");
+
 });
 
