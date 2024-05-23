@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('admin.layout')
 
 @section('extraHead')
     <link rel="stylesheet" href="{{asset("css/pages/profile.css")}}">

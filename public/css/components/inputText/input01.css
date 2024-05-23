@@ -85,3 +85,33 @@
     background: #ffffff;
     color: #000;
 }
+
+
+/*
+    Input File
+*/
+.inputFile01Container {
+    font-size: 15px;
+    border-radius: 5px;
+    padding: 2px 10px;
+    transition: 0.3s all ease;
+    border: 3px solid #fff;
+    background: none;
+    display: block;
+    height: 36px;
+    outline: none;
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    color: white;
+}
+
+.inputFile01Container:hover {
+    border-color: #ff7300;
+}
+
+.inputFile01Container:focus {
+    background: #ffffff;
+    font-size: 16px;
+    color: #000;
+}

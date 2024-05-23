@@ -22,16 +22,9 @@
         </div>
 
         <div class="contentContainer">
-            <a href="#">Map</a>
-            <a href="/news">News</a>
-            <a href="#">Vote</a>
-            <a href="#">Boutique</a>
-            <a href="/reglement">Règlement</a>
-            <a href="/stages">Paliers</a>
-
-            @if (auth()->check() && auth()->user()->hasRole('admin'))
-                <a href="{{ route("adminPanel") }}">Admin Panel</a>
-            @endif
+            <a href="{{ route("adminPanel") }}">Admin Panel</a>
+            <a href="{{ route("launcherVersions") }}">Launcher Versions</a>
+            <a href="{{ route("launcherImages") }}">Launcher Images</a>
         </div>
 
         <div class="profileImageContainer">

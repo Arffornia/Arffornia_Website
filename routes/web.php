@@ -37,7 +37,7 @@ Route::post('/profile/logout', [UserController::class, 'logoutUser']);
 
 // Admin
 Route::group(['middleware'=> ['admin']], function() {
-    Route::get('/admin', [AdminPanelManager::class,'adminPanelView']);
+    Route::get('/admin', [AdminPanelManager::class,'adminPanelView'])->name("adminPanel");
 
     Route::get('/admin/launcherVersions', [AdminPanelManager::class,'launcherVersionsView'])->name("launcherVersions");
     Route::post('/admin/launcherVersions', [AdminPanelManager::class,'uploadNewLauncherVersion'])->name("launcherVersions.upload");

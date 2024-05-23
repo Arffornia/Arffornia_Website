@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('admin.layout')
 
 @section('extraHead')
     <link rel="stylesheet" href="{{asset("css/pages/adminPanel.css")}}">
@@ -39,7 +39,7 @@
                                 <p>{{$message}}</p>
                             @enderror
 
-
+                            <x-inputFile01 id="launcher_file" name="launcher_file" placeholder="Launcher file" value="{{ old('launcher_file') }}"></x-inputFile01>
                             <input type="file" name="file_upload">
                         </div>
 
