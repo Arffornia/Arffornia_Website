@@ -13,4 +13,8 @@ class AdminPanelRepository {
             'path' => $filePath,
         ]);
     }
+
+    public function getLauncherVersions() {
+        return LauncherVersion::orderBy('created_at', 'desc')->get();
+    }
 }

@@ -40,7 +40,6 @@
                             @enderror
 
                             <x-inputFile01 id="launcher_file" name="launcher_file" placeholder="Launcher file" value="{{ old('launcher_file') }}"></x-inputFile01>
-                            <input type="file" name="file_upload">
                         </div>
 
                         <div style="margin-top: 10%">
@@ -54,6 +53,21 @@
         </div>
 
         <img class="imgBG" src="{{ asset("images/screenshots1920x1080/old_spawn.png") }}" alt="">
+    </div>
+
+    <div class="versions">
+
+        @foreach ($launcherVersions as $launcherVersion)
+            <div class="item">
+                <div class="content">
+                    <div class="version">version: <b>{{ $launcherVersion->version }}</b></div>
+                    <div class="in_prod">in prod: <input type="checkbox" onclick="return false;" {{ $launcherVersion->in_prod ? 'checked' : '' }} /></div>
+                    <div class="name">name: <b>{{ basename($launcherVersion->path) }}</b></div>
+                    <div class="date">date: <b>{{ $launcherVersion->created_at }}</b></div>
+                </div>
+            </div>
+        @endforeach
+
     </div>
 </div>
 @endsection

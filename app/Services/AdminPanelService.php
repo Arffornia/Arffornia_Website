@@ -28,4 +28,8 @@ class AdminPanelService {
         return $this->repository->createNewLauncherVersion($version, $hash, $in_prod, $filePath);
     }
 
+    public function getLauncherVersions() {
+        return $this->repository->getLauncherVersions();
+    }
+
 }

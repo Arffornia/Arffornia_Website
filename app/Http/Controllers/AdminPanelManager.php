@@ -18,18 +18,21 @@ class AdminPanelManager extends Controller
         return view('admin.admin_panel');
     }
     public function launcherVersionsView() {
-        return view('admin.launcher_versions');
+        return view('admin.launcher_versions',
+        [
+            'launcherVersions' => $this->adminPanelService->getLauncherVersions(),
+        ]);
     }
 
     public function uploadNewLauncherVersion(Request $request) {
         $request->validate([
             'launcher_version' => 'required',
-            'file_upload' => 'required|mimes:jar|max:2048',
+            'launcher_file' => 'required|mimes:jar|max:2048',
         ]);
 
         $version = $request->string("launcher_version");
         $in_prod = $request->has("in_prod");
-        $file = $request->file('file_upload');
+        $file = $request->file('launcher_file');
 
         $this->adminPanelService->uploadNewLauncherVersion($version, $in_prod, $file);
 

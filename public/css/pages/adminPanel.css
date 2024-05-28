@@ -50,3 +50,28 @@
 .checkbox-container label {
     margin-right: 14%;
 }
+
+/*
+    launcher version list
+*/
+
+
+.versions {
+    padding-top: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+
+.versions .item {
+    padding: 10px;
+    width: 100%;
+    border: solid 5px #ff7300;
+    border-radius: 15px;
+}
+
+.versions .content {
+    display: flex;
+    justify-content: space-between;
+}
