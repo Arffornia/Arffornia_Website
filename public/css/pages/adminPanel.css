@@ -56,7 +56,7 @@
 */
 
 
-.versions {
+.versions, .images {
     padding-top: 25px;
     display: flex;
     flex-direction: column;
@@ -64,14 +64,14 @@
 }
 
 
-.versions .item {
+.versions .item, .images .item {
     padding: 10px;
     width: 100%;
     border: solid 5px #ff7300;
     border-radius: 15px;
 }
 
-.versions .content {
+.versions .content, .images .content {
     display: flex;
     justify-content: space-between;
 }

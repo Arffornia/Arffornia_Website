@@ -15,7 +15,7 @@ class LauncherService {
     public function getLauncherInfo(bool $devVersion) {
         $launcherVersionInfo = $this->repository->getLauncherInfo($devVersion);
 
-        return 
+        return
         [
             'version'=> $launcherVersionInfo->version,
             'hash' => $launcherVersionInfo->hash,
@@ -23,6 +23,11 @@ class LauncherService {
     }
 
     public function getLauncherImages() {
-        return $this->repository->getLauncherImages()->pluck('url')->toArray();
+        return $this->repository->getLauncherImages()
+            ->pluck('path')
+            ->map(function($path) {
+                return url($path);
+            })
+            ->toArray();
     }
 }

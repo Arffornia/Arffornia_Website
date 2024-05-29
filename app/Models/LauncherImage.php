@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class LauncherImage extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'path',
+        'in_prod',
+    ];
 }

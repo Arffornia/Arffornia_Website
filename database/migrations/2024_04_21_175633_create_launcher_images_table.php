@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('launcher_images', function (Blueprint $table) {
             $table->id();
-            $table->text("url");
+            $table->text("path");
             $table->boolean("in_prod");
             $table->timestamps();
         });

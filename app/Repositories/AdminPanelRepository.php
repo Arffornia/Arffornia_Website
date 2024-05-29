@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 
+use App\Models\LauncherImage;
 use App\Models\User;
 use App\Models\LauncherVersion;
 
@@ -14,7 +15,18 @@ class AdminPanelRepository {
         ]);
     }
 
+    public function createNewLauncherImage(bool $in_prod, string $filePath) {
+        LauncherImage::create([
+            'path' => $filePath,
+            'in_prod' => $in_prod,
+        ]);
+    }
+
     public function getLauncherVersions() {
         return LauncherVersion::orderBy('created_at', 'desc')->get();
+    }
+
+    public function getLauncherImages() {
+        return LauncherImage::orderBy('created_at', 'desc')->get();
     }
 }

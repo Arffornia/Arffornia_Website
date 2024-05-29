@@ -143,12 +143,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         LauncherImage::create([
-            'url' => 'images/screenshots1920x1080/caveBg1920x1080.jpg',
+            'path' => 'images/screenshots1920x1080/caveBg1920x1080.jpg',
             'in_prod' => true,
         ]);
 
         LauncherImage::create([
-            'url' => 'images/screenshots1920x1080/Cherry-blossomBg1920x1080.png',
+            'path' => 'images/screenshots1920x1080/Cherry-blossomBg1920x1080.png',
             'in_prod' => false,
         ]);
     }

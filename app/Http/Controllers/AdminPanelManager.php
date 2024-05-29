@@ -18,8 +18,7 @@ class AdminPanelManager extends Controller
         return view('admin.admin_panel');
     }
     public function launcherVersionsView() {
-        return view('admin.launcher_versions',
-        [
+        return view('admin.launcher_versions', [
             'launcherVersions' => $this->adminPanelService->getLauncherVersions(),
         ]);
     }
@@ -36,13 +35,25 @@ class AdminPanelManager extends Controller
 
         $this->adminPanelService->uploadNewLauncherVersion($version, $in_prod, $file);
 
-        return back()->with('message', 'Success to upload: ' . $file->getClientOriginalName() . ' !');;
+        return back()->with('message', 'Success to upload: ' . $file->getClientOriginalName() . ' !');
     }
 
     public function launcherImagesView() {
-        return view('admin.launcher_images');
+        return view('admin.launcher_images', [
+            'launcherImages' => $this->adminPanelService->getLauncherImages(),
+        ]);
     }
 
-    public function uploadNewLauncherImage() {
+    public function uploadNewLauncherImage(Request $request) {
+        $request->validate([
+            'launcher_file' => 'required|max:2048',
+        ]);
+
+        $in_prod = $request->has("in_prod");
+        $file = $request->file('launcher_file');
+
+        $this->adminPanelService->uploadNewLauncherImage($in_prod, $file);
+
+        return back()->with('message', 'Success to upload: ' . $file->getClientOriginalName() . ' !');
     }
 }
