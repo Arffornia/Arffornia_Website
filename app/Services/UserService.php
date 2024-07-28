@@ -21,14 +21,17 @@ class UserService{
     */
 
     public function getPlayerNameFromUuid(string $uuid) {
-        $rep = Http::get('https://minecraft-api.com/api/pseudo/' . $uuid);
-        if($rep->successful()) {
-            $pseudo = $rep->body();
-            if($pseudo != "Player not found !") {
+        $url = 'https://api.mojang.com/user/profiles/' . $uuid . '/names';
+        $response = Http::get($url);
+    
+        if ($response->successful()) {
+            $names = $response->json();
+            if (is_array($names) && count($names) > 0) {
+                $pseudo = end($names)['name'];
                 return $pseudo;
             }
         }
-
+    
         return null;
     }
 
