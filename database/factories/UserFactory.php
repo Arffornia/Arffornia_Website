@@ -26,6 +26,8 @@ class UserFactory extends Factory
             'money' => random_int(0, 500000),
             'progress_point' => random_int(0, 10000000),
             'stage_id' => $stageId,
+            'day_streak' => 0,
+            'grade' => 'citizen',
             'remember_token' => Str::random(10),
         ];
     }

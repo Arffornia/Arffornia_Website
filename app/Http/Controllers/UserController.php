@@ -30,7 +30,10 @@ class UserController extends Controller
                 'name' => $user->name,
                 'uuid' => $user->uuid,
                 'money' => $user->money,
+                'grade' => $user->grade,
+                'day_streak' => $user->day_streak,
                 'vote_count' => $user->getVoteCount(),
+
             ]);
         }
 
@@ -45,6 +48,8 @@ class UserController extends Controller
                 'name' => $user->name,
                 'uuid' => $user->uuid,
                 'money' => $user->money,
+                'grade' => $user->grade,
+                'day_streak' => $user->day_streak,
                 'vote_count' => $user->getVoteCount(),
             ]);
         }

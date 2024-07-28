@@ -58,6 +58,8 @@ class User extends Authenticatable
         'money',
         'progress_point',
         'stage_id',
+        'day_streak',
+        'grade',
     ];
 
     /**

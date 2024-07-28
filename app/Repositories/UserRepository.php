@@ -32,6 +32,8 @@ class UserRepository {
         $formFields['money'] = 0;
         $formFields['progress_point'] = 0;
         $formFields['stage_id'] = $startStageId;
+        $formFields['day_streak'] = 0;
+        $formFields['grade'] = 'citizen';
 
         // Create User
         return User::create($formFields);

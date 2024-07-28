@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string("name");
             $table->string("uuid");
             $table->string("role")->nullable();
+            $table->string("grade");
             $table->float("money");
             $table->unsignedBigInteger("progress_point");
             $table->unsignedBigInteger("stage_id");
+            $table->unsignedInteger('day_streak');
             $table->dateTime('last_connexion')->nullable();
             $table->rememberToken();
             $table->timestamps();
