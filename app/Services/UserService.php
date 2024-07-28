@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Http;
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
+use Illuminate\Support\Facades\Config;
+
 class UserService{
     private UserRepository $repository;
 
@@ -77,17 +79,17 @@ class UserService{
     }
 
     public function getMsAuthRedirectUrl() {
-        $clientId = env('AZURE_OAUTH_CLIENT_ID');
-        $redirectUri = urlencode(env('AZURE_OAUTH_REDIRECT_URI'));
+        $clientId = config('app.azure.oauth.client.id');
+        $redirectUri = urlencode(config('app.azure.oauth.redirect_uri')); 
 
         return "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
     }
 
 
     public function getUserFromMsAuthCallback() {
-        $clientId = env('AZURE_OAUTH_CLIENT_ID');
-        $redirectUri = env('AZURE_OAUTH_REDIRECT_URI');
-        $clientSecret = env('AZURE_OAUTH_CLIENT_SECRET');
+        $clientId = config('app.azure.oauth.client.id');
+        $redirectUri = config('app.azure.oauth.redirect_uri');
+        $clientSecret = urlencode(config('app.azure.oauth.client.secret'));
 
         try {
             $profile = (new MinecraftOauth)->fetchProfile(

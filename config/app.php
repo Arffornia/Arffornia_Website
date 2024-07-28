@@ -123,4 +123,24 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Azure oauth settings
+    |--------------------------------------------------------------------------
+    |
+    | Those settings allow the authentification by Microsoft / Mojang 
+    | for a Minecraft Account
+    |
+    */
+
+    'azure' => [
+        'oauth' => [
+            'client' => [
+                'id' => env('AZURE_OAUTH_CLIENT_ID', ''),
+                'secret' => env('AZURE_OAUTH_CLIENT_SECRET', ''),
+            ],
+            'redirect_uri' => env('AZURE_OAUTH_REDIRECT_URI', ''),
+        ],
+    ],
 ];
