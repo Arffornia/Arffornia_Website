@@ -23,7 +23,7 @@ class UserService{
     public function getPlayerNameFromUuid(string $uuid) {
         $url = 'https://api.mojang.com/user/profiles/' . $uuid . '/names';
         $response = Http::get($url);
-    
+
         if ($response->successful()) {
             $names = $response->json();
             if (is_array($names) && count($names) > 0) {
@@ -31,7 +31,7 @@ class UserService{
                 return $pseudo;
             }
         }
-    
+
         return null;
     }
 
@@ -66,15 +66,13 @@ class UserService{
 
 
     public function getTopVoters(int $size) {
-        if ($size < 0) {
-            $size *= -1;
-        }
-
-        if ($size > 25) {
-            $size = 25;
-        }
-
+        $size = min(max(0, $size), 25);
         return $this->repository->getTopVoters($size);
+    }
+
+    public function getTopUsersByPoint(int $size) {
+        $size = min(max(0, $size), 25);
+        return $this->repository->getTopUsersByPoint($size);
     }
 
     public function createUser(string $name, string $uuid) {
@@ -83,7 +81,7 @@ class UserService{
 
     public function getMsAuthRedirectUrl() {
         $clientId = config('app.azure.oauth.client.id');
-        $redirectUri = urlencode(config('app.azure.oauth.redirect_uri')); 
+        $redirectUri = urlencode(config('app.azure.oauth.redirect_uri'));
 
         return "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
     }

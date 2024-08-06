@@ -24,6 +24,12 @@ class UserRepository {
                         ->get();
     }
 
+    public function getTopUsersByPoint(int $size) {
+        return User::orderByDesc('progress_point')
+                        ->limit($size)
+                        ->get();
+    }
+
     public function createUser(string $name, string $uuid) {
         $startStageId = Stage::where('number', 1)->first()->id;
 

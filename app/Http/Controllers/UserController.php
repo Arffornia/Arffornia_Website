@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Stage;
-use App\Services\StagesService;
 use Illuminate\Http\Request;
 use App\Services\UserService;
-
 use Illuminate\Http\Response;
+
+use App\Services\StagesService;
+use Illuminate\Http\JsonResponse;
 
 
 class UserController extends Controller
@@ -146,5 +147,25 @@ class UserController extends Controller
         // TODO add message with error
         return view('pages.users.login');
 
+    }
+
+    public function bestPlayerByPoint($size): array
+    {
+        $topUsersByPoint = $this->userService->getTopUsersByPoint($size)
+            ->map(function ($user) {
+                return [
+                    'name' => $user->name,
+                    'uuid' => $user->uuid,
+                    'value' => $user->progress_point,
+                ];
+            });
+
+        return $topUsersByPoint->toArray();
+    }
+
+    public function bestPlayerByPointJson($size): JsonResponse
+    {
+        $data = $this->bestPlayerByPoint($size);
+        return response()->json($data);
     }
 }

@@ -27,7 +27,7 @@ class VoteController extends Controller
                 return [
                     'name' => $user->name,
                     'uuid' => $user->uuid,
-                    'vote_count' => $user->votes_count,
+                    'value' => $user->votes_count,
                 ];
             });
 
