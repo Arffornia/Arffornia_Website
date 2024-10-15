@@ -1,11 +1,13 @@
 {
-	"curseFiles": [
-		{
-            // Meka
-            "projectID": 268560,
-			"fileID": 5125665            
-        }
-    ],
-
-    "mods": []
+    "mods": {
+        "curseforge": [
+            {
+                "displayName": "Mekanism",
+                "projectId": "268560",
+                "fileId": "4776410"
+            }
+        ],
+        "modrinth": [
+        ]
+    }
 }
