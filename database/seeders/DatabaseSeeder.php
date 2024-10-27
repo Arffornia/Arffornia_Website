@@ -13,6 +13,7 @@ use App\Models\MilestoneUser;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\MilestoneClosure;
+use App\Models\ShopItem;
 
 class DatabaseSeeder extends Seeder
 {
@@ -150,6 +151,51 @@ class DatabaseSeeder extends Seeder
         LauncherImage::create([
             'path' => 'images/screenshots1920x1080/Cherry-blossomBg1920x1080.png',
             'in_prod' => false,
+        ]);
+
+        ShopItem::create([
+            'name' => "AE2 Kit",
+            'description' => "Make your brain great again !",
+            'img_url' => "images/shop_items/ae2_icon.png",
+            'category_id' => 0,
+            'real_price' => 1250,
+            'promo_price' => 0,
+        ]);
+
+        ShopItem::create([
+            'name' => "Meka Kit",
+            'description' => "Let's unlock the nuclear power !",
+            'img_url' => "images/shop_items/meka_icon.png",
+            'category_id' => 0,
+            'real_price' => 1250,
+            'promo_price' => 0,
+        ]);
+
+        ShopItem::create([
+            'name' => "Kitten Pet",
+            'description' => "Let this kawaii kitten seduce you.",
+            'img_url' => "images/shop_items/kitten_pet.png",
+            'category_id' => 0,
+            'real_price' => 500,
+            'promo_price' => 0,
+        ]);
+
+        ShopItem::create([
+            'name' => "Dragon Pet",
+            'description' => "Who says a pet dragon isn't impressive ?",
+            'img_url' => "images/shop_items/dragon_pet.png",
+            'category_id' => 0,
+            'real_price' => 750,
+            'promo_price' => 0,
+        ]);
+
+        ShopItem::create([
+            'name' => "Dinosaur Pet",
+            'description' => "The last of his species !",
+            'img_url' => "images/shop_items/dinosaur_pet.png",
+            'category_id' => 0,
+            'real_price' => 750,
+            'promo_price' => 0,
         ]);
     }
 }

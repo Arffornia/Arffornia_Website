@@ -29,8 +29,3 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
-    networks:
-      - mysql-phpmyadmin
-
-networks:
-  mysql-phpmyadmin:

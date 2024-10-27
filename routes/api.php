@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LauncherController;
+use App\Http\Controllers\ShopItemsController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
@@ -24,3 +25,5 @@ Route::get('launcherVersionInfo/{dev?}', [LauncherController::class,'getLauncher
 Route::get('launcherImages', [LauncherController::class,'getLauncherImages']);
 Route::get('download/bootstrap', [LauncherController::class,'downloadBootstrap']);
 Route::get('download/launcher', [LauncherController::class,'downloadLauncher']);
+
+Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJson']);
