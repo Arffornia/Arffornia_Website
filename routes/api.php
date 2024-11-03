@@ -27,3 +27,7 @@ Route::get('download/bootstrap', [LauncherController::class,'downloadBootstrap']
 Route::get('download/launcher', [LauncherController::class,'downloadLauncher']);
 
 Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJson']);
+Route::get('shop/newest/{size}', [ShopItemsController::class, 'newestJson']);
+Route::get('shop/sales/{size}', [ShopItemsController::class, 'salesJson']);
+
+

@@ -16,6 +16,36 @@ class ShopItemsService {
     public function getBestSellers($size)
     {
         $size = min(25, max(0, $size));
-        return $this->repository->getBestSellers($size);
+        $bestSellers = $this->repository->getBestSellers($size);
+
+        foreach ($bestSellers as &$item) {
+            $item->img_url = url($item->img_url);
+        }
+
+        return $bestSellers;
+    }
+
+    public function getNewest($size)
+    {
+        $size = min(25, max(0, $size));
+        $newest = $this->repository->getNewest($size);
+
+        foreach ($newest as &$item) {
+            $item->img_url = url($item->img_url);
+        }
+
+        return $newest;
+    }
+
+    public function getSales($size)
+    {
+        $size = min(25, max(0, $size));
+        $sales = $this->repository->getSales($size);
+
+        foreach ($sales as &$item) {
+            $item->img_url = url($item->img_url);
+        }
+
+        return $sales;
     }
 }

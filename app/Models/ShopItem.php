@@ -21,6 +21,6 @@ class ShopItem extends Model
     ];
 
     public function userSales() {
-        return $this->hasMany(userSale::class);
+        return $this->hasMany(UserSale::class);
     }
 }
