@@ -6,24 +6,29 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\AdminPanelManager;
+use App\Http\Controllers\ShopController;
 
 // Home
 Route::get('/', [HomeController::class, 'homeView']);
 
 // Profile
 Route::get('/profile', [UserController::class, 'profileView']);
-Route::get('/profile/{username}', [UserController::class, 'profileView']);
+Route::get('/profile/{playerName}', [UserController::class, 'profileViewByName']);
+Route::get('/profile/uuid/{playerUuid}', [UserController::class, 'profileViewByUuid']);
 
 // rules
 Route::get('/reglement', function() { return view('pages.reglement'); });
 
 // Stages
 Route::get('stages', [StagesController::class, 'loadStagesView']);
-Route::get('stages/{playerName}', [StagesController::class, 'loadPlayerStageView']);
+Route::get('stages/{playerUuid}', [StagesController::class, 'loadPlayerStageView']);
 
 // News
 Route::get('news', [NewsController::class, 'allNewsView']);
 Route::get('news/{newsId}', [NewsController::class, 'newsView']);
+
+// Shop
+Route::get('shop', [ShopController::class, 'shopView']);
 
 
 // Authentification

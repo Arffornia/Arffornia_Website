@@ -112,22 +112,29 @@ class UserController extends Controller
         Profile
     */
 
-    public function profileView($username = null) {
-        if($username) {
-            $user = $this->userService->getUserByName($username);
-        } else {
-            if(!auth()->check()) {
-                return redirect('/')->with('message', '⚠ You are not logged !');
-            }
-
+    public function profileView($user = null) {
+        if (!$user) {
             $user = auth()->user();
         }
-        if($user != null) {
-            return view('pages.users.profile', [
-                'user' => $user,
-                'stage_number' => $this->stageService->getStageById($user->stage_id)->number,
-            ]);
+
+        if (!$user) {
+            abort(404);
         }
+
+        return view('pages.users.profile', [
+            'user' => $user,
+            'stage_number' => $this->stageService->getStageById($user->stage_id)->number,
+        ]);
+    }
+
+    public function profileViewByName($playerName) {
+        $user = $this->userService->getUserByName($playerName);
+        return $this->profileView($user);
+    }
+
+    public function profileViewByUuid($playerUuid) {
+        $user = $this->userService->getUserByUuid($playerUuid);
+        return $this->profileView($user);
     }
 
     public function msAuth()

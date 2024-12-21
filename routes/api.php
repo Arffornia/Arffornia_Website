@@ -19,7 +19,7 @@ Route::get('profile/uuid/{playerUuid}/', [UserController::class, 'playerProfileB
 Route::get('checkNewPlayer/{playerUuid}', [UserController::class,'checkNewPlayer']);
 
 Route::get('stages', [StagesController::class, 'stagesJson']);
-Route::get('stages/{playerName}', [StagesController::class, 'playerStagesJson']);
+Route::get('stages/{playerUuid}', [StagesController::class, 'playerStagesJson']);
 
 Route::get('launcherVersionInfo/{dev?}', [LauncherController::class,'getLauncherInfo'])->where('dev', 'dev');
 Route::get('launcherImages', [LauncherController::class,'getLauncherImages']);

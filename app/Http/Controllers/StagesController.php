@@ -30,11 +30,11 @@ class StagesController extends Controller
     /**
      * Get player stages information
      *
-     * @param  string  $playerName
+     * @param  string  $playerUuid
      * @return array
      */
-    private function playerStagesInfo(string $playerName) {
-        $user = $this->userService->getUserByName($playerName);
+    private function playerStagesInfo(string $playerUuid) {
+        $user = $this->userService->getUserByUuid($playerUuid);
         $playerProgress = $this->stagesService->getMilestoneByUsername($user);
 
         if($user) {
@@ -48,21 +48,21 @@ class StagesController extends Controller
 
         abort(404, 'Username not found');
     }
-    
+
     public function stagesJson() {
         return response()->json($this->getStagesInfo());
     }
 
-    public function playerStagesJson($playerName) {
-        return response()->json($this->playerStagesInfo($playerName));
+    public function playerStagesJson($playerUuid) {
+        return response()->json($this->playerStagesInfo($playerUuid));
     }
 
     public function loadStagesView() {
         return view('pages.stages', $this->getStagesInfo());
     }
 
-    public function loadPlayerStageView($playerName) {
-        return view('pages.stages', $this->playerStagesInfo($playerName));
+    public function loadPlayerStageView($playerUuid) {
+        return view('pages.stages', $this->playerStagesInfo($playerUuid));
     }
 
 }
