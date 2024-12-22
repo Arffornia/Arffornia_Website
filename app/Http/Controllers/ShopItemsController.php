@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ShopItemsService;
+use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
+use App\Services\ShopItemsService;
+use Illuminate\Contracts\Routing\ResponseFactory;
 
 class ShopItemsController extends Controller
 {
@@ -14,33 +16,69 @@ class ShopItemsController extends Controller
         $this->shopItemsService = $shopItemsService;
     }
 
+    /**
+     * Return the size best sallers
+     *
+     * @param int $size
+     * @return Collection<ShopItem>
+     */
     public function bestSellers($size)
     {
         return $this->shopItemsService->getBestSellers($size);
     }
 
-    public function bestSellersJson($size): JsonResponse
+    /**
+     * Return the size best sellers as JSON
+     *
+     * @param int $size
+     * @return JsonResponse
+     */
+    public function bestSellersJson($size)
     {
         $data = $this->bestSellers($size);
         return response()->json($data);
     }
 
+    /**
+     *  Return the size newest items
+     *
+     * @param int $size
+     * @return Collection<ShopItem>
+     */
     public function newest($size)
     {
         return $this->shopItemsService->getNewest($size);
     }
 
+    /**
+     * Return the size newest items as JSON
+     *
+     * @param int $size
+     * @return JsonResponse
+     */
     public function newestJson($size): JsonResponse
     {
         $data = $this->newest($size);
         return response()->json($data);
     }
 
+    /**
+     * Return the size discounts items
+     *
+     * @param int $size
+     * @return Collection<ShopItem>
+     */
     public function sales($size)
     {
-        return $this->shopItemsService->getSales($size);
+        return $this->shopItemsService->getDiscounts($size);
     }
 
+    /**
+     * Return the size discounts items as JSON
+     *
+     * @param int $size
+     * @return JsonResponse
+     */
     public function salesJson($size): JsonResponse
     {
         $data = $this->sales($size);

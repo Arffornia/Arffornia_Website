@@ -25,7 +25,7 @@
             <a href="#">Map</a>
             <a href="/news">News</a>
             <a href="#">Vote</a>
-            <a href="#">Boutique</a>
+            <a href="/shop">Boutique</a>
             <a href="/reglement">Règlement</a>
             <a href="/stages">Paliers</a>
 

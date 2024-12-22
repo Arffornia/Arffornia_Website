@@ -6,6 +6,12 @@ use App\Models\ShopItem;
 
 class ShopItemsRepository
 {
+    /**
+     * Get best seller
+     *
+     * @param integer $size
+     * @return Collection<ShopItem>
+     */
     public function getBestSellers(int $size)
     {
         return ShopItem::withCount('userSales')
@@ -14,6 +20,12 @@ class ShopItemsRepository
             ->get();
     }
 
+    /**
+     * Get size newest items
+     *
+     * @param integer $size
+     * @return Collection<ShopItem>
+     */
     public function getNewest(int $size)
     {
         return ShopItem::latest()
@@ -21,7 +33,13 @@ class ShopItemsRepository
             ->get();
     }
 
-    public function getSales(int $size)
+    /**
+     * Get size discounts items
+     *
+     * @param integer $size
+     * @return Collection<ShopItem>
+     */
+    public function getDiscounts(int $size)
     {
         return ShopItem::where('promo_price', '>', 0)
             ->whereColumn('promo_price', '<', 'real_price')

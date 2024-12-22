@@ -13,6 +13,12 @@ class ShopItemsService {
         $this->repository = $repository;
     }
 
+    /**
+     * Get size best seller
+     *
+     * @param [type] $size
+     * @return Collection<User>
+     */
     public function getBestSellers($size)
     {
         $size = min(25, max(0, $size));
@@ -25,6 +31,12 @@ class ShopItemsService {
         return $bestSellers;
     }
 
+    /**
+     * get size newest shop items
+     *
+     * @param [type] $size
+     * @return Collection<ShopItem>
+     */
     public function getNewest($size)
     {
         $size = min(25, max(0, $size));
@@ -37,10 +49,16 @@ class ShopItemsService {
         return $newest;
     }
 
-    public function getSales($size)
+    /**
+     * Get size discounts
+     *
+     * @param [type] $size
+     * @return Collection<ShopItem>
+     */
+    public function getDiscounts($size)
     {
         $size = min(25, max(0, $size));
-        $sales = $this->repository->getSales($size);
+        $sales = $this->repository->getDiscounts($size);
 
         foreach ($sales as &$item) {
             $item->img_url = url($item->img_url);

@@ -2,23 +2,35 @@
 namespace App\Repositories;
 
 use App\Models\LauncherImage;
-use App\Models\LauncherVersioning;
+use App\Models\LauncherVersion;
 use App\Models\User;
 
 class LauncherRepository {
+
+    /**
+     * Get launcher information
+     *
+     * @param boolean $devVersion
+     * @return Collection<LauncherVersion>
+     */
     public function getLauncherInfo(bool $devVersion) {
         if($devVersion){
-            $launcherVersion = LauncherVersioning::orderBy("created_at","desc")->first();
+            $launcherVersion = LauncherVersion::orderBy("created_at","desc")->first();
         } else {
-            $launcherVersion = LauncherVersioning::where('in_prod', !$devVersion)
+            $launcherVersion = LauncherVersion::where('in_prod', !$devVersion)
                                 ->orderBy("created_at","desc")
                                 ->first();
         }
-        
-        
-        return $launcherVersion;            
+
+
+        return $launcherVersion;
     }
 
+    /**
+     * Get all launcher images
+     *
+     * @return Collection<LauncherVersion>
+     */
     public function getLauncherImages() {
         return LauncherImage::where('in_prod', true)->orderBy("created_at","desc")->get();
     }

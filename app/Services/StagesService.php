@@ -24,10 +24,22 @@ class StagesService {
         return $this->repository->getMilestoneByUsername($user);
     }
 
+    /**
+     * Get stage by id
+     *
+     * @param integer $id
+     * @return Stage
+     */
     public function getStageById(int $id) {
         return $this->repository->getStageById($id);
     }
 
+    /**
+     * Get starting stage
+     * The starting stage at the beginning stage for each player
+     *
+     * @return Stage
+     */
     public function getStartStage() {
         return $this->repository->getStartStage();
     }

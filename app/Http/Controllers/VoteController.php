@@ -20,6 +20,12 @@ class VoteController extends Controller
         $this->userService = $userService;
     }
 
+    /**
+     * Get size best players by vote
+     *
+     * @param int $size
+     * @return Collection<User>
+     */
     public function bestPlayerByVote($size): array
     {
         $topVoters = $this->userService->getTopVoters($size)
@@ -34,6 +40,12 @@ class VoteController extends Controller
         return $topVoters->toArray();
     }
 
+    /**
+     * Get size best players by vote as JSON
+     *
+     * @param [type] $size
+     * @return JsonResponse
+     */
     public function bestPlayerByVoteJson($size): JsonResponse
     {
         $data = $this->bestPlayerByVote($size);

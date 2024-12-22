@@ -1,12 +1,13 @@
 <?php
 namespace App\Services;
 
+use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Config;
+
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
-
-use Illuminate\Support\Facades\Config;
 
 class UserService{
     private UserRepository $repository;
@@ -20,6 +21,12 @@ class UserService{
         Mojang api
     */
 
+    /**
+     * Get player name by uuid from mojang api
+     *
+     * @param string $uuid
+     * @return string
+     */
     public function getPlayerNameFromUuid(string $uuid) {
         $url = 'https://api.mojang.com/user/profiles/' . $uuid . '/names';
         $response = Http::get($url);
@@ -35,10 +42,22 @@ class UserService{
         return null;
     }
 
+    /**
+     * Format the player uuid
+     *
+     * @param string $uuid
+     * @return string
+     */
     public function getCleanPlayerUuid(string $uuid) {
         return str_replace('-','', $uuid);
     }
 
+    /**
+     * Get size best user by progress points
+     *
+     * @param int $size
+     * @return Collection<User>
+     */
     public function getBestUsersByProgressPoints($size) {
         return $this->repository->getBestUsersByProgressPoints($size);
     }
@@ -47,7 +66,7 @@ class UserService{
      * Get user by name
      *
      * @param  string  $name
-     * @return
+     * @return User
      */
     public function getUserByName(string $name) {
         return $this->repository->getUserByName($name);
@@ -57,28 +76,50 @@ class UserService{
      * Get user by uuid
      *
      * @param  string  $uuid
-     * @return
+     * @return User
      */
     public function getUserByUuid(string $uuid) {
         return $this->repository->getUserByUuid($uuid);
     }
 
-
-
+    /**
+     * Get size top voters
+     *
+     * @param integer $size
+     * @return Collection<User>
+     */
     public function getTopVoters(int $size) {
         $size = min(max(0, $size), 25);
         return $this->repository->getTopVoters($size);
     }
 
+    /**
+     * Get size user by progress points
+     *
+     * @param integer $size
+     * @return Collection<User>
+     */
     public function getTopUsersByPoint(int $size) {
         $size = min(max(0, $size), 25);
         return $this->repository->getTopUsersByPoint($size);
     }
 
+    /**
+     * Create a new user, and return it
+     *
+     * @param string $name
+     * @param string $uuid
+     * @return User
+     */
     public function createUser(string $name, string $uuid) {
         return $this->repository->createUser($name, $uuid);
     }
 
+    /**
+     * Generate user loging redirect url by MS auth
+     *
+     * @return string
+     */
     public function getMsAuthRedirectUrl() {
         $clientId = config('app.azure.oauth.client.id');
         $redirectUri = urlencode(config('app.azure.oauth.redirect_uri'));
@@ -86,7 +127,11 @@ class UserService{
         return "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
     }
 
-
+    /**
+     * Get MS auth callback for user loging
+     *
+     * @return User
+     */
     public function getUserFromMsAuthCallback() {
         $clientId = config('app.azure.oauth.client.id');
         $redirectUri = config('app.azure.oauth.redirect_uri');
