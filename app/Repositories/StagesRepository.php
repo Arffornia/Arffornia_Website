@@ -4,6 +4,8 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Models\MilestoneUser;
 use App\Models\Stage;
+use Illuminate\Database\Eloquent\Collection;
+
 
 class StagesRepository {
 

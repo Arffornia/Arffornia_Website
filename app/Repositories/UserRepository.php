@@ -3,6 +3,8 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\Stage;
+use Illuminate\Support\Collection;
+
 
 class UserRepository {
 

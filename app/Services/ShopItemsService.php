@@ -2,8 +2,7 @@
 namespace App\Services;
 
 use App\Repositories\ShopItemsRepository;
-
-
+use Illuminate\Database\Eloquent\Collection;
 
 class ShopItemsService {
 

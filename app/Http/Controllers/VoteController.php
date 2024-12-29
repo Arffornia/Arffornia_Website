@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\UserService;
 use App\Services\VoteService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\Collection;
 
 class VoteController extends Controller
 {

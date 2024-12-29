@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ShopItemsService;
+use Illuminate\Contracts\View\View;
 
 class ShopController extends Controller
 {

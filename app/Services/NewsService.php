@@ -3,6 +3,8 @@ namespace App\Services;
 
 use App\Models\News;
 use App\Repositories\NewsRepository;
+use Illuminate\Database\Eloquent\Collection;
+
 
 class NewsService {
 

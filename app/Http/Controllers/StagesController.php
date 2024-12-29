@@ -10,6 +10,7 @@ use App\Services\StagesService;
 use App\Models\MilestoneClosure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Eloquent\Collection;
 
 class StagesController extends Controller
 {

@@ -4,6 +4,8 @@ namespace App\Repositories;
 use App\Models\LauncherImage;
 use App\Models\User;
 use App\Models\LauncherVersion;
+use Illuminate\Database\Eloquent\Collection;
+
 
 class AdminPanelRepository {
     /**

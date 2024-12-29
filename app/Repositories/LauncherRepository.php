@@ -4,6 +4,8 @@ namespace App\Repositories;
 use App\Models\LauncherImage;
 use App\Models\LauncherVersion;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+
 
 class LauncherRepository {
 

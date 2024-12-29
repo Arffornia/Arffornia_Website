@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Database\Eloquent\Collection;
 
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
@@ -25,7 +26,7 @@ class UserService{
      * Get player name by uuid from mojang api
      *
      * @param string $uuid
-     * @return string
+     * @return string|null
      */
     public function getPlayerNameFromUuid(string $uuid) {
         $url = 'https://api.mojang.com/user/profiles/' . $uuid . '/names';

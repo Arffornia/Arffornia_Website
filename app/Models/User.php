@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $name
@@ -41,6 +41,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereStageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
+ * @property string $uuid
+ * @property string|null $role
+ * @property string $grade
+ * @property int $day_streak
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDayStreak($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGrade($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUuid($value)
  * @mixin \Eloquent
  */
 class User extends Authenticatable

@@ -4,6 +4,8 @@ namespace App\Services;
 use App\Models\LauncherImage;
 use App\Models\LauncherVersion;
 use App\Repositories\LauncherRepository;
+use Illuminate\Database\Eloquent\Collection;
+
 
 
 class LauncherService {

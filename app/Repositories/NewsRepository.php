@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\News;
+use Illuminate\Support\Collection;
 
 class NewsRepository {
     /**

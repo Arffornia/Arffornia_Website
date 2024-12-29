@@ -6,6 +6,7 @@ use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use App\Services\ShopItemsService;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Eloquent\Collection;
 
 class ShopItemsController extends Controller
 {

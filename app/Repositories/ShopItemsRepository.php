@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\ShopItem;
+use Illuminate\Database\Eloquent\Collection;
 
 class ShopItemsRepository
 {
