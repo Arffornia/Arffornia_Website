@@ -2,7 +2,7 @@
     padding-top: 30px;
 }
 
-.mediumPlayBtn{
+.mediumPlayBtn {
     height: 50px;
     font-weight: 1000;
     min-width: 250px;
@@ -75,17 +75,23 @@
     padding-top: 3%;
 }
 
-
-#palierTitle {
+.default-title {
     font-size: 225%;
     font-weight: 750;
     color: black;
+    border-left: 4px solid #ff7300;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    padding-left: 10px;
+    font-family: WF Visual Sans, Arial, sans-serif;
+    letter-spacing: .01em;
+    line-height: 1.04;
 }
 
 .palierText {
     font-size: 100%;
     font-weight: 500;
-    color: black;
+    color: rgb(110, 110, 110);
 }
 
 .palierTextContainer {
@@ -119,12 +125,6 @@
     align-items: flex-start;
 }
 
-#dicord__title {
-    font-size: 225%;
-    font-weight: 750;
-    color: black;
-}
-
 .discord__text {
     font-size: 125%;
     font-weight: 500;
@@ -141,26 +141,23 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex-grow: 1; /* Make it grow to fill the container */
-    height: 100%; /* Make sure it fills the parent height */
+    flex-grow: 1;
+    /* Make it grow to fill the container */
+    height: 100%;
+    /* Make sure it fills the parent height */
 }
 
 .discord-widget {
-    flex-grow: 1; /* Make the widget grow to fill available space */
-    align-self: stretch; /* Stretch the widget to fit the container */
+    flex-grow: 1;
+    /* Make the widget grow to fill available space */
+    align-self: stretch;
+    /* Stretch the widget to fit the container */
 }
 
 #join-us-img {
     max-width: 90%;
     margin-top: 20px;
     border-radius: 15px;
-}
-
-.scoreboard__title {
-    padding-bottom: 1.5%;
-    text-align: center;
-    font-size: 400%;
-    font-weight: 800;
 }
 
 .players-container {
@@ -172,7 +169,7 @@
     border: solid 5px #ff7300;
     border-radius: 30px;
     display: block;
-    background-color: #2C3239;
+    background-color: #160020d1;
     color: #fff;
     width: 17%;
     align-items: center;
@@ -231,19 +228,21 @@
     border-radius: 10px;
     font-size: 250%;
     font-weight: 700;
-    background-color: #2C3239;
+    background-color: #160020d1;
 
     border: solid 3px #ff7300;
 }
 
-.p2, .p1, .p3 {
+.p2,
+.p1,
+.p3 {
     align-self: flex-end;
     width: 15%;
 
 }
 
 .podium .shape {
-    background-color: #2C3239;
+    background-color: #160020d1;
     border-radius: 10px;
     border: solid 3px #ff7300;
 
@@ -304,12 +303,6 @@
 
 .podium .score {
     font-weight: 500;
-}
-
-.newsContent .title {
-    font-size: 225%;
-    font-weight: 750;
-    color: black;
 }
 
 .newsContent .seeMoreBtnContainer {
