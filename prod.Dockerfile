@@ -13,8 +13,12 @@ COPY composer.json composer.lock ${HTML_ENDPOINT}
 # RUN mkdir -p ${HTML_ENDPOINT}database/{factories,seeds}
 
 # See composer install doc: https://getcomposer.org/doc/03-cli.md#install-i
-RUN composer install --no-dev --prefer-dist --no-scripts --no-autoloader --no-progress --ignore-platform-reqs
-
+RUN composer install \
+    --prefer-dist \
+    --no-scripts \
+    --no-autoloader \
+    --no-progress \
+    --ignore-platform-reqs
 
 # NPM dependencies
 FROM node:18-alpine3.20 AS npm-builder
@@ -23,30 +27,35 @@ ARG HTML_ENDPOINT
 
 WORKDIR ${HTML_ENDPOINT}
 
-COPY package.json package-lock.json ${HTML_ENDPOINT}
+COPY package.json package-lock.json vite.config.js ${HTML_ENDPOINT}
 
 # Frontend
 COPY resources ${HTML_ENDPOINT}resources/
 COPY public ${HTML_ENDPOINT}public/
 
-RUN npm ci && npm run production
+RUN npm ci && npm run build
 
-# Production image
-FROM php:8.3.19-alpine3.20 AS runner
+FROM php:8.3-fpm-alpine AS runner
 
 ARG HTML_ENDPOINT
 
 WORKDIR ${HTML_ENDPOINT}
 
 RUN apk add --no-cache \
-        libzip-dev \
-        zip \
-        unzip \
-        mysql-client \
-        bash \
-    && docker-php-ext-install zip pdo pdo_mysql
+    libzip-dev \
+    zip \
+    unzip \
+    mysql-client \
+    bash \
+    && docker-php-ext-install zip pdo pdo_mysql opcache \
+    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-COPY --chown=www-data --from=composer-builder ${HTML_ENDPOINT}vendor/ ${HTML_ENDPOINT}vendor/
-COPY --chown=www-data --from=npm-builder ${HTML_ENDPOINT}public/ ${HTML_ENDPOINT}public/
-COPY --chown=www-data . ${HTML_ENDPOINT}
+COPY --from=composer-builder /usr/bin/composer /usr/local/bin/composer
 
+COPY --from=composer-builder ${HTML_ENDPOINT}/vendor/ ${HTML_ENDPOINT}/vendor/
+COPY --from=npm-builder ${HTML_ENDPOINT}/public/ ${HTML_ENDPOINT}/public/
+COPY --chown=www-data:www-data . ${HTML_ENDPOINT}
+
+RUN composer dump -o \
+    && composer check-platform-reqs \
+    && rm -rf /usr/local/bin/composer
