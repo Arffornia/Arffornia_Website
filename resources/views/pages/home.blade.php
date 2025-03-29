@@ -29,7 +29,7 @@
 
         <div class="discord__container homeSection">
             <div class="discord__left-container">
-                <p id="dicord__title">Rejoins Notre Discord :</p>
+                <p class="default-title">Rejoins Notre Discord :</p>
                 <p class="discord__text"></p>
 
                 <img id=join-us-img src="{{ asset("images/join_us.png") }}" alt="">
@@ -42,7 +42,7 @@
         </div>
 
         <div class="newsContent homeSection">
-            <p class="title">News :</p>
+            <p class="default-title">News :</p>
             <div class="newsContainer">
                 @foreach ($newsList as $news)
                 <a class="news" href="news/{{ $news->id }}" title="Show news">
@@ -59,7 +59,7 @@
         </div>
 
         <div class="palierContainer homeSection">
-            <p id="palierTitle">Paliers de progression :</p>
+            <p class="default-title">Paliers de progression :</p>
             <div class="palierTextContainer">
                 <p class="palierText">Débloquez 2/3 des jalons menant à un palier pour pouvoir débloquer un nouveau palier.</p>
                 <p class="palierText">Chaque palier vous permet d'avancer un peu plus dans les mods.</p>
