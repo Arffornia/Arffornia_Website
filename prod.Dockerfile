@@ -50,6 +50,8 @@ RUN apk add --no-cache \
     && docker-php-ext-install zip pdo pdo_mysql opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+COPY .docker/php/opcache.ini $PHP_INI_DIR/conf.d/
+
 COPY --from=composer-builder /usr/bin/composer /usr/local/bin/composer
 
 COPY --from=composer-builder ${HTML_ENDPOINT}/vendor/ ${HTML_ENDPOINT}/vendor/
