@@ -7,7 +7,7 @@ on:
     branches:
       - $default-branch
     tags:
-      - '*.*.*'
+      - 'laravel-*.*.*'
 
 env:
   REGISTRY: ghcr.io
