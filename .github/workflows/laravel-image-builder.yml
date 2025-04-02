@@ -12,7 +12,7 @@ on:
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: "laravel-arffornia-website"
+  IMAGE_NAME: "arffornia/arffornia_website"
 
   # The  Tiger-env Docker file is named Dockerfile-sid
   DOCKERFILE_NAME: './prod.Dockerfile'

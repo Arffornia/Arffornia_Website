@@ -12,7 +12,7 @@ on:
 env:
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: "nginx-arffornia-website"
+  IMAGE_NAME: "arffornia/nginx_arffornia_website"
 
   # The  Tiger-env Docker file is named Dockerfile-sid
   DOCKERFILE_NAME: './nginx.Dockerfile'
