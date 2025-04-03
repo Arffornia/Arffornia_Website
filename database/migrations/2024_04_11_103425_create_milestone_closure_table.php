@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('milestone_closure', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger("milestone_id");
             $table->unsignedBigInteger("descendant_id");
         });

@@ -1,28 +1,49 @@
 services:
   php:
-    image: test-arffornia-website:latest
+    build:
+      context: ./
+      dockerfile: prod.Dockerfile
+    container_name: test-arffornia-website
 
   web:
-    image: nginx:1.17
-    working_dir: /var/www/html
-    volumes:
-      - ./:/var/www/html
-      - .docker/nginx/nginx_template_local.conf:/etc/nginx/conf.d/default.conf
+    build:
+      context: ./
+      dockerfile: nginx.Dockerfile
+    container_name: test-nginx
+    environment:
+      TARGET_HOST: php
+      TARGET_PORT: 9000
+      LISTEN_PORT: 80
     ports:
       - "80:80"
+    depends_on:
+      - php
+      - db
+
+  # db:
+  #   image: mysql:8.0
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     MYSQL_DATABASE: arffornia
+  #     MYSQL_USER: laravel
+  #     MYSQL_PASSWORD: laravel
+  #     MYSQL_ROOT_PASSWORD: laravel
+  #   volumes:
+  #     - ./data/db:/var/lib/mysql
 
   db:
-    image: mysql:8.0
+    image: postgres:17
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "5432:5432"
     environment:
-      MYSQL_DATABASE: arffornia
-      MYSQL_USER: laravel
-      MYSQL_PASSWORD: laravel
-      MYSQL_ROOT_PASSWORD: laravel
+      POSTGRES_DB: arffornia
+      POSTGRES_USER: laravel
+      POSTGRES_PASSWORD: laravel
     volumes:
-      - ./data/db:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
 
   phpmyadmin:
     depends_on:
@@ -34,3 +55,6 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: root
+
+volumes:
+  postgres_data:
