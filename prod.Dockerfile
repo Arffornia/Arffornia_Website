@@ -45,9 +45,10 @@ RUN apk add --no-cache \
     libzip-dev \
     zip \
     unzip \
-    mysql-client \
+    postgresql-client \
+    libpq-dev \
     bash \
-    && docker-php-ext-install zip pdo pdo_mysql opcache \
+    && docker-php-ext-install zip pdo pdo_pgsql opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY .docker/php/opcache.ini $PHP_INI_DIR/conf.d/
