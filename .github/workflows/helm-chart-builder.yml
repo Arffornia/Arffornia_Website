@@ -1,0 +1,42 @@
+name: Publish Helm Chart
+
+on:
+  push:
+    branches:
+      - $default-branch
+    tags:
+      - 'chart-*.*.*'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract Chart Version from Tag
+        id: chart-version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/chart-}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Extracted version: ${VERSION}"
+
+      - name: Update Chart.yaml Version
+        run: |
+          sed -i "s/^version: .*/version: ${{ steps.chart-version.outputs.version }}/" ./charts/arffornia-website/Chart.yaml
+          cat ./charts/arffornia-website/Chart.yaml
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Package and Push Helm Chart to ${{ env.REGISTRY }}
+        run: |
+          helm package ./charts/arffornia-website
+          helm push arffornia-website-${{ steps.chart-version.outputs.version }}.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
