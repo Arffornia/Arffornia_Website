@@ -88,7 +88,7 @@ spec:
           livenessProbe:
             {{- toYaml .Values.liveness.spec | nindent 12 }}
           {{- end }}
-          {{- if .Values.readinessProbe.enabled }}
+          {{- if .Values.readiness.enabled }}
           readinessProbe:
             {{- toYaml .Values.readiness.spec | nindent 12 }}
           {{- end }}
@@ -122,14 +122,15 @@ spec:
             - name: LISTEN_PORT
               value: {{ .Values.service.port | quote }}
 
-          {{- with .Values.livenessProbe }}
+          {{- if .Values.liveness.enabled }}
           livenessProbe:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml .Values.liveness.spec | nindent 12 }}
           {{- end }}
-          {{- with .Values.readinessProbe }}
+          {{- if .Values.readiness.enabled }}
           readinessProbe:
-            {{- toYaml . | nindent 12 }}
+            {{- toYaml .Values.readiness.spec | nindent 12 }}
           {{- end }}
+
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
