@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "arffornia-website.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "arffornia-website.selectorLabels" . | nindent 6 }}
@@ -50,8 +48,8 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.backend.pullPolicy }}
+          image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
 
           {{- with .Values.initContainers.command }}
           command:
@@ -79,11 +77,11 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.backend.repository }}:{{ .Values.image.backend.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.backend.pullPolicy }}
+          image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.image.backend.port }}
+              containerPort: {{ .Values.images.backend.port }}
               protocol: TCP
 
           {{- with .Values.livenessProbe }}
@@ -108,8 +106,8 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.frontend.repository }}:{{ .Values.image.frontend.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.frontend.pullPolicy }}
+          image: "{{ .Values.images.frontend.repository }}:{{ .Values.images.frontend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.frontend.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -117,7 +115,7 @@ spec:
 
           env:
             - name: TARGET_HOST
-              value: {{ .Values.images.backend.host | default 127.0.0.1 | quote }}
+              value: {{ .Values.images.backend.host | default "127.0.0.1" | quote }}
             - name: TARGET_PORT
               value: {{ .Values.images.backend.port | default 9000 | quote }}
             - name: LISTEN_PORT
