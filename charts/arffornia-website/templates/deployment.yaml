@@ -31,15 +31,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-      {{- with .Values.env }}
-      env:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
 
-      {{- with .Values.envFrom }}
-      envFrom:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
 
       {{- if .Values.initContainers.enabled }}
       initContainers:
@@ -50,6 +42,16 @@ spec:
           {{- end }}
           image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
+
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
 
           {{- with .Values.initContainers.command }}
           command:
@@ -79,6 +81,17 @@ spec:
           {{- end }}
           image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
+
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
           ports:
             - name: http
               containerPort: {{ .Values.images.backend.port }}
@@ -109,6 +122,17 @@ spec:
           {{- end }}
           image: "{{ .Values.images.frontend.repository }}:{{ .Values.images.frontend.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.images.frontend.pullPolicy }}
+
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
