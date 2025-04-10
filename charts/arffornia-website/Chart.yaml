@@ -1,5 +1,5 @@
 apiVersion: v2
-name: arffornia-website
+name: arffornia-website-chart
 description: arffornia-website-helm-chart
 type: application
 version: 0.0.1

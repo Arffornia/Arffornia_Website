@@ -13,6 +13,10 @@ env:
 jobs:
   publish:
     runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -39,4 +43,4 @@ jobs:
       - name: Package and Push Helm Chart to ${{ env.REGISTRY }}
         run: |
           helm package ./charts/arffornia-website --version ${{ steps.chart-version.outputs.version }}
-          helm push arffornia-website-chart-${{ steps.chart-version.outputs.version }}.tgz oci://ghcr.io/arffornia/arffornia_website
+          helm push arffornia-website-chart-${{ steps.chart-version.outputs.version }}.tgz oci://ghcr.io/arffornia/arffornia-website-chart
