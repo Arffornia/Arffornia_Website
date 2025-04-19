@@ -2,6 +2,13 @@
 
 Official website of Arffornia.
 
+
+## How to Run in Dev mode
+
+```bash
+docker compose -f docker-compose-dev.yaml up --build -d
+```
+
 ## 📘 API Documentation
 
 This document describes the available API endpoints.
