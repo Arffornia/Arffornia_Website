@@ -1,6 +1,5 @@
 :root {
-    --techno-width: 175px;
-}
+    --techno-width: 125px;
 
 .techno-section {
     display: flex;
@@ -8,7 +7,6 @@
 }
 
 .info {
-    padding: 2% 5% 0% 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -29,23 +27,23 @@
 }
 
 .text-less {
-    color: #c2c2c2d3;
+    color: #727272d4;
 }
 
 .content {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
     gap: 40px;
-    margin: 20px 5%;
 }
 
 .block {
     display: flex;
-    background: #1e1e1e;
+    background: #ededed;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     height: var(--techno-width);
     transition: transform 0.3s, opacity 0.3s;
+    overflow: hidden;
 }
 
 .block:hover .block-image {

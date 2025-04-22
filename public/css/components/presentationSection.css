@@ -19,7 +19,8 @@
     width: 50%;
     aspect-ratio: 16/9;
     object-fit: cover;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
     border-radius: 15px;
 }
 

@@ -1,49 +1,49 @@
 @props([
     'title' => 'Technologies',
     'blocks' => [],
+    'limit' => 3,
+    'showAll' => false, // optionnel : si tu veux pré-afficher tout direct
 ])
 
 @php
-    $displayedBlocks = count($blocks) > 3 ? array_slice($blocks, 0, 3) : $blocks;
+    $total = count($blocks);
+    $displayedBlocks = $showAll ? $blocks : array_slice($blocks, 0, $limit);
 @endphp
 
-<div x-data="{ showAll: false }" class="techno-section">
+<div class="techno-section">
     <div class="info">
         <p class="title-midle">{{ $title }}</p>
-        @if (count($blocks) > 3)
-            <button @click="showAll = !showAll" class="medium-btn weak-border">
-                {{ __('Voir plus') }}
-            </button>
+
+        @if ($total > $limit)
+            <a href="?showAll=1" class="medium-btn weak-border">
+                {{ request('showAll') ? 'Voir moins' : 'Voir plus' }}
+            </a>
         @endif
     </div>
 
     <div class="content">
-        <template x-for="(block, index) in showAll ? {{ json_encode($blocks) }} : {{ json_encode($displayedBlocks) }}"
-            :key="index">
+        @foreach ($displayedBlocks as $block)
+            @php
+                $hasLink = !empty($block['link']);
+            @endphp
+
+            @if ($hasLink)
+                <a href="{{ $block['link'] }}" class="block-link">
+            @endif
+
             <div class="block">
-                <template x-if="block.link">
-                    <a :href="block.link" class="block-link">
-                        <div class="img-container">
-                            <img :src="block.image" alt="" class="block-image" />
-                        </div>
-                        <div class="block-text">
-                            <p class="title-mini" x-text="block.title"></p>
-                            <p class="text-less description" x-text="block.description"></p>
-                        </div>
-                    </a>
-                </template>
-                <template x-if="!block.link">
-                    <div>
-                        <div class="img-container">
-                            <img :src="block.image" alt="" class="block-image" />
-                        </div>
-                        <div class="block-text">
-                            <p class="title-mini" x-text="block.title"></p>
-                            <p class="text-less description" x-text="block.description"></p>
-                        </div>
-                    </div>
-                </template>
+                <div class="img-container">
+                    <img src="{{ $block['image'] }}" alt="{{ $block['title'] }}" class="block-image" />
+                </div>
+                <div class="block-text">
+                    <p class="title-mini">{{ $block['title'] }}</p>
+                    <p class="text-less description">{{ $block['description'] }}</p>
+                </div>
             </div>
-        </template>
+
+            @if ($hasLink)
+                </a>
+            @endif
+        @endforeach
     </div>
 </div>

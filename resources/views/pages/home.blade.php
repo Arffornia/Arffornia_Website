@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{{ asset('css/pages/home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/gridSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/presentationSection.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/technoSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/discord_widget.css') }}">
     <link rel="stylesheet" href="{{ asset('css/pages/news/allNews.css') }}">
 @endsection
@@ -74,16 +75,16 @@
             // etc.
         ]" />
 
-        <x-technoSection title="Nos technologies" :blocks="[
+        <x-technoSection title="Nos technos du moment" :blocks="[
             [
                 'title' => 'Laravel',
                 'description' => 'Framework PHP',
-                'image' => '/images/laravel.png',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
                 'link' => 'https://laravel.com',
             ],
             ['title' => 'VueJS', 'description' => 'Frontend réactif', 'image' => 'images/screenshots1920x1080/old_spawn.png'],
             ['title' => 'AlpineJS', 'description' => 'JS léger', 'image' => 'images/screenshots1920x1080/old_spawn.png'],
-            ['title' => 'Tailwind', 'description' => 'CSS utilitaire', 'image' => 'images/screenshots1920x1080/old_spawn.png'],
+            ['title' => 'TailwindCSS', 'description' => 'CSS utilitaire', 'image' => 'images/screenshots1920x1080/old_spawn.png'],
         ]" />
 
 
