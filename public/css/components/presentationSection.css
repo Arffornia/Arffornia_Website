@@ -1,21 +1,21 @@
-.title {
+.presentation-section .title {
     font-size: 2.3rem;
     font-weight: 600;
     margin: 0%;
 }
 
-.overview {
+.presentation-section .overview {
     display: flex;
     align-items: center;
     padding: 5% 0%;
     gap: 5%;
 }
 
-.description {
+.presentation-section .description {
     padding-top: 50px;
 }
 
-.overview-image {
+.presentation-section .overview-image {
     width: 50%;
     aspect-ratio: 16/9;
     object-fit: cover;
@@ -24,15 +24,15 @@
     border-radius: 15px;
 }
 
-.section-ti-sep {
+.presentation-section .section-ti-sep {
     width: 55%;
     padding-top: 0%;
 }
 
-#presentation-title {
+.presentation-section #presentation-title {
     padding-bottom: 50px;
 }
 
-.text-less {
+.presentation-section .text-less {
     color: #c2c2c2d3;
 }

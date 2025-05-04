@@ -1,45 +1,45 @@
-#grid-title {
+.grid-section #grid-title {
     padding-bottom: 10px;
 }
 
-#grid-description {
+.grid-section #grid-description {
     max-width: 70%;
 }
 
 .grid-section {
 }
 
-.title {
+.grid-section .title {
     font-size: 3.7rem;
     font-weight: 600;
     margin: 0%;
 }
 
-.title-midle {
+.grid-section .title-midle {
     font-size: 2.5rem;
     font-weight: 650;
     margin: 0%;
 }
 
-.title-mini {
+.grid-section .title-mini {
     line-height: 150%;
     font-size: 1.3em;
     font-weight: 500;
     margin: 0%;
 }
 
-.text-less {
+.grid-section .text-less {
     color: #c2c2c2d3;
 }
 
-.test-chamber {
+.grid-section .test-chamber {
     border-radius: 10px;
     overflow: hidden;
     position: relative;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.grids {
+.grid-section .grids {
     margin: 0%;
     padding: 0%;
     display: grid;
@@ -47,7 +47,7 @@
     gap: 2rem;
 }
 
-.test-chamber img {
+.grid-section .test-chamber img {
     object-fit: cover;
     width: 100%;
     height: 100%;
@@ -56,11 +56,11 @@
     transition: transform ease 0.5s;
 }
 
-.test-chamber:hover img {
+.grid-section .test-chamber:hover img {
     transform: scale(1.05);
 }
 
-.image-container {
+.grid-section .image-container {
     position: relative;
     width: 100%;
     height: 100%;
@@ -69,7 +69,7 @@
     border-radius: 10px;
 }
 
-.overlay {
+.grid-section .overlay {
     position: absolute;
     bottom: 5%;
     left: 5%;
@@ -80,10 +80,10 @@
     transition: transform ease 0.3s;
 }
 
-.test-chamber:hover .overlay {
+.grid-section .test-chamber:hover .overlay {
     transform: translateY(-10px);
 }
 
-.overlay p {
+.grid-section .overlay p {
     margin: 0;
 }

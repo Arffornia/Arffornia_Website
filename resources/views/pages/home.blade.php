@@ -30,64 +30,32 @@
             <div class="sloganStatueContainer"></div>
         </div>
 
+        <x-technoSection title="Les mods phares" :blocks="[
+            [
+                'title' => 'Create',
+                'description' => 'This is Create.',
+                'image' => 'https://media.forgecdn.net/avatars/1065/184/638598725500886388.png',
+            ],
+            [
+                'title' => 'Applied Energistics 2',
+                'description' => 'Inventory management and Automation',
+                'image' => 'https://media.forgecdn.net/avatars/1025/127/638548475358792693.webp',
+            ],
+            [
+                'title' => 'Mekanism',
+                'description' => 'High-tech tools',
+                'image' => 'https://cdn.modrinth.com/data/Ce6I4WUE/icon.png',
+            ],
+            [
+                'title' => 'Ender IO',
+                'description' => 'Full-featured tech mod',
+                'image' => 'https://media.forgecdn.net/avatars/thumbnails/6/770/64/64/635368290959736289.png',
+            ],
+        ]" />
+
         <x-presentationSection image-src="{{ asset('images/join_us.png') }}" image-alt="Une image cool"
             overview="Présentation" title="Mon Titre" description="<p>Ceci est une description avec HTML.</p>"
             dir="left" />
-
-        <x-gridSection title="Ma superbe grille" description="Voici un aperçu de nos blocs dynamiques." :blocks="[
-            [
-                'title' => 'Premier bloc',
-                'description' => 'Description 1',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '#',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-
-            // etc.
-        ]" />
-
-        <x-technoSection title="Nos technos du moment" :blocks="[
-            [
-                'title' => 'Laravel',
-                'description' => 'Framework PHP',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => 'https://laravel.com',
-            ],
-            ['title' => 'VueJS', 'description' => 'Frontend réactif', 'image' => 'images/screenshots1920x1080/old_spawn.png'],
-            ['title' => 'AlpineJS', 'description' => 'JS léger', 'image' => 'images/screenshots1920x1080/old_spawn.png'],
-            ['title' => 'TailwindCSS', 'description' => 'CSS utilitaire', 'image' => 'images/screenshots1920x1080/old_spawn.png'],
-        ]" />
-
-
 
         <div class="discord__container homeSection">
             <div class="discord__left-container">
@@ -102,6 +70,13 @@
                 <discord-widget class="discord-widget" id="752121854923374614"></discord-widget>
             </div>
         </div>
+
+        <x-presentationSection image-src="{{ asset('images/palier_progres.png') }}" image-alt="Progression stage"
+            overview="Overview" title="Paliers de progression"
+            description="<p>Débloquez 2/3 des jalons menant à un palier pour pouvoir débloquer un nouveau palier.</br>
+            Chaque palier vous permet d'avancer un peu plus dans les mods.</br>
+            Le but, équilibré les mods entre eux, ainsi que de vous faire découvrir de nouveaux mods.</p>"
+            dir="right" />
 
         <div class="newsContent homeSection">
             <p class="default-title">News :</p>
@@ -118,18 +93,6 @@
             <div class="seeMoreBtnContainer">
                 <a href="/news"><input class="seeMoreBtn" type="button" value="Voir plus"></a>
             </div>
-        </div>
-
-        <div class="palierContainer homeSection">
-            <p class="default-title">Paliers de progression :</p>
-            <div class="palierTextContainer">
-                <p class="palierText">Débloquez 2/3 des jalons menant à un palier pour pouvoir débloquer un nouveau palier.
-                </p>
-                <p class="palierText">Chaque palier vous permet d'avancer un peu plus dans les mods.</p>
-                <p class="palierText">Le but, équilibré les mods entre eux, ainsi que de vous faire découvrir de nouveaux
-                    mods.</p>
-            </div>
-            <img class="imgBG" src="{{ asset('images/palier_progres.png') }}" alt="">
         </div>
 
         <div class="podium homeSection">
@@ -188,6 +151,72 @@
                 <p>Meilleurs joueurs</p>
             </div>
         </div>
+
+        <x-gridSection title="Ma superbe grille" description="Voici un aperçu de nos blocs dynamiques."
+            :blocks="[
+                [
+                    'title' => 'Premier bloc',
+                    'description' => 'Description 1',
+                    'image' => 'images/screenshots1920x1080/old_spawn.png',
+                    'link' => '#',
+                ],
+                [
+                    'title' => 'Deuxième bloc',
+                    'description' => 'Description 2',
+                    'image' => 'images/screenshots1920x1080/old_spawn.png',
+                    'link' => '',
+                ],
+                [
+                    'title' => 'Deuxième bloc',
+                    'description' => 'Description 2',
+                    'image' => 'images/screenshots1920x1080/old_spawn.png',
+                    'link' => '',
+                ],
+                [
+                    'title' => 'Deuxième bloc',
+                    'description' => 'Description 2',
+                    'image' => 'images/screenshots1920x1080/old_spawn.png',
+                    'link' => '',
+                ],
+                [
+                    'title' => 'Deuxième bloc',
+                    'description' => 'Description 2',
+                    'image' => 'images/screenshots1920x1080/old_spawn.png',
+                    'link' => '',
+                ],
+                [
+                    'title' => 'Deuxième bloc',
+                    'description' => 'Description 2',
+                    'image' => 'images/screenshots1920x1080/old_spawn.png',
+                    'link' => '',
+                ],
+
+                // etc.
+            ]" />
+
+        <x-technoSection title="Nos technos du moment" :blocks="[
+            [
+                'title' => 'Laravel',
+                'description' => 'Framework PHP',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+                'link' => 'https://laravel.com',
+            ],
+            [
+                'title' => 'VueJS',
+                'description' => 'Frontend réactif',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+            ],
+            [
+                'title' => 'AlpineJS',
+                'description' => 'JS léger',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+            ],
+            [
+                'title' => 'TailwindCSS',
+                'description' => 'CSS utilitaire',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+            ],
+        ]" />
 
         <div class="APropos homeSection">
             <div class="sloganContainer">
