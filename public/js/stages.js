@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function() {
         hideMilestoneInfo();
     });
 
-    canvas.addEventListener('click', function(event) {  
+    canvas.addEventListener('click', function(event) {
         const node = event.target.closest('.node');
         if (node) {
             showNilestonesInfo(milestones.find(x => x.id == node.id));
@@ -83,24 +83,48 @@ function linkNodes(nodeId1, nodeId2) {
     svg.setAttribute("height", "100%");
     svg.setAttribute("style", "position: absolute; top: 0; left: 0; z-index: -1;");
 
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    line.setAttribute("x1", center1.x);
-    line.setAttribute("y1", center1.y);
-    line.setAttribute("x2", center2.x);
-    line.setAttribute("y2", center2.y);
-    line.classList.add("line");
+    const deltaY = center2.y - center1.y;
 
-    svg.appendChild(line);
+    if (deltaY === 0) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", center1.x);
+        line.setAttribute("y1", center1.y);
+        line.setAttribute("x2", center2.x);
+        line.setAttribute("y2", center2.y);
+        line.setAttribute("stroke", "black");
+        line.setAttribute("fill", "none");
+        line.classList.add("line");
+
+        svg.appendChild(line);
+    } else {
+        const curveStrength = Math.min(Math.abs(deltaY) * 0.7, 100);
+
+        const controlPoint = {
+            x: (center1.x + center2.x) / 2,
+            y: (center1.y + center2.y) / 2 + (deltaY > 0 ? curveStrength : -curveStrength)
+        };
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const d = `M ${center1.x},${center1.y} Q ${controlPoint.x},${controlPoint.y} ${center2.x},${center2.y}`;
+        path.setAttribute("d", d);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "black");
+        path.classList.add("line");
+
+        svg.appendChild(path);
+    }
+
     canvas.appendChild(svg);
 }
 
+
 function createNode(milestone) {
-    const node = document.createElement("div");   
+    const node = document.createElement("div");
     node.classList.add("node");
     node.id = milestone.id;
     node.title = milestone.name;
 
-    const icon = document.createElement("div"); 
+    const icon = document.createElement("div");
     icon.classList.add("icon");
     icon.innerHTML = getIconSvgByType(milestone.icon_type);
 
@@ -109,14 +133,14 @@ function createNode(milestone) {
 }
 
 function buildTree(milestone) {
-    const nodeContainer = document.createElement("div");   
-    const nodeChildren = document.createElement("div");  
-    
+    const nodeContainer = document.createElement("div");
+    const nodeChildren = document.createElement("div");
+
     nodeContainer.classList.add("nodeContainer");
     nodeChildren.classList.add("nodeChildren");
 
     nodeContainer.appendChild(createNode(milestone));
-    
+
     milestone_closure.forEach(closure => {
         if(closure.milestone_id == milestone.id) {
             nodeChildren.appendChild(buildTree(
@@ -126,7 +150,7 @@ function buildTree(milestone) {
     });
 
     nodeContainer.appendChild(nodeChildren);
-    
+
     return nodeContainer;
 }
 
@@ -139,6 +163,7 @@ function buildTrees() {
     })
 
     milestone_closure.forEach(closure => {
+        console.log(`Linking: ${closure.milestone_id} with ${closure.descendant_id}`);
         linkNodes(closure.milestone_id, closure.descendant_id)
     })
 }
