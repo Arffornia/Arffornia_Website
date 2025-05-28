@@ -118,11 +118,17 @@ function linkNodes(nodeId1, nodeId2) {
 }
 
 
+const NODE_GAP = 70;
+
 function createNode(milestone) {
     const node = document.createElement("div");
     node.classList.add("node");
     node.id = milestone.id;
     node.title = milestone.name;
+
+    node.style.position = 'absolute';
+    node.style.left = `${milestone.x * NODE_GAP}px`;
+    node.style.top = `${milestone.y * NODE_GAP}px`;
 
     const icon = document.createElement("div");
     icon.classList.add("icon");
@@ -132,34 +138,9 @@ function createNode(milestone) {
     return node;
 }
 
-function buildTree(milestone) {
-    const nodeContainer = document.createElement("div");
-    const nodeChildren = document.createElement("div");
-
-    nodeContainer.classList.add("nodeContainer");
-    nodeChildren.classList.add("nodeChildren");
-
-    nodeContainer.appendChild(createNode(milestone));
-
-    milestone_closure.forEach(closure => {
-        if(closure.milestone_id == milestone.id) {
-            nodeChildren.appendChild(buildTree(
-                milestones.find(x => x.id == closure.descendant_id)
-            ))
-        }
-    });
-
-    nodeContainer.appendChild(nodeChildren);
-
-    return nodeContainer;
-}
-
 function buildTrees() {
     milestones.forEach(milestone => {
-        if(milestone.is_root) {
-            const tree = buildTree(milestone);
-            canvas.appendChild(tree);
-        }
+        canvas.appendChild(createNode(milestone))
     })
 
     milestone_closure.forEach(closure => {

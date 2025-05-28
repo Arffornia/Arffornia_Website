@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ asset('css/components/technoSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/discord_widget.css') }}">
     <link rel="stylesheet" href="{{ asset('css/pages/news/allNews.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/inputText/dropDown.css') }}">
 @endsection
 
 @section('content')
@@ -20,7 +21,11 @@
                         <p>+ 25 Paliers de progression</p>
                     </div>
                     <div class="sloganPlayBtnContainer">
-                        <a href="#"><input class="mediumPlayBtn" type="button" value="Jouer"></a>
+                        <x-dropDownBtn title="Download" :items="[
+                            ['label' => 'Windows', 'url' => '/download/windows'],
+                            ['label' => 'Linux', 'url' => '/download/linux'],
+                            ['label' => 'Mac', 'url' => '/download/mac'],
+                        ]" />
                     </div>
                 </div>
             </div>
@@ -152,47 +157,46 @@
             </div>
         </div>
 
-        <x-gridSection title="Ma superbe grille" description="Voici un aperçu de nos blocs dynamiques."
-            :blocks="[
-                [
-                    'title' => 'Premier bloc',
-                    'description' => 'Description 1',
-                    'image' => 'images/screenshots1920x1080/old_spawn.png',
-                    'link' => '#',
-                ],
-                [
-                    'title' => 'Deuxième bloc',
-                    'description' => 'Description 2',
-                    'image' => 'images/screenshots1920x1080/old_spawn.png',
-                    'link' => '',
-                ],
-                [
-                    'title' => 'Deuxième bloc',
-                    'description' => 'Description 2',
-                    'image' => 'images/screenshots1920x1080/old_spawn.png',
-                    'link' => '',
-                ],
-                [
-                    'title' => 'Deuxième bloc',
-                    'description' => 'Description 2',
-                    'image' => 'images/screenshots1920x1080/old_spawn.png',
-                    'link' => '',
-                ],
-                [
-                    'title' => 'Deuxième bloc',
-                    'description' => 'Description 2',
-                    'image' => 'images/screenshots1920x1080/old_spawn.png',
-                    'link' => '',
-                ],
-                [
-                    'title' => 'Deuxième bloc',
-                    'description' => 'Description 2',
-                    'image' => 'images/screenshots1920x1080/old_spawn.png',
-                    'link' => '',
-                ],
+        <x-gridSection title="Ma superbe grille" description="Voici un aperçu de nos blocs dynamiques." :blocks="[
+            [
+                'title' => 'Premier bloc',
+                'description' => 'Description 1',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+                'link' => '#',
+            ],
+            [
+                'title' => 'Deuxième bloc',
+                'description' => 'Description 2',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+                'link' => '',
+            ],
+            [
+                'title' => 'Deuxième bloc',
+                'description' => 'Description 2',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+                'link' => '',
+            ],
+            [
+                'title' => 'Deuxième bloc',
+                'description' => 'Description 2',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+                'link' => '',
+            ],
+            [
+                'title' => 'Deuxième bloc',
+                'description' => 'Description 2',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+                'link' => '',
+            ],
+            [
+                'title' => 'Deuxième bloc',
+                'description' => 'Description 2',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+                'link' => '',
+            ],
 
-                // etc.
-            ]" />
+            // etc.
+        ]" />
 
         <x-technoSection title="Nos technos du moment" :blocks="[
             [
@@ -247,5 +251,6 @@
 
     @section('script')
         <script src="{{ asset('js/discord_widget.js') }}"></script>
+        <script src="{{ asset('js/fetch_launcher_release.js') }}"></script>
         @vite(['resources/js/skinviewer.js'])
     @endsection

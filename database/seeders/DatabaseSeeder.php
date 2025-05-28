@@ -29,8 +29,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 1,
             'reward_progress_points' => 20,
-            'is_root' => true,
             'icon_type' => 'tech',
+            'x' => 1,
+            'y' => 2,
         ]);
 
         Milestone::create([
@@ -38,8 +39,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 2,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'tech',
+            'x' => 3,
+            'y' => 1,
         ]);
 
         Milestone::create([
@@ -47,8 +49,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 3,
             'reward_progress_points' => 2000,
-            'is_root' => false,
             'icon_type' => 'tech',
+            'x' => 3,
+            'y' => 3,
         ]);
 
         Milestone::create([
@@ -56,8 +59,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 2,
             'reward_progress_points' => 20,
-            'is_root' => false,
             'icon_type' => 'pipe',
+            'x' => 1,
+            'y' => 7,
         ]);
 
         Milestone::create([
@@ -65,8 +69,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 3,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'pipe',
+            'x' => 3,
+            'y' => 6,
 
         ]);
 
@@ -75,8 +80,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of bota',
             'stage_id' => 1,
             'reward_progress_points' => 20,
-            'is_root' => true,
             'icon_type' => 'magic',
+            'x' => 3,
+            'y' => 8,
 
         ]);
 
@@ -85,8 +91,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of bota',
             'stage_id' => 2,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'magic',
+            'x' => 6,
+            'y' => 6,
 
         ]);
 

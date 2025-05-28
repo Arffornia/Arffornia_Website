@@ -1,4 +1,4 @@
-.bg {   
+.bg {
     height: 89vh;
     width: 94%;
     background-color: #3d267d;;
@@ -15,20 +15,18 @@
     position: absolute;
     border-radius: 10px;
     top: 50%;
-    left: 0%; 
-    transform: translateY(-50%); 
+    left: 0%;
+    transform: translateY(-50%);
     cursor: -webkit-grabbing;
-    cursor: grab; 
+    cursor: grab;
     background-color: #ffffff00;
     display: grid;
-    gap: 100px;    
+    gap: 100px;
 }
 
 .canvas:active {
-    cursor: grabbing; 
+    cursor: grabbing;
 }
-
-
 
 .node {
     width: 70px;
@@ -39,16 +37,6 @@
     margin-top: auto;
     margin-bottom: auto;
     cursor: pointer;
-}
-
-.nodeContainer {
-    display: flex;
-    gap: 50px;
-}
-
-.nodeChildren {
-    display: grid;
-    gap: 30px;
 }
 
 .layer_line {
@@ -83,7 +71,7 @@
     right: 2%;
     z-index: 3;
     width: 350px;
-    
+
     background-color: #000;
     border-radius: 15px;
     padding: 30px;
@@ -92,7 +80,7 @@
 .info-hidden {
     position: none;
     visibility: hidden;
-    
+
 }
 
 .info-show {
