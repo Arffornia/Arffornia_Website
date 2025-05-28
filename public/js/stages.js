@@ -20,8 +20,26 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.addEventListener("mousemove", function(e) {
         if (dragging) {
-            canvas.style.left = e.clientX - offsetX + "px";
-            canvas.style.top = e.clientY - offsetY + "px";
+            let newLeft = e.clientX - offsetX;
+            let newTop = e.clientY - offsetY;
+
+            const bgRect = document.querySelector(".bg").getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+
+            // Taille visible (viewport)
+            const visibleWidth = bgRect.width;
+            const visibleHeight = bgRect.height;
+
+            // Taille totale du canvas
+            const totalWidth = canvas.offsetWidth;
+            const totalHeight = canvas.offsetHeight;
+
+            // Clamp: empêcher que le canvas parte trop loin
+            newLeft = Math.min(0, Math.max(visibleWidth - totalWidth, newLeft));
+            newTop = Math.min(0, Math.max(visibleHeight - totalHeight, newTop));
+
+            canvas.style.left = `${newLeft}px`;
+            canvas.style.top = `${newTop}px`;
         }
     });
 
@@ -47,8 +65,6 @@ function hideMilestoneInfo() {
     milestoneInfo.classList.add("info-hidden");
     milestoneInfo.classList.remove("info-show");
 }
-
-
 
 function showNilestonesInfo(milestone) {
     infoTitle.textContent = milestone.name;
@@ -141,14 +157,57 @@ function createNode(milestone) {
 function buildTrees() {
     milestones.forEach(milestone => {
         canvas.appendChild(createNode(milestone))
-    })
+    });
 
     milestone_closure.forEach(closure => {
-        console.log(`Linking: ${closure.milestone_id} with ${closure.descendant_id}`);
         linkNodes(closure.milestone_id, closure.descendant_id)
-    })
+    });
+
+    resizeCanvasToFitViewport();
+    centerCanvas();
 }
 
 document.addEventListener("DOMContentLoaded", function() {
     buildTrees();
 });
+
+function resizeCanvasToFitViewport() {
+    const canvas = document.querySelector(".canvas");
+    const nodes = document.querySelectorAll(".node");
+
+    let maxX = 0;
+    let maxY = 0;
+
+    nodes.forEach(node => {
+        const x = parseInt(node.style.left || 0) + node.offsetWidth;
+        const y = parseInt(node.style.top || 0) + node.offsetHeight;
+
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+    });
+
+    // Ajouter une marge + assurer que ça couvre au moins la fenêtre
+    const minWidth = Math.max(window.innerWidth, maxX + 200);
+    const minHeight = Math.max(window.innerHeight, maxY + 200);
+
+    canvas.style.width = `${minWidth}px`;
+    canvas.style.height = `${minHeight}px`;
+}
+
+
+function centerCanvas() {
+    const bgRect = document.querySelector(".bg").getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+
+    const left = (bgRect.width - canvas.offsetWidth) / 2;
+    const top = (bgRect.height - canvas.offsetHeight) / 2;
+
+    // Ne pas dépasser le bord
+    // canvas.style.left = `${Math.min(0, left)}px`;
+    // canvas.style.top = `${Math.min(0, top)}px`;
+}
+
+window.addEventListener("resize", () => {
+    resizeCanvasToFitViewport();
+});
+

@@ -35,10 +35,8 @@
                 </ul>
             </div>
         </div>
-        <div class="canvas">
-            
-        </div>
-    </div>   
+        <div class="canvas"></div>
+    </div>
 @endsection
 @section('script')
     <script>

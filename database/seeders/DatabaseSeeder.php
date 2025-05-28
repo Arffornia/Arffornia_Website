@@ -122,6 +122,16 @@ class DatabaseSeeder extends Seeder
             'descendant_id' => 7,
         ]);
 
+        MilestoneClosure::create([
+            'milestone_id' => 7,
+            'descendant_id' => 6,
+        ]);
+
+        MilestoneClosure::create([
+            'milestone_id' => 7,
+            'descendant_id' => 3,
+        ]);
+
         User::factory(10)->create();
         Vote::factory(25)->create();
 
