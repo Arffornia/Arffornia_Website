@@ -16,14 +16,30 @@
     --grid-cell-size: 78px;
 }
 
+html {
+    max-width: none;
+}
+
+header {
+    position: absolute;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    align-items: center;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    z-index: 100;
+    width: 100%;
+    align-items: center;
+}
+
 .bg {
-    height: 89vh;
-    width: 94%;
-    border-radius: 15px;
-    border: solid 5px #ff7300;
+    height: 100vh;
+    width: 100%;
     box-sizing: border-box;
-    margin-left: 3%;
-    margin-right: 3%;
     position: relative;
     overflow: hidden;
 }
