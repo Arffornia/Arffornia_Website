@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Hide the milestone info box
 function hideMilestoneInfo() {
-    milestoneInfo.classList.add("info-hidden");
     milestoneInfo.classList.remove("info-show");
 }
 
@@ -79,7 +78,6 @@ function showNilestonesInfo(milestone) {
     infoPoints.textContent = milestone.reward_progress_points;
     infoIcon.innerHTML = getIconSvgByType(milestone.icon_type);
 
-    milestoneInfo.classList.remove("info-hidden");
     milestoneInfo.classList.add("info-show");
 }
 

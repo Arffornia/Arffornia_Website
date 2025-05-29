@@ -33,26 +33,26 @@
     top: 0;
     left: 0;
     background:
-      linear-gradient(-90deg, var(--color-line-thin) var(--line-thin-width), transparent var(--line-thin-width)),
-      linear-gradient(var(--color-line-thin) var(--line-thin-width), transparent var(--line-thin-width)),
-      linear-gradient(-90deg, var(--color-line-thin-alt) var(--line-thin-width), transparent var(--line-thin-width)),
-      linear-gradient(var(--color-line-thin-alt) var(--line-thin-width), transparent var(--line-thin-width)),
-      linear-gradient(transparent var(--grid-padding), var(--color-background) var(--grid-padding), var(--color-background) var(--grid-cell-size), transparent var(--grid-cell-size)),
-      linear-gradient(-90deg, var(--color-line-thick) var(--line-thick-width), transparent var(--line-thick-width)),
-      linear-gradient(-90deg, transparent var(--grid-padding), var(--color-background) var(--grid-padding), var(--color-background) var(--grid-cell-size), transparent var(--grid-cell-size)),
-      linear-gradient(var(--color-line-thick) var(--line-thick-width), transparent var(--line-thick-width)),
-      var(--color-background);
+        linear-gradient(-90deg, var(--color-line-thin) var(--line-thin-width), transparent var(--line-thin-width)),
+        linear-gradient(var(--color-line-thin) var(--line-thin-width), transparent var(--line-thin-width)),
+        linear-gradient(-90deg, var(--color-line-thin-alt) var(--line-thin-width), transparent var(--line-thin-width)),
+        linear-gradient(var(--color-line-thin-alt) var(--line-thin-width), transparent var(--line-thin-width)),
+        linear-gradient(transparent var(--grid-padding), var(--color-background) var(--grid-padding), var(--color-background) var(--grid-cell-size), transparent var(--grid-cell-size)),
+        linear-gradient(-90deg, var(--color-line-thick) var(--line-thick-width), transparent var(--line-thick-width)),
+        linear-gradient(-90deg, transparent var(--grid-padding), var(--color-background) var(--grid-padding), var(--color-background) var(--grid-cell-size), transparent var(--grid-cell-size)),
+        linear-gradient(var(--color-line-thick) var(--line-thick-width), transparent var(--line-thick-width)),
+        var(--color-background);
     background-size:
-      var(--grid-small-size) var(--grid-small-size),
-      var(--grid-small-size) var(--grid-small-size),
-      var(--grid-large-size) var(--grid-large-size),
-      var(--grid-large-size) var(--grid-large-size),
-      var(--grid-large-size) var(--grid-large-size),
-      var(--grid-large-size) var(--grid-large-size),
-      var(--grid-large-size) var(--grid-large-size),
-      var(--grid-large-size) var(--grid-large-size);
+        var(--grid-small-size) var(--grid-small-size),
+        var(--grid-small-size) var(--grid-small-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size);
     z-index: 0;
-  }
+}
 
 .canvas:active {
     cursor: grabbing;
@@ -110,20 +110,16 @@
     transform: translateY(-20px);
     transition: opacity 0.4s ease, transform 0.4s ease;
     pointer-events: none;
+    position: absolute;
 }
 
 .info-show {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
-    position: absolute;
 }
 
-.info-hidden {
-    opacity: 0;
-    transform: translateY(-20px);
-    pointer-events: none;
-}
+
 
 .info .closeBtn {
     width: 30px;
@@ -132,6 +128,12 @@
     top: 5px;
     right: 5px;
     cursor: pointer;
+    transition: opacity 0.3s ease;
+    opacity: 0.75;
+}
+
+.info .closeBtn:hover {
+    opacity: 1;
 }
 
 .info .iconContainer {
