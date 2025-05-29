@@ -30,17 +30,19 @@
             </div>
 
             <div class="textContainer">
-                <p><span class="textTitle">Description: </span><span id="description">Basic of meka</span></p>
-                <p><span class="textTitle">Stage: </span><span id="stageNumber">5</span></p>
-                <p><span class="textTitle">Points: </span><span id="reward_progress_points">20000</span></p>
+                <p><span class="textTitle">Description: </span><span id="description" class="textDescription">Basic of
+                        meka</span></p>
+                <p><span class="textTitle">Stage: </span><span id="stageNumber" class="textDescription">5</span></p>
+                <p><span class="textTitle">Points: </span><span id="reward_progress_points"
+                        class="textDescription">20000</span></p>
                 <p class="textTitle">Items:</p>
             </div>
 
             <div id="itemsContainer">
                 <ul>
-                    <li>Smelt factory mk1</li>
-                    <li>Osmium</li>
-                    <li>Osmium</li>
+                    <li class="textDescription">Smelt factory mk1</li>
+                    <li class="textDescription">Osmium</li>
+                    <li class="textDescription">Osmium</li>
                 </ul>
             </div>
         </div>

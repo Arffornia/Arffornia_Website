@@ -113,7 +113,7 @@ footer {
     color: #fff;
     font-family: Montserrat, sans-serif;
     font-weight: 500;
-    top: 4%;
+    top: 12%;
     right: 2%;
     z-index: 3;
     width: 350px;
@@ -166,7 +166,7 @@ footer {
 
 .info #title {
     padding-left: 10px;
-    font-size: 125%;
+    font-size: 100%;
     font-weight: 700;
 }
 
@@ -178,16 +178,11 @@ footer {
 
 .info .textContainer .textTitle {
     font-weight: 700;
-    font-size: 125%;
+    font-size: 100%;
 }
 
-.info #description,
-.info #stageNumber,
-.info #stageNumber,
-.icon #itemsContainer {
-    transition: opacity 0.3s ease;
-
-    font-weight: 500;
+.info .textDescription {
+    font-weight: 300;
 }
 
 .info .itemsContainer {
