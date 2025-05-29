@@ -16,7 +16,7 @@ Route::get('checkNewPlayer/{playerUuid}', [UserController::class, 'checkNewPlaye
 
 Route::get('stages', [StagesController::class, 'stagesJson']);
 Route::get('stages/{playerUuid}', [StagesController::class, 'playerStagesJson']);
-Route::get('stages/get/{nodeId}', [StagesController::class, 'getMilestoneById']);
+Route::get('milestone/get/{nodeId}', [StagesController::class, 'getMilestoneById']);
 
 Route::get('launcherVersionInfo/{dev?}', [LauncherController::class, 'getLauncherInfo'])->where('dev', 'dev');
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);

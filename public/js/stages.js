@@ -12,6 +12,8 @@ import { getIconSvgByType } from "./mod_icons.js";
 
 const { milestones, milestone_closure } = window.AppData;
 
+var currentNodeId = null;
+
 // Manage cnavas mouvement (drag)
 document.addEventListener("DOMContentLoaded", function () {
     var dragging = false;
@@ -57,10 +59,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     canvas.addEventListener('click', function (event) {
         const node = event.target.closest('.node');
-        if (node) {
+        if (node && node.id !== currentNodeId) {
             showNilestonesInfo(milestones.find(x => x.id == node.id));
+            currentNodeId = node.id;
         } else {
             hideMilestoneInfo();
+            currentNodeId = null;
         }
     });
 });
@@ -72,13 +76,46 @@ function hideMilestoneInfo() {
 
 // Show the milestone info box with the given milestone data
 function showNilestonesInfo(milestone) {
-    infoTitle.textContent = milestone.name;
-    infoDescription.textContent = milestone.description;
-    infoStageNumber.textContent = milestone.id; // TODO query stage id to get truth stage number
-    infoPoints.textContent = milestone.reward_progress_points;
-    infoIcon.innerHTML = getIconSvgByType(milestone.icon_type);
-
     milestoneInfo.classList.add("info-show");
+
+    const loader = document.getElementById("info-loader");
+    const content = document.getElementById("info-content");
+
+    // Show skeleton, hide real content
+    loader.style.display = "block";
+    content.style.display = "none";
+
+    fetch(`http://localhost:8080/api/milestone/get/${milestone.id}`)
+        .then(response => {
+            if (!response.ok) throw new Error("Erreur API");
+            return response.json();
+        })
+        // .then(data => { // Simulate a delay for the loader (dev mode)
+        //     return new Promise(resolve => {
+        //         setTimeout(() => resolve(data), 1000 * 1);
+        //     });
+        // })
+        .then(data => {
+            infoTitle.textContent = data.name;
+            infoDescription.textContent = data.description;
+            infoStageNumber.textContent = data.stage_id;
+            infoPoints.textContent = data.reward_progress_points;
+            infoIcon.innerHTML = getIconSvgByType(data.icon_type);
+
+            // TODO: Add fetch required items
+        })
+        .catch(err => {
+            console.error("Erreur lors du fetch :", err);
+            infoTitle.textContent = "Erreur de chargement";
+            infoDescription.textContent = "-";
+            infoStageNumber.textContent = "-";
+            infoPoints.textContent = "-";
+            infoIcon.innerHTML = "";
+        })
+        .finally(() => {
+            loader.style.display = "none";
+            content.style.display = "block";
+        });
 }
 
 // Link two nodes together.
