@@ -8,33 +8,37 @@ const infoPoints = milestoneInfo.querySelector("#reward_progress_points");
 const infoIcon = milestoneInfo.querySelector(".icon");
 const infoCloseBtnDiv = milestoneInfo.querySelector(".closeBtn")
 
-document.addEventListener("DOMContentLoaded", function() {
+import { getIconSvgByType } from "./mod_icons.js";
+
+const { milestones, milestone_closure } = window.AppData;
+
+// Manage cnavas mouvement (drag)
+document.addEventListener("DOMContentLoaded", function () {
     var dragging = false;
     var offsetX, offsetY;
 
-    canvas.addEventListener("mousedown", function(e) {
+    canvas.addEventListener("mousedown", function (e) {
         dragging = true;
         offsetX = e.clientX - parseInt(window.getComputedStyle(canvas).left);
         offsetY = e.clientY - parseInt(window.getComputedStyle(canvas).top);
     });
 
-    document.addEventListener("mousemove", function(e) {
+    document.addEventListener("mousemove", function (e) {
         if (dragging) {
             let newLeft = e.clientX - offsetX;
             let newTop = e.clientY - offsetY;
 
             const bgRect = document.querySelector(".bg").getBoundingClientRect();
-            const canvasRect = canvas.getBoundingClientRect();
 
-            // Taille visible (viewport)
+            // Visible width and height of the viewport
             const visibleWidth = bgRect.width;
             const visibleHeight = bgRect.height;
 
-            // Taille totale du canvas
+            // Total width and height of the canvas
             const totalWidth = canvas.offsetWidth;
             const totalHeight = canvas.offsetHeight;
 
-            // Clamp: empêcher que le canvas parte trop loin
+            // Clamp the canvas in the viewport
             newLeft = Math.min(0, Math.max(visibleWidth - totalWidth, newLeft));
             newTop = Math.min(0, Math.max(visibleHeight - totalHeight, newTop));
 
@@ -43,15 +47,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    document.addEventListener("mouseup", function() {
+    document.addEventListener("mouseup", function () {
         dragging = false;
     });
 
-    infoCloseBtnDiv.addEventListener('click', function() {
+    infoCloseBtnDiv.addEventListener('click', function () {
         hideMilestoneInfo();
     });
 
-    canvas.addEventListener('click', function(event) {
+    canvas.addEventListener('click', function (event) {
         const node = event.target.closest('.node');
         if (node) {
             showNilestonesInfo(milestones.find(x => x.id == node.id));
@@ -61,11 +65,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+// Hide the milestone info box
 function hideMilestoneInfo() {
     milestoneInfo.classList.add("info-hidden");
     milestoneInfo.classList.remove("info-show");
 }
 
+// Show the milestone info box with the given milestone data
 function showNilestonesInfo(milestone) {
     infoTitle.textContent = milestone.name;
     infoDescription.textContent = milestone.description;
@@ -77,19 +83,19 @@ function showNilestonesInfo(milestone) {
     milestoneInfo.classList.add("info-show");
 }
 
-
-function getCenterRelativeToWindow(div) {
-    const rect = div.getBoundingClientRect();
-    const canvasRect = canvas.getBoundingClientRect();
-    return {
-        x: rect.left - canvasRect.left + rect.width / 2,
-        y: rect.top - canvasRect.top + rect.height / 2
-    };
-}
-
+// Link two nodes together.
 function linkNodes(nodeId1, nodeId2) {
     const node1 = document.getElementById(nodeId1);
     const node2 = document.getElementById(nodeId2);
+
+    function getCenterRelativeToWindow(div) {
+        const rect = div.getBoundingClientRect();
+        const canvasRect = canvas.getBoundingClientRect();
+        return {
+            x: rect.left - canvasRect.left + rect.width / 2,
+            y: rect.top - canvasRect.top + rect.height / 2
+        };
+    }
 
     const center1 = getCenterRelativeToWindow(node1);
     const center2 = getCenterRelativeToWindow(node2);
@@ -136,6 +142,7 @@ function linkNodes(nodeId1, nodeId2) {
 
 const NODE_GAP = 70;
 
+// Create a node element
 function createNode(milestone) {
     const node = document.createElement("div");
     node.classList.add("node");
@@ -154,6 +161,7 @@ function createNode(milestone) {
     return node;
 }
 
+// Build the graph by creating nodes and linking them
 function buildTrees() {
     milestones.forEach(milestone => {
         canvas.appendChild(createNode(milestone))
@@ -167,10 +175,11 @@ function buildTrees() {
     centerCanvas();
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     buildTrees();
 });
 
+// Resize the canvas to fit the canvas to the viewport
 function resizeCanvasToFitViewport() {
     const canvas = document.querySelector(".canvas");
     const nodes = document.querySelectorAll(".node");
@@ -186,23 +195,23 @@ function resizeCanvasToFitViewport() {
         if (y > maxY) maxY = y;
     });
 
-    // Ajouter une marge + assurer que ça couvre au moins la fenêtre
-    const minWidth = Math.max(window.innerWidth, maxX + 200);
-    const minHeight = Math.max(window.innerHeight, maxY + 200);
+    // Add some padding to ensure the canvas is larger than the window
+    const padding = 200;
+    const minWidth = Math.max(window.innerWidth, maxX + padding);
+    const minHeight = Math.max(window.innerHeight, maxY + padding);
 
     canvas.style.width = `${minWidth}px`;
     canvas.style.height = `${minHeight}px`;
 }
 
-
+// Center the graph oln the middle for a better UX
 function centerCanvas() {
-    const bgRect = document.querySelector(".bg").getBoundingClientRect();
-    const canvasRect = canvas.getBoundingClientRect();
+    // const bgRect = document.querySelector(".bg").getBoundingClientRect();
+    // const canvasRect = canvas.getBoundingClientRect();
 
-    const left = (bgRect.width - canvas.offsetWidth) / 2;
-    const top = (bgRect.height - canvas.offsetHeight) / 2;
+    // const left = (bgRect.width - canvas.offsetWidth) / 2;
+    // const top = (bgRect.height - canvas.offsetHeight) / 2;
 
-    // Ne pas dépasser le bord
     // canvas.style.left = `${Math.min(0, left)}px`;
     // canvas.style.top = `${Math.min(0, top)}px`;
 }

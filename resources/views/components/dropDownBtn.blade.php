@@ -8,7 +8,7 @@
         {{ $title }} <span class="arrow-down">▼</span>
     </div>
     <div class="dropdown-content">
-        @foreach($items as $item)
+        @foreach ($items as $item)
             <a href="{{ $item['url'] ?? '#' }}">
                 {{ $item['label'] ?? 'Item' }}
             </a>

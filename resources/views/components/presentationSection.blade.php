@@ -1,11 +1,4 @@
-@props([
-    'imageSrc',
-    'imageAlt',
-    'overview',
-    'title',
-    'description',
-    'dir' => 'left'
-])
+@props(['imageSrc', 'imageAlt', 'overview', 'title', 'description', 'dir' => 'left'])
 
 @php
     $isRight = $dir === 'right';

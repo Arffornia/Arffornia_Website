@@ -40,7 +40,7 @@ window.addEventListener('load', () => {
         let footerInfo = document.createElement('widget-footer-info');
         let joinButton = document.createElement('widget-button-join');
         joinButton.style.fontSize = '18px';
-        joinButton.addEventListener('click', (e) => {
+        joinButton.addEventListener('click', () => {
             if (joinButton.getAttribute('href')) {
                 window.open(joinButton.getAttribute('href') || '', joinButton.getAttribute('target') || '', '');
             }
@@ -53,7 +53,7 @@ window.addEventListener('load', () => {
         widget.style.setProperty('--color', color);
         widget.style.setProperty('--bgColor', backgroundColor);
         widget.style.setProperty('--textColor', textColor);
-        widget.style.setProperty('--buttonColor', `#${LDColor(color.replace('#',''),-10)}`);
+        widget.style.setProperty('--buttonColor', `#${LDColor(color.replace('#', ''), -10)}`);
         widget.style.setProperty('--statusColor', statusColor);
 
         joinButton.style.height = '40px';
@@ -65,7 +65,7 @@ window.addEventListener('load', () => {
         widget.append(head, body, footer);
         fetch(`https://discord.com/api/guilds/${id}/widget.json`).then((data) => {
             data.json().then((data) => {
-                count.innerHTML = `<strong>${data.presence_count-1}</strong> Members Online`;
+                count.innerHTML = `<strong>${data.presence_count - 1}</strong> Members Online`;
                 joinButton.setAttribute('href', data.instant_invite);
                 joinButton.setAttribute('target', '_blank');
                 if (data.instant_invite === null || data.instant_invite === undefined) joinButton.remove();

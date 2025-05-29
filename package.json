@@ -6,13 +6,30 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@eslint/js": "^9.27.0",
         "axios": "^1.6.4",
+        "eslint": "^9.27.0",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-vue": "^10.1.0",
+        "globals": "^16.2.0",
         "laravel-mix": "^6.0.49",
         "laravel-vite-plugin": "^1.0",
+        "prettier": "^3.5.3",
+        "typescript-eslint": "^8.33.0",
         "vite": "^5.0"
     },
     "dependencies": {
         "express": "^4.19.2",
         "skinview3d": "^3.0.1"
-    }
+    },
+    "name": "arffornia_website",
+    "version": "1.0.0",
+    "description": "Official website of Arffornia.",
+    "main": "vite.config.js",
+    "directories": {
+        "test": "tests"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT"
 }
