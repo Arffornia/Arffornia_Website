@@ -174,8 +174,10 @@ function linkNodes(nodeId1, nodeId2) {
     canvas.appendChild(svg);
 }
 
-
-const NODE_GAP = 70;
+const GRID_CELL_SPACING = 80; // Must correspond to --grid-large-size in the CSS
+const NODE_CONTENT_DIAMETER = 70; // width/height of the .node in the CSS
+const NODE_BORDER_WIDTH = 5;      // border-width of the .node in the CSS
+const NODE_ACTUAL_DIAMETER = NODE_CONTENT_DIAMETER + (2 * NODE_BORDER_WIDTH); // Total size = 70 + 2*5 = 80
 
 // Create a node element
 function createNode(milestone) {
@@ -185,8 +187,13 @@ function createNode(milestone) {
     node.title = milestone.name;
 
     node.style.position = 'absolute';
-    node.style.left = `${milestone.x * NODE_GAP}px`;
-    node.style.top = `${milestone.y * NODE_GAP}px`;
+
+    // Calcule la position du coin supérieur gauche pour que le CENTRE du node soit à l'intersection
+    const topLeftX = (milestone.x * GRID_CELL_SPACING) - (NODE_ACTUAL_DIAMETER / 2);
+    const topLeftY = (milestone.y * GRID_CELL_SPACING) - (NODE_ACTUAL_DIAMETER / 2);
+
+    node.style.left = `${topLeftX}px`;
+    node.style.top = `${topLeftY}px`;
 
     const icon = document.createElement("div");
     icon.classList.add("icon");
