@@ -1,16 +1,20 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\User;
 use App\Models\Milestone;
+use App\Models\Stage;
 use App\Repositories\StagesRepository;
 use Illuminate\Database\Eloquent\Collection;
 
-class StagesService {
+class StagesService
+{
 
     private StagesRepository $repository;
 
-    public function __construct(StagesRepository $repository) {
+    public function __construct(StagesRepository $repository)
+    {
         $this->repository = $repository;
     }
 
@@ -20,7 +24,8 @@ class StagesService {
      * @param  User  $user
      * @return Collection<Milestone>
      */
-    public function getMilestoneByUsername(User $user) {
+    public function getMilestoneByUsername(User $user)
+    {
         return $this->repository->getMilestoneByUsername($user);
     }
 
@@ -30,7 +35,8 @@ class StagesService {
      * @param integer $id
      * @return Stage
      */
-    public function getStageById(int $id) {
+    public function getStageById(int $id)
+    {
         return $this->repository->getStageById($id);
     }
 
@@ -40,8 +46,22 @@ class StagesService {
      *
      * @return Stage
      */
-    public function getStartStage() {
+    public function getStartStage()
+    {
         return $this->repository->getStartStage();
     }
 
+    /**
+     * Get all stages
+     *
+     * @return ?Milestone
+     */
+    public function getMilestoneById(int $milestoneId): ?Milestone
+    {
+        if ($milestoneId < 0) {
+            return null;
+        }
+
+        return $this->repository->getMilestoneById($milestoneId);
+    }
 }

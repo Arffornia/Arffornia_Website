@@ -1,22 +1,35 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\MilestoneUser;
+use App\Models\Milestone;
 use App\Models\Stage;
 use Illuminate\Database\Eloquent\Collection;
 
 
-class StagesRepository {
+class StagesRepository
+{
 
     /**
      * Get milestone by user
      *
-     * @param  User  $user
      * @return Collection<Milestone>
      */
-    public function getMilestoneByUsername(User $user) {
+    public function getMilestoneByUsername(User $user)
+    {
         return MilestoneUser::where('user_id', $user->id)->get();;
+    }
+
+    /**
+     * Get Milestone by id
+     *
+     * @return ?Milestone
+     */
+    public function getMilestoneById(int $id)
+    {
+        return Milestone::where('id', $id)->first();
     }
 
     /**
@@ -25,7 +38,8 @@ class StagesRepository {
      * @param integer $id
      * @return Stage
      */
-    public function getStageById(int $id) {
+    public function getStageById(int $id)
+    {
         return Stage::where('id', $id)->first();
     }
 
@@ -35,8 +49,8 @@ class StagesRepository {
      *
      * @return Stage
      */
-    public function getStartStage() {
+    public function getStartStage()
+    {
         return Stage::where('number', 1)->first();
     }
-
 }

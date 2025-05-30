@@ -1,0 +1,70 @@
+:root {
+    --skeleton-color: #1c2733;
+    --skeleton-border-radius: 3px;
+    --skeleton-img-border-radius: 0.75rem;
+    --skeleton-animation-speed: 1s;
+    --skeleton-avatar-size: 48px;
+    --skeleton-button-size: 26px;
+}
+
+@keyframes skeleton {
+    0% {
+        opacity: 0.2;
+        transform: translateY(6px) scale(0.98);
+    }
+
+    85%,
+    100% {
+        opacity: 1;
+        transform: translateY(0px) scale(1);
+    }
+}
+
+.skeleton-avatar {
+    width: var(--skeleton-avatar-size);
+    height: var(--skeleton-avatar-size);
+    background-color: var(--skeleton-color);
+    border-radius: 50%;
+    animation: skeleton var(--skeleton-animation-speed) ease-in-out infinite alternate;
+}
+
+.skeleton-line {
+    height: 0.7rem;
+    background-color: var(--skeleton-color);
+    border-radius: var(--skeleton-border-radius);
+    margin-bottom: 0.3rem;
+    animation: skeleton var(--skeleton-animation-speed) ease-in-out infinite alternate;
+}
+
+.skeleton-line.heading {
+    height: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-img {
+    height: 250px;
+    background-color: var(--skeleton-color);
+    border-radius: var(--skeleton-img-border-radius);
+    margin-top: 1.5rem;
+    animation: skeleton var(--skeleton-animation-speed) ease-in-out infinite alternate;
+    animation-delay: 300ms;
+}
+
+.skeleton-button {
+    width: var(--skeleton-button-size);
+    height: var(--skeleton-button-size);
+    background-color: var(--skeleton-color);
+    border-radius: 4px;
+    flex-shrink: 0;
+    animation: skeleton var(--skeleton-animation-speed) ease-in-out infinite alternate;
+}
+
+.skeleton-button.rounded {
+    border-radius: 100%;
+}
+
+.skeleton-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
