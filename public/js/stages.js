@@ -90,11 +90,11 @@ function showNilestonesInfo(milestone) {
             if (!response.ok) throw new Error("Erreur API");
             return response.json();
         })
-        // .then(data => { // Simulate a delay for the loader (dev mode)
-        //     return new Promise(resolve => {
-        //         setTimeout(() => resolve(data), 1000 * 1);
-        //     });
-        // })
+        .then(data => { // Simulate a delay for the loader (dev mode)
+            return new Promise(resolve => {
+                setTimeout(() => resolve(data), 1000 * 1);
+            });
+        })
         .then(data => {
             infoTitle.textContent = data.name;
             infoDescription.textContent = data.description;
@@ -188,7 +188,6 @@ function createNode(milestone) {
 
     node.style.position = 'absolute';
 
-    // Calcule la position du coin supérieur gauche pour que le CENTRE du node soit à l'intersection
     const topLeftX = (milestone.x * GRID_CELL_SPACING) - (NODE_ACTUAL_DIAMETER / 2);
     const topLeftY = (milestone.y * GRID_CELL_SPACING) - (NODE_ACTUAL_DIAMETER / 2);
 
