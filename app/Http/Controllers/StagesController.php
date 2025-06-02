@@ -53,6 +53,20 @@ class StagesController extends Controller
     }
 
     /**
+     * Get all stages information (export)
+     *
+     * @return array
+     */
+    public function exportStages()
+    {
+        return response()->json([
+            'stages' => Stage::all(),
+            'milestones' => Milestone::all(),
+            'milestone_closure' => MilestoneClosure::all(),
+        ]);
+    }
+
+    /**
      * Get player stages information
      *
      * @param  string  $playerUuid

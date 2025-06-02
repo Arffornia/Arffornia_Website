@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -53,7 +54,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  */
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -89,15 +90,18 @@ class User extends Authenticatable
         return [];
     }
 
-    public function getVoteCount() {
+    public function getVoteCount()
+    {
         return $this->votes()->count();
     }
 
-    public function votes() {
+    public function votes()
+    {
         return $this->hasMany(Vote::class);
     }
 
-    public function hasRole(string $role) : bool {
+    public function hasRole(string $role): bool
+    {
         return $this->role == $role;
     }
 }

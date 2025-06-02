@@ -15,7 +15,7 @@ Route::get('profile/uuid/{playerUuid}/', [UserController::class, 'playerProfileB
 Route::get('checkNewPlayer/{playerUuid}', [UserController::class, 'checkNewPlayer']);
 
 Route::get('stages', [StagesController::class, 'stagesJson']);
-Route::get('stages/{playerUuid}', [StagesController::class, 'playerStagesJson']);
+Route::get('stages/player/get/{playerUuid}', [StagesController::class, 'playerStagesJson']);
 Route::get('milestone/get/{nodeId}', [StagesController::class, 'getMilestoneById']);
 
 Route::get('launcherVersionInfo/{dev?}', [LauncherController::class, 'getLauncherInfo'])->where('dev', 'dev');
@@ -26,3 +26,7 @@ Route::get('download/launcher', [LauncherController::class, 'downloadLauncher'])
 Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJson']);
 Route::get('shop/newest/{size}', [ShopItemsController::class, 'newestJson']);
 Route::get('shop/sales/{size}', [ShopItemsController::class, 'salesJson']);
+
+Route::middleware(['auth:sanctum', 'ability:admin'])->group(function () {
+    Route::get('stages/export', [StagesController::class, 'exportStages']);
+});

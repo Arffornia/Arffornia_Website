@@ -6,6 +6,9 @@
 @endsection
 
 @section('content')
+    <button onclick="testApiCall()">Test API</button>
+    <pre id="output"></pre>
+
     <div class="bg">
         <div class="info info-hidden">
             <div class="closeBtn">
@@ -77,6 +80,29 @@
 @endsection
 @section('script')
     <script>
+        function testApiCall() {
+            fetch("/api/stages/export", {
+                    method: 'GET',
+                    credentials: 'include',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(async response => {
+                    if (!response.ok) {
+                        throw new Error("Erreur HTTP : " + response.status);
+                    }
+                    const data = await response.json();
+                    document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(err => {
+                    console.error("Erreur lors du fetch :", err);
+                    document.getElementById("output").textContent = "Erreur : " + err.message;
+                });
+        }
+
+
         window.AppData = {
             stages: @json($stages),
             milestones: @json($milestones),
