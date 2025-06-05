@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Collection;
 
 
@@ -208,16 +209,17 @@ class UserController extends Controller
      */
     public function getAuthTokenBySession(Request $request)
     {
-        $user = auth()->user();
+        $user = $request->user();
 
         if (!$user) {
             return response()->json(['message' => 'Not authenticated'], 401);
         }
 
-        $token = $user->createToken('session', $user->getRoles())->plainTextToken;
+        $token = $user->createToken('api_token', $user->getRoles())->plainTextToken;
 
         return response()->json(['token' => $token]);
     }
+
 
     /**
      * Get auth token using a Microsoft access_token
@@ -226,7 +228,14 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function getAuthTokenByMSAuth(Request $request) {}
+    public function getAuthTokenByMSAuth(Request $request)
+    {
+        $request->validate([
+            'access_token' => 'required|string',
+        ]);
+
+        // Validate the access token and get Mojang user
+    }
 
     /**
      * Get auth token using special SVC account credentials
@@ -235,7 +244,25 @@ class UserController extends Controller
      *
      * @return JsonResponse
      */
-    public function getAuthTokenBySvcAuth(Request $request) {}
+    public function getAuthTokenBySvcAuth(Request $request)
+    {
+        $request->validate([
+            'svc_id' => 'required|string',
+            'secret' => 'required|string',
+        ]);
+
+        $user = User::where('uuid', $request->input('svc_id'))
+            ->where('role', 'like', '%svc%')
+            ->first();
+
+        if (!$user || !Hash::check($request->input('secret'), $user->password)) {
+            return response()->json(['message' => 'Invalid SVC credentials'], 401);
+        }
+
+        $token = $user->createToken('api_token', $user->getRoles())->plainTextToken;
+
+        return response()->json(['token' => $token]);
+    }
     /**
      * Get size best player by points
      *
