@@ -200,6 +200,43 @@ class UserController extends Controller
     }
 
     /**
+     * Get auth token using the current user session (laravel session)
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAuthTokenBySession(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Not authenticated'], 401);
+        }
+
+        $token = $user->createToken('session', $user->getRoles())->plainTextToken;
+
+        return response()->json(['token' => $token]);
+    }
+
+    /**
+     * Get auth token using a Microsoft access_token
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAuthTokenByMSAuth(Request $request) {}
+
+    /**
+     * Get auth token using special SVC account credentials
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAuthTokenBySvcAuth(Request $request) {}
+    /**
      * Get size best player by points
      *
      * @param int $size

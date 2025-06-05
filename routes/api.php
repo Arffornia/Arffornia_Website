@@ -27,6 +27,12 @@ Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJ
 Route::get('shop/newest/{size}', [ShopItemsController::class, 'newestJson']);
 Route::get('shop/sales/{size}', [ShopItemsController::class, 'salesJson']);
 
+// Get auth token routes:
+Route::get('/auth/token/session', [UserController::class, 'getAuthTokenBySession']);
+Route::get('/auth/token/ms', [UserController::class, 'getAuthTokenByMSAuth']);
+Route::get('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcAuth']);
+
+
 Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::get('stages/export', [StagesController::class, 'exportStages']);
 });
