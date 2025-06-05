@@ -27,6 +27,6 @@ Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJ
 Route::get('shop/newest/{size}', [ShopItemsController::class, 'newestJson']);
 Route::get('shop/sales/{size}', [ShopItemsController::class, 'salesJson']);
 
-Route::middleware(['auth:sanctum', 'ability:admin'])->group(function () {
+Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::get('stages/export', [StagesController::class, 'exportStages']);
 });

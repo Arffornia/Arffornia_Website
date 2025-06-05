@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\User;
@@ -6,7 +7,8 @@ use App\Models\Stage;
 use Illuminate\Support\Collection;
 
 
-class UserRepository {
+class UserRepository
+{
 
     /**
      * Get size best user by progress points
@@ -14,7 +16,8 @@ class UserRepository {
      * @param integer $size
      * @return Collection<User>
      */
-    public function getBestUsersByProgressPoints(int $size) {
+    public function getBestUsersByProgressPoints(int $size)
+    {
         return User::orderBy('progress_point', 'desc')->take($size)->get();
     }
 
@@ -24,7 +27,8 @@ class UserRepository {
      * @param string $username
      * @return user
      */
-    public function getUserByName($username) {
+    public function getUserByName($username)
+    {
         return User::where('name', $username)->first();
     }
 
@@ -34,7 +38,8 @@ class UserRepository {
      * @param int $uuid
      * @return User
      */
-    public function getUserByUuid($uuid) {
+    public function getUserByUuid($uuid)
+    {
         return User::where('uuid', $uuid)->first();
     }
 
@@ -44,11 +49,12 @@ class UserRepository {
      * @param integer $size
      * @return Collection<User>
      */
-    public function getTopVoters(int $size) {
+    public function getTopVoters(int $size)
+    {
         return User::withCount('votes')
-                        ->orderByDesc('votes_count')
-                        ->limit($size)
-                        ->get();
+            ->orderByDesc('votes_count')
+            ->limit($size)
+            ->get();
     }
 
     /**
@@ -57,10 +63,11 @@ class UserRepository {
      * @param integer $size
      * @return Collection<User>
      */
-    public function getTopUsersByPoint(int $size) {
+    public function getTopUsersByPoint(int $size)
+    {
         return User::orderByDesc('progress_point')
-                        ->limit($size)
-                        ->get();
+            ->limit($size)
+            ->get();
     }
 
     /**
@@ -70,7 +77,8 @@ class UserRepository {
      * @param string $uuid
      * @return User
      */
-    public function createUser(string $name, string $uuid) {
+    public function createUser(string $name, string $uuid)
+    {
         $startStageId = Stage::where('number', 1)->first()->id;
 
         $formFields['name'] = $name;
@@ -80,6 +88,7 @@ class UserRepository {
         $formFields['stage_id'] = $startStageId;
         $formFields['day_streak'] = 0;
         $formFields['grade'] = 'citizen';
+        $formFields['role'] = 'user';
 
         // Create User
         return User::create($formFields);

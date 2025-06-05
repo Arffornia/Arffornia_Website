@@ -39,10 +39,12 @@ Route::get('/login/connect', [UserController::class, 'msAuthCallback']);
 
 Route::get('/login', [UserController::class, 'loginView'])->name('login');
 
-Route::post('/profile/logout', [UserController::class, 'logoutUser']);
+Route::middleware(['auth', "anyRole:user"])->group(callback: function () {
+    Route::post('/profile/logout', [UserController::class, 'logoutUser']);
+});
 
 // Admin
-Route::middleware(['auth', "admin"])->group(function () {
+Route::middleware(['auth', "anyRole:admin"])->group(callback: function () {
     Route::get('/admin', [AdminPanelManager::class, 'adminPanelView'])->name("adminPanel");
 
     Route::get('/admin/launcherVersions', [AdminPanelManager::class, 'launcherVersionsView'])->name("launcherVersions");
