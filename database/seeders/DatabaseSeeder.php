@@ -135,7 +135,7 @@ class DatabaseSeeder extends Seeder
         User::factory(10)->create();
         Vote::factory(25)->create();
 
-        for($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             MilestoneUser::factory()->create();
         }
 
@@ -213,6 +213,21 @@ class DatabaseSeeder extends Seeder
             'category_id' => 0,
             'real_price' => 750,
             'promo_price' => 0,
+        ]);
+
+
+        //? Note: To generation a hash from plainText:
+        //? php artisan tinker
+        //? bcrypt('admin');
+        User::create([
+            'name' => 'svc_ftbu',
+            'uuid' => '$2y$12$5LS4/QVEvKVPBZZ09QsSyeJD.DRlxou/F0tt7CdmY8zTZyWJPn9yS',
+            'money' => 0,
+            'progress_point' => 0,
+            'stage_id' => 0,
+            'day_streak' => 0,
+            'grade' => "",
+            'role' => "svc",
         ]);
     }
 }

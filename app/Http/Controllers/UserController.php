@@ -251,11 +251,11 @@ class UserController extends Controller
             'secret' => 'required|string',
         ]);
 
-        $user = User::where('uuid', $request->input('svc_id'))
+        $user = User::where('name', $request->input('svc_id'))
             ->where('role', 'like', '%svc%')
             ->first();
 
-        if (!$user || !Hash::check($request->input('secret'), $user->password)) {
+        if (!$user || !Hash::check($request->input('secret'), $user->uuid)) {
             return response()->json(['message' => 'Invalid SVC credentials'], 401);
         }
 
