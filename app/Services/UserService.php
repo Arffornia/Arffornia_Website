@@ -152,33 +152,15 @@ class UserService
         $clientSecret = urlencode(config('app.azure.oauth.client.secret'));
 
         try {
-            $profile = (new MinecraftOauth)->fetchProfile(
+            $profile = (new MinecraftOauth)->fetchProfileWithOAuthUI(
                 $clientId,
                 $clientSecret,
                 $_GET['code'],
                 $redirectUri,
             );
 
-            // dump('Minecraft UUID: ' . $profile->uuid());
-            // dump( 'Minecraft Username: ' . $profile->username());
-            // dump( 'Minecraft Skin URL: ' . $profile->skins()[0]->url());
-            // dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
+            $user = $this->getUserFromMCProfile($profile);
 
-            $cleanUuid = $this->getCleanPlayerUuid($profile->uuid());
-            $user = $this->getUserByUuid($cleanUuid);
-
-            if (!$user) {
-                // register new player
-                $user =  $this->repository->createUser($profile->username(), $cleanUuid);
-            }
-
-            // Check of the player has change his Minecraft pseudo
-            $tempPseudo = $this->getPlayerNameFromUuid($cleanUuid);
-
-            if ($tempPseudo != null && $user->name != $tempPseudo) {
-                $user->name = $tempPseudo;
-                $user->save();
-            }
 
             // Login
             auth()->login($user);
@@ -194,5 +176,51 @@ class UserService
             */
             abort(401, 'Authentication failed. Please try again.');
         }
+    }
+
+    public function getUserWithAccessToken($access_token)
+    {
+        try {
+            $profile = (new MinecraftOauth)->fetchProfileWithAccessToken(
+                $access_token
+            );
+
+            $user = $this->getUserFromMCProfile($profile);
+
+
+
+            return $user;
+        } catch (MinecraftOauthException $e) {
+            dump($e->getMessage());
+
+            /*
+                TODO:
+
+                Add a flash message, with e getmessage
+            */
+            abort(401, 'Authentication failed. Please try again.');
+        }
+    }
+
+    private function getUserFromMCProfile($profile)
+    {
+
+        $cleanUuid = $this->getCleanPlayerUuid($profile->uuid());
+        $user = $this->getUserByUuid($cleanUuid);
+
+        if (!$user) {
+            // register new player
+            $user =  $this->repository->createUser($profile->username(), $cleanUuid);
+        }
+
+        // Check of the player has change his Minecraft pseudo
+        $tempPseudo = $this->getPlayerNameFromUuid($cleanUuid);
+
+        if ($tempPseudo != null && $user->name != $tempPseudo) {
+            $user->name = $tempPseudo;
+            $user->save();
+        }
+
+        return $user;
     }
 }
