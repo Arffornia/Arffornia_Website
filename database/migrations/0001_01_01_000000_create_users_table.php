@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->string("uuid");
-            $table->string("role")->nullable();
+            $table->string("role");
             $table->string("grade");
             $table->float("money");
             $table->unsignedBigInteger("progress_point");

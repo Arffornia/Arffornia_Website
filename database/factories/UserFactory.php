@@ -11,7 +11,7 @@ use App\Models\Stage;
  */
 class UserFactory extends Factory
 {
-     /**
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
@@ -27,6 +27,7 @@ class UserFactory extends Factory
             'progress_point' => random_int(0, 10000000),
             'stage_id' => $stageId,
             'day_streak' => 0,
+            'role' => 'user',
             'grade' => 'citizen',
             'remember_token' => Str::random(10),
         ];

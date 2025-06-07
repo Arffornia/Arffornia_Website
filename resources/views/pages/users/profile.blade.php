@@ -1,14 +1,14 @@
 @extends('layout')
 
 @section('extraHead')
-    <link rel="stylesheet" href="{{asset("css/pages/profile.css")}}">
+    <link rel="stylesheet" href="{{ asset('css/pages/profile.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/inputText/input01.css') }}">
 @endsection
 
 @section('content')
     <div class="standart-page">
         <div class="profile">
-            <img class="imgBG" src="{{ asset("images/screenshots1920x1080/old_spawn.png") }}" alt="">
+            <img class="imgBG" src="{{ asset('images/screenshots1920x1080/old_spawn.png') }}" alt="">
 
             <div class="skinContainer">
                 <div class="player-skin">

@@ -20,6 +20,15 @@ namespace App\Models{
  * @property int $in_prod
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereInProd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereUpdatedAt($value)
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage query()
@@ -43,6 +52,17 @@ namespace App\Models{
  * @property string $path
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereInProd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereVersion($value)
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion query()
@@ -80,6 +100,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereRewardProgressPoints($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereStageId($value)
  * @mixin \Eloquent
+ * @property int $x
+ * @property int $y
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereX($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereY($value)
  */
 	class Milestone extends \Eloquent {}
 }
@@ -96,6 +120,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereDescendantId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereMilestoneId($value)
  * @mixin \Eloquent
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereId($value)
  */
 	class MilestoneClosure extends \Eloquent {}
 }
@@ -119,6 +145,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUserId($value)
  * @mixin \Eloquent
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereId($value)
  */
 	class MilestoneUser extends \Eloquent {}
 }
@@ -162,6 +190,19 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserSale> $userSales
  * @property-read int|null $user_sales_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereImgUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePromoPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|ShopItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ShopItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ShopItem query()
@@ -235,11 +276,17 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereStageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
- * @mixin \Eloquent
  * @property string $uuid
  * @property string|null $role
  * @property string $grade
  * @property int $day_streak
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDayStreak($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGrade($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUuid($value)
+ * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
  * @method static \Illuminate\Database\Eloquent\Builder|User whereDayStreak($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereGrade($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRole($value)
@@ -257,6 +304,15 @@ namespace App\Models{
  * @property int $shop_item_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereShopItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereUserId($value)
+ * @mixin \Eloquent
  * @method static \Illuminate\Database\Eloquent\Builder|UserSale newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserSale newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserSale query()

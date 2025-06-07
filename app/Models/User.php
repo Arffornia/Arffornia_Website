@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -53,7 +54,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  */
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -68,6 +69,7 @@ class User extends Authenticatable
         'stage_id',
         'day_streak',
         'grade',
+        'role',
     ];
 
     /**
@@ -89,15 +91,56 @@ class User extends Authenticatable
         return [];
     }
 
-    public function getVoteCount() {
+    public function getVoteCount()
+    {
         return $this->votes()->count();
     }
 
-    public function votes() {
+    public function votes()
+    {
         return $this->hasMany(Vote::class);
     }
 
-    public function hasRole(string $role) : bool {
-        return $this->role == $role;
+    /**
+     * Get user's role as an array of roles.
+     *
+     * @return array<string>
+     */
+    public function getRoles(): array
+    {
+        return explode(',', $this->role);
+    }
+
+    /**
+     * Check if the user has a specific role.
+     *
+     * @param string $role
+     * @return bool
+     */
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles());
+    }
+
+    /**
+     * Check if the user has any of the specified roles.
+     *
+     * @param array<string> $rolesToCheck
+     * @return bool
+     */
+    public function hasAnyRole(array $rolesToCheck): bool
+    {
+        return !empty(array_intersect($this->getRoles(), $rolesToCheck));
+    }
+
+    /**
+     * Check if the user has all of the specified roles.
+     *
+     * @param array<string> $requiredRoles
+     * @return bool
+     */
+    public function hasAllRoles(array $requiredRoles): bool
+    {
+        return empty(array_diff($requiredRoles, $this->getRoles()));
     }
 }

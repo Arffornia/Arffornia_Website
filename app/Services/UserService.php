@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\User;
@@ -10,10 +11,12 @@ use Illuminate\Database\Eloquent\Collection;
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
-class UserService{
+class UserService
+{
     private UserRepository $repository;
 
-    public function __construct(UserRepository $repository) {
+    public function __construct(UserRepository $repository)
+    {
         $this->repository = $repository;
     }
 
@@ -28,7 +31,8 @@ class UserService{
      * @param string $uuid
      * @return string|null
      */
-    public function getPlayerNameFromUuid(string $uuid) {
+    public function getPlayerNameFromUuid(string $uuid)
+    {
         $url = 'https://api.mojang.com/user/profiles/' . $uuid . '/names';
         $response = Http::get($url);
 
@@ -49,8 +53,9 @@ class UserService{
      * @param string $uuid
      * @return string
      */
-    public function getCleanPlayerUuid(string $uuid) {
-        return str_replace('-','', $uuid);
+    public function getCleanPlayerUuid(string $uuid)
+    {
+        return str_replace('-', '', $uuid);
     }
 
     /**
@@ -59,7 +64,8 @@ class UserService{
      * @param int $size
      * @return Collection<User>
      */
-    public function getBestUsersByProgressPoints($size) {
+    public function getBestUsersByProgressPoints($size)
+    {
         return $this->repository->getBestUsersByProgressPoints($size);
     }
 
@@ -69,7 +75,8 @@ class UserService{
      * @param  string  $name
      * @return User
      */
-    public function getUserByName(string $name) {
+    public function getUserByName(string $name)
+    {
         return $this->repository->getUserByName($name);
     }
 
@@ -79,7 +86,8 @@ class UserService{
      * @param  string  $uuid
      * @return User
      */
-    public function getUserByUuid(string $uuid) {
+    public function getUserByUuid(string $uuid)
+    {
         return $this->repository->getUserByUuid($uuid);
     }
 
@@ -89,7 +97,8 @@ class UserService{
      * @param integer $size
      * @return Collection<User>
      */
-    public function getTopVoters(int $size) {
+    public function getTopVoters(int $size)
+    {
         $size = min(max(0, $size), 25);
         return $this->repository->getTopVoters($size);
     }
@@ -100,7 +109,8 @@ class UserService{
      * @param integer $size
      * @return Collection<User>
      */
-    public function getTopUsersByPoint(int $size) {
+    public function getTopUsersByPoint(int $size)
+    {
         $size = min(max(0, $size), 25);
         return $this->repository->getTopUsersByPoint($size);
     }
@@ -112,7 +122,8 @@ class UserService{
      * @param string $uuid
      * @return User
      */
-    public function createUser(string $name, string $uuid) {
+    public function createUser(string $name, string $uuid)
+    {
         return $this->repository->createUser($name, $uuid);
     }
 
@@ -121,67 +132,80 @@ class UserService{
      *
      * @return string
      */
-    public function getMsAuthRedirectUrl() {
+    public function getMsAuthRedirectUrl()
+    {
         $clientId = config('app.azure.oauth.client.id');
         $redirectUri = urlencode(config('app.azure.oauth.redirect_uri'));
 
         return "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
     }
 
+
     /**
-     * Get MS auth callback for user loging
+     * Get an User with MS OAuth UI Flow
      *
      * @return User
+     *
+     * @throws MinecraftOauthException
      */
-    public function getUserFromMsAuthCallback() {
+    public function getUserFromMsAuthCallback()
+    {
         $clientId = config('app.azure.oauth.client.id');
         $redirectUri = config('app.azure.oauth.redirect_uri');
         $clientSecret = urlencode(config('app.azure.oauth.client.secret'));
 
-        try {
-            $profile = (new MinecraftOauth)->fetchProfile(
-                $clientId,
-                $clientSecret,
-                $_GET['code'],
-                $redirectUri,
-            );
+        $profile = (new MinecraftOauth)->fetchProfileWithOAuthUI(
+            $clientId,
+            $clientSecret,
+            $_GET['code'],
+            $redirectUri,
+        );
 
-            // dump('Minecraft UUID: ' . $profile->uuid());
-            // dump( 'Minecraft Username: ' . $profile->username());
-            // dump( 'Minecraft Skin URL: ' . $profile->skins()[0]->url());
-            // dump( 'Minecraft Cape URL: ' . $profile->capes()[0]->url());
+        $user = $this->getUserFromMCProfile($profile);
 
-            $cleanUuid = $this->getCleanPlayerUuid($profile->uuid());
-            $user = $this->getUserByUuid($cleanUuid);
+        // Login
+        auth()->login($user);
 
-            if(!$user) {
-                // register new player
-                $user =  $this->repository->createUser($profile->username(), $cleanUuid);
-            }
-
-            // Check of the player has change his Minecraft pseudo
-            $tempPseudo = $this->getPlayerNameFromUuid($cleanUuid);
-
-            if($tempPseudo != null && $user->name != $tempPseudo) {
-                $user->name = $tempPseudo;
-                $user->save();
-            }
-
-            // Login
-            auth()->login($user);
-
-            return $user;
+        return $user;
+    }
 
 
-        } catch (MinecraftOauthException $e) {
-            dump($e->getMessage());
+    /**
+     * Get an User with a MS access token
+     *
+     * @param mixed $access_token
+     * @return User
+     *
+     * @throws MinecraftOauthException
+     */
+    public function getUserWithAccessToken($access_token)
+    {
+        $profile = (new MinecraftOauth)->fetchProfileWithAccessToken(
+            $access_token
+        );
 
-            /*
-                TODO:
+        return $this->getUserFromMCProfile($profile);
+    }
 
-                Add a flash message, with e getmessage
-            */
-            return null;
+    private function getUserFromMCProfile($profile)
+    {
+
+        $cleanUuid = $this->getCleanPlayerUuid($profile->uuid());
+        $user = $this->getUserByUuid($cleanUuid);
+
+        if (!$user) {
+            // register new player
+            $user =  $this->repository->createUser($profile->username(), $cleanUuid);
         }
+
+        // Check of the player has change his Minecraft pseudo
+        $tempPseudo = $this->getPlayerNameFromUuid($cleanUuid);
+
+        if ($tempPseudo != null && $user->name != $tempPseudo) {
+            $user->name = $tempPseudo;
+            $user->save();
+        }
+
+        return $user;
     }
 }

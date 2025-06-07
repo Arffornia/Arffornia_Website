@@ -29,8 +29,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 1,
             'reward_progress_points' => 20,
-            'is_root' => true,
             'icon_type' => 'tech',
+            'x' => 1,
+            'y' => 2,
         ]);
 
         Milestone::create([
@@ -38,8 +39,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 2,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'tech',
+            'x' => 3,
+            'y' => 1,
         ]);
 
         Milestone::create([
@@ -47,8 +49,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 3,
             'reward_progress_points' => 2000,
-            'is_root' => false,
             'icon_type' => 'tech',
+            'x' => 3,
+            'y' => 3,
         ]);
 
         Milestone::create([
@@ -56,8 +59,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 2,
             'reward_progress_points' => 20,
-            'is_root' => false,
             'icon_type' => 'pipe',
+            'x' => 1,
+            'y' => 7,
         ]);
 
         Milestone::create([
@@ -65,8 +69,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 3,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'pipe',
+            'x' => 3,
+            'y' => 6,
 
         ]);
 
@@ -75,8 +80,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of bota',
             'stage_id' => 1,
             'reward_progress_points' => 20,
-            'is_root' => true,
             'icon_type' => 'magic',
+            'x' => 3,
+            'y' => 8,
 
         ]);
 
@@ -85,8 +91,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of bota',
             'stage_id' => 2,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'magic',
+            'x' => 6,
+            'y' => 6,
 
         ]);
 
@@ -115,10 +122,20 @@ class DatabaseSeeder extends Seeder
             'descendant_id' => 7,
         ]);
 
+        MilestoneClosure::create([
+            'milestone_id' => 7,
+            'descendant_id' => 6,
+        ]);
+
+        MilestoneClosure::create([
+            'milestone_id' => 7,
+            'descendant_id' => 3,
+        ]);
+
         User::factory(10)->create();
         Vote::factory(25)->create();
 
-        for($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             MilestoneUser::factory()->create();
         }
 
@@ -196,6 +213,21 @@ class DatabaseSeeder extends Seeder
             'category_id' => 0,
             'real_price' => 750,
             'promo_price' => 0,
+        ]);
+
+
+        //? Note: To generation a hash from plainText:
+        //? php artisan tinker
+        //? bcrypt('admin');
+        User::create([
+            'name' => 'svc_ftbu',
+            'uuid' => '$2y$12$5LS4/QVEvKVPBZZ09QsSyeJD.DRlxou/F0tt7CdmY8zTZyWJPn9yS',
+            'money' => 0,
+            'progress_point' => 0,
+            'stage_id' => 0,
+            'day_streak' => 0,
+            'grade' => "",
+            'role' => "svc",
         ]);
     }
 }
