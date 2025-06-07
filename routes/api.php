@@ -35,4 +35,5 @@ Route::post('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcAuth'])
 
 Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('stages/export', [StagesController::class, 'exportStages']);
+    // TODO export stage of KubeJS ?!
 });

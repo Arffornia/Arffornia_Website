@@ -140,10 +140,13 @@ class UserService
         return "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
     }
 
+
     /**
-     * Get MS auth callback for user loging
+     * Get an User with MS OAuth UI Flow
      *
      * @return User
+     *
+     * @throws MinecraftOauthException
      */
     public function getUserFromMsAuthCallback()
     {
@@ -151,55 +154,37 @@ class UserService
         $redirectUri = config('app.azure.oauth.redirect_uri');
         $clientSecret = urlencode(config('app.azure.oauth.client.secret'));
 
-        try {
-            $profile = (new MinecraftOauth)->fetchProfileWithOAuthUI(
-                $clientId,
-                $clientSecret,
-                $_GET['code'],
-                $redirectUri,
-            );
+        $profile = (new MinecraftOauth)->fetchProfileWithOAuthUI(
+            $clientId,
+            $clientSecret,
+            $_GET['code'],
+            $redirectUri,
+        );
 
-            $user = $this->getUserFromMCProfile($profile);
+        $user = $this->getUserFromMCProfile($profile);
 
+        // Login
+        auth()->login($user);
 
-            // Login
-            auth()->login($user);
-
-            return $user;
-        } catch (MinecraftOauthException $e) {
-            dump($e->getMessage());
-
-            /*
-                TODO:
-
-                Add a flash message, with e getmessage
-            */
-            abort(401, 'Authentication failed. Please try again.');
-        }
+        return $user;
     }
 
+
+    /**
+     * Get an User with a MS access token
+     *
+     * @param mixed $access_token
+     * @return User
+     *
+     * @throws MinecraftOauthException
+     */
     public function getUserWithAccessToken($access_token)
     {
-        try {
-            $profile = (new MinecraftOauth)->fetchProfileWithAccessToken(
-                $access_token
-            );
+        $profile = (new MinecraftOauth)->fetchProfileWithAccessToken(
+            $access_token
+        );
 
-            $user = $this->getUserFromMCProfile($profile);
-
-
-
-            return $user;
-        } catch (MinecraftOauthException $e) {
-            dump($e->getMessage());
-
-            /*
-                TODO:
-
-                Add a flash message, with e getmessage
-            */
-            abort(401, 'Authentication failed. Please try again.');
-        }
+        return $this->getUserFromMCProfile($profile);
     }
 
     private function getUserFromMCProfile($profile)
