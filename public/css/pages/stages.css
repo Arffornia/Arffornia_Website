@@ -210,3 +210,44 @@ footer {
 .export-btn:hover {
     transform: scale(1.05);
 }
+
+.info .admin-actions {
+    margin-top: 20px;
+    display: flex;
+    /* Changed from none to flex by JS if admin */
+    gap: 10px;
+}
+
+.info .admin-actions button {
+    padding: 8px 12px;
+    background-color: #ff7300;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.info .admin-actions button#cancelBtn {
+    background-color: #555;
+}
+
+.info input.title-input,
+.info input.points-input,
+.info textarea.description-input {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+.info textarea.description-input {
+    min-height: 80px;
+    resize: vertical;
+}

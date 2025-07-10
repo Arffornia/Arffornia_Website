@@ -124,11 +124,10 @@ class StagesController extends Controller
      * @param int $nodeId
      * @return JsonResponse
      */
-    public function getMilestoneById(Milestone $milestone)
+    public function getMilestoneById(int $nodeId)
     {
-        // Items relation can be loaded here if needed in the future
-        // $milestone->load('items');
-        return response()->json($milestone);
+
+        return response()->json($this->stagesService->getMilestoneById($nodeId));
     }
 
     /**
@@ -144,7 +143,7 @@ class StagesController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'reward_progress_points' => 'required|integer|min:0',
-            'icon_type' => 'required|string|in:tech,pipe,magic,default',
+            // 'icon_type' => 'required|string|in:tech,pipe,magic,default',
         ]);
 
         if ($validator->fails()) {

@@ -5,7 +5,7 @@ const infoTitle = milestoneInfo.querySelector("#title");
 const infoDescription = milestoneInfo.querySelector("#description");
 const infoStageNumber = milestoneInfo.querySelector("#stageNumber");
 const infoPoints = milestoneInfo.querySelector("#reward_progress_points");
-const infoIcon = milestoneInfo.querySelector(".icon");
+const infoIcon = milestoneInfo.querySelector("#iconContent");
 const infoCloseBtnDiv = milestoneInfo.querySelector(".closeBtn")
 
 import { getIconSvgByType } from "./mod_icons.js";
@@ -14,8 +14,10 @@ const { milestones, milestone_closure, isAdmin, csrfToken, baseUrl } = window.Ap
 
 var currentNodeId = null;
 
-// Manage cnavas mouvement (drag)
-document.addEventListener("DOMContentLoaded", function () {
+/**
+ * Sets up all event listeners for the page.
+ */
+function setupEventListeners() {
     var dragging = false;
     var offsetX, offsetY;
 
@@ -67,7 +69,19 @@ document.addEventListener("DOMContentLoaded", function () {
             currentNodeId = null;
         }
     });
-});
+
+    window.addEventListener("resize", () => {
+        resizeCanvasToFitViewport();
+    });
+
+    if (isAdmin) {
+        exportBtn.addEventListener('click', handleExport);
+        document.querySelector('.admin-actions').style.display = 'flex';
+        editBtn.addEventListener('click', () => setEditMode(true));
+        cancelBtn.addEventListener('click', () => setEditMode(false));
+        saveBtn.addEventListener('click', handleSave);
+    }
+}
 
 // Hide the milestone info box
 function hideMilestoneInfo() {
@@ -77,44 +91,43 @@ function hideMilestoneInfo() {
 // Show the milestone info box with the given milestone data
 function showNilestonesInfo(milestone) {
     milestoneInfo.classList.add("info-show");
-
     const loader = document.getElementById("info-loader");
     const content = document.getElementById("info-content");
 
-    // Show skeleton, hide real content
     loader.style.display = "block";
     content.style.display = "none";
 
-    fetch(`${window.location.origin}/api/milestone/get/${milestone.id}`)
+    fetch(`${baseUrl}/api/milestone/get/${milestone.id}`)
         .then(response => {
             if (!response.ok) throw new Error("Erreur API");
             return response.json();
         })
-        .then(data => { // Simulate a delay for the loader (dev mode)
+        .then(data => {
             return new Promise(resolve => {
                 setTimeout(() => resolve(data), 1000 * 0.3);
             });
         })
         .then(data => {
-            infoTitle.textContent = data.name;
+            currentMilestoneData = data;
+
+            milestoneInfo.querySelector('#milestone-title').textContent = data.name;
             infoDescription.textContent = data.description;
             infoStageNumber.textContent = data.stage_id;
             infoPoints.textContent = data.reward_progress_points;
             infoIcon.innerHTML = getIconSvgByType(data.icon_type);
-
-            // TODO: Add fetch required items
         })
         .catch(err => {
             console.error("Erreur lors du fetch :", err);
-            infoTitle.textContent = "Erreur de chargement";
-            infoDescription.textContent = "-";
-            infoStageNumber.textContent = "-";
-            infoPoints.textContent = "-";
-            infoIcon.innerHTML = "";
+            milestoneInfo.querySelector('#milestone-title').textContent = "Erreur de chargement";
         })
         .finally(() => {
             loader.style.display = "none";
             content.style.display = "block";
+            if (isAdmin) {
+                editBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+            }
         });
 }
 
@@ -216,10 +229,6 @@ function buildTrees() {
     centerCanvas();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    buildTrees();
-});
-
 // Resize the canvas to fit the canvas to the viewport
 function resizeCanvasToFitViewport() {
     const canvas = document.querySelector(".canvas");
@@ -257,18 +266,8 @@ function centerCanvas() {
     // canvas.style.top = `${Math.min(0, top)}px`;
 }
 
-window.addEventListener("resize", () => {
-    resizeCanvasToFitViewport();
-});
-
 const exportBtn = document.getElementById('exportStagesBtn');
 let apiToken = null;
-
-document.addEventListener("DOMContentLoaded", function () {
-    if (isAdmin) {
-        exportBtn.addEventListener('click', handleExport);
-    }
-});
 
 async function getApiToken() {
     if (apiToken) return apiToken;
@@ -312,4 +311,72 @@ async function handleExport() {
         });
 }
 
+let currentMilestoneData = null;
+let isEditing = false;
 
+const editBtn = document.getElementById('editBtn');
+const saveBtn = document.getElementById('saveBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+
+function setEditMode(editing) {
+    isEditing = editing;
+    const titleContainer = milestoneInfo.querySelector('#milestone-title');
+    const descriptionContainer = milestoneInfo.querySelector('#description');
+    const pointsContainer = milestoneInfo.querySelector('#reward_progress_points');
+
+    if (editing) {
+        titleContainer.innerHTML = `<input type="text" class="title-input" value="${currentMilestoneData.name}">`;
+        descriptionContainer.innerHTML = `<textarea class="description-input">${currentMilestoneData.description}</textarea>`;
+        pointsContainer.innerHTML = `<input type="number" class="points-input" value="${currentMilestoneData.reward_progress_points}">`;
+
+        editBtn.style.display = 'none';
+        saveBtn.style.display = 'inline-block';
+        cancelBtn.style.display = 'inline-block';
+    } else {
+        titleContainer.innerHTML = currentMilestoneData.name;
+        descriptionContainer.innerHTML = currentMilestoneData.description;
+        pointsContainer.innerHTML = currentMilestoneData.reward_progress_points;
+
+        editBtn.style.display = 'inline-block';
+        saveBtn.style.display = 'none';
+        cancelBtn.style.display = 'none';
+    }
+}
+
+// Sauvegarde les modifications
+async function handleSave() {
+    const token = await getApiToken();
+    if (!token) return;
+
+    const updatedData = {
+        name: milestoneInfo.querySelector('.title-input').value,
+        description: milestoneInfo.querySelector('.description-input').value,
+        reward_progress_points: parseInt(milestoneInfo.querySelector('.points-input').value, 10),
+    };
+
+    fetch(`${baseUrl}/api/milestones/${currentMilestoneData.id}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify(updatedData)
+    })
+        .then(res => {
+            if (!res.ok) return Promise.reject('Save failed');
+            return res.json();
+        })
+        .then(savedData => {
+            currentMilestoneData = savedData;
+            setEditMode(false);
+        })
+        .catch(error => console.error('Save Error:', error));
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    setupEventListeners();
+    buildTrees();
+});
