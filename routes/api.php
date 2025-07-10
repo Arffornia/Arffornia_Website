@@ -28,11 +28,12 @@ Route::get('shop/newest/{size}', [ShopItemsController::class, 'newestJson']);
 Route::get('shop/sales/{size}', [ShopItemsController::class, 'salesJson']);
 
 // Get auth token routes:
-Route::post('/auth/token/session', [UserController::class, 'getAuthTokenBySession']);
+Route::post('/auth/token/session', [UserController::class, 'getAuthTokenBySession'])->middleware('auth:sanctum');;
 Route::post('/auth/token/ms', [UserController::class, 'getAuthTokenByMSAuth']);
 Route::post('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcAuth']);
 
 
 Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('stages/export', [StagesController::class, 'exportStages']);
+    Route::put('milestones/{milestone}', [StagesController::class, 'updateMilestone']);
 });

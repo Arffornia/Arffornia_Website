@@ -192,3 +192,21 @@ footer {
 .info .itemsContainer {
     padding-top: 3%;
 }
+
+.export-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 999;
+    transition: transform 0.3s ease;
+}
+
+.export-btn:hover {
+    transform: scale(1.05);
+}

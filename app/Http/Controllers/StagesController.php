@@ -10,6 +10,8 @@ use App\Models\MilestoneClosure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 use function PHPSTORM_META\map;
 
@@ -32,6 +34,8 @@ class StagesController extends Controller
      */
     private function getStagesInfo()
     {
+        $isAdmin = auth()->check() && auth()->user()->hasRole('admin');
+
         return [
             'stages' => Stage::all()->map(function ($stage) {
                 return [
@@ -49,8 +53,10 @@ class StagesController extends Controller
                 ];
             }),
             'milestone_closure' => MilestoneClosure::all(),
+            'isAdmin' => $isAdmin,
         ];
     }
+
 
     /**
      * Get all stages information (export)
@@ -76,6 +82,7 @@ class StagesController extends Controller
     {
         $user = $this->userService->getUserByUuid($playerUuid);
         $playerProgress = $this->stagesService->getMilestoneByUsername($user);
+        $isAdmin = auth()->check() && auth()->user()->hasRole('admin');
 
         if ($user) {
             return [
@@ -83,12 +90,12 @@ class StagesController extends Controller
                 'milestones' =>  Milestone::all(),
                 'milestone_closure' => MilestoneClosure::all(),
                 'playerProgress' => $playerProgress,
+                'isAdmin' => $isAdmin,
             ];
         }
 
         abort(404, 'Username not found');
     }
-
     /**
      * Get all stages information as JSON
      *
@@ -117,15 +124,36 @@ class StagesController extends Controller
      * @param int $nodeId
      * @return JsonResponse
      */
-    public function getMilestoneById($milestoneId)
+    public function getMilestoneById(Milestone $milestone)
     {
-        $Milestone = $this->stagesService->getMilestoneById($milestoneId);
+        // Items relation can be loaded here if needed in the future
+        // $milestone->load('items');
+        return response()->json($milestone);
+    }
 
-        if ($Milestone) {
-            return response()->json($Milestone);
+    /**
+     * Update a milestone
+     *
+     * @param Request $request
+     * @param Milestone $milestone
+     * @return JsonResponse
+     */
+    public function updateMilestone(Request $request, Milestone $milestone)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'reward_progress_points' => 'required|integer|min:0',
+            'icon_type' => 'required|string|in:tech,pipe,magic,default',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        return response()->json(['error' => 'Milestone not found'], Response::HTTP_NOT_FOUND);
+        $milestone->update($validator->validated());
+
+        return response()->json($milestone);
     }
 
     /**

@@ -187,8 +187,6 @@ class UserService
 
             $user = $this->getUserFromMCProfile($profile);
 
-
-
             return $user;
         } catch (MinecraftOauthException $e) {
             dump($e->getMessage());

@@ -212,14 +212,13 @@ class UserController extends Controller
         $user = $request->user();
 
         if (!$user) {
-            return response()->json(['message' => 'Not authenticated'], 401);
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        $token = $user->createToken('api_token', $user->getRoles())->plainTextToken;
+        $token = $user->createToken('api-token', $user->getRoles())->plainTextToken;
 
         return response()->json(['token' => $token]);
     }
-
 
     /**
      * Get auth token using a Microsoft access_token
@@ -259,7 +258,7 @@ class UserController extends Controller
             return response()->json(['message' => 'Invalid SVC credentials'], 401);
         }
 
-        $token = $user->createToken('api_token', $user->getRoles())->plainTextToken;
+        $token = $user->createToken('api-token', $user->getRoles())->plainTextToken;
 
         return response()->json(['token' => $token]);
     }

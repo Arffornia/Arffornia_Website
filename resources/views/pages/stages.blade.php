@@ -6,9 +6,6 @@
 @endsection
 
 @section('content')
-    <button onclick="testApiCall()">Test API</button>
-    <pre id="output"></pre>
-
     <div class="bg">
         <div class="info info-hidden">
             <div class="closeBtn">
@@ -75,38 +72,23 @@
                 </div>
             </div>
         </div>
+
+        @if ($isAdmin ?? false)
+            <button id="exportStagesBtn" class="export-btn">Export Stages</button>
+        @endif
+
         <div class="canvas"></div>
     </div>
 @endsection
 @section('script')
     <script>
-        function testApiCall() {
-            fetch("/api/stages/export", {
-                    method: 'GET',
-                    credentials: 'include',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(async response => {
-                    if (!response.ok) {
-                        throw new Error("Erreur HTTP : " + response.status);
-                    }
-                    const data = await response.json();
-                    document.getElementById("output").textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(err => {
-                    console.error("Erreur lors du fetch :", err);
-                    document.getElementById("output").textContent = "Erreur : " + err.message;
-                });
-        }
-
-
         window.AppData = {
             stages: @json($stages),
             milestones: @json($milestones),
             milestone_closure: @json($milestone_closure),
+            isAdmin: @json($isAdmin ?? false),
+            csrfToken: "{{ csrf_token() }}",
+            baseUrl: "{{ url('/') }}"
         };
     </script>
 

@@ -23,6 +23,7 @@
                     <p> <span class="sectionTitle">Stages :</span> {{ $stage_number }}</p>
                     <p> <span class="sectionTitle">Progress points :</span> {{ $user->progress_point }} </p>
                     <p> <span class="sectionTitle">Account created date :</span> {{ $user->created_at }}</p>
+                    <p> <span class="sectionTitle">User Roles :</span> {{ implode(', ', $user->getRoles()) }}</p>
 
                     <p class="lastConnexion">
                         <span class="sectionTitle">Last connexion :</span>

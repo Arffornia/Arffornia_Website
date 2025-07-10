@@ -10,7 +10,7 @@ const infoCloseBtnDiv = milestoneInfo.querySelector(".closeBtn")
 
 import { getIconSvgByType } from "./mod_icons.js";
 
-const { milestones, milestone_closure } = window.AppData;
+const { milestones, milestone_closure, isAdmin, csrfToken, baseUrl } = window.AppData;
 
 var currentNodeId = null;
 
@@ -85,14 +85,14 @@ function showNilestonesInfo(milestone) {
     loader.style.display = "block";
     content.style.display = "none";
 
-    fetch(`http://localhost:8080/api/milestone/get/${milestone.id}`)
+    fetch(`${window.location.origin}/api/milestone/get/${milestone.id}`)
         .then(response => {
             if (!response.ok) throw new Error("Erreur API");
             return response.json();
         })
         .then(data => { // Simulate a delay for the loader (dev mode)
             return new Promise(resolve => {
-                setTimeout(() => resolve(data), 1000 * 1);
+                setTimeout(() => resolve(data), 1000 * 0.3);
             });
         })
         .then(data => {
@@ -260,4 +260,56 @@ function centerCanvas() {
 window.addEventListener("resize", () => {
     resizeCanvasToFitViewport();
 });
+
+const exportBtn = document.getElementById('exportStagesBtn');
+let apiToken = null;
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (isAdmin) {
+        exportBtn.addEventListener('click', handleExport);
+    }
+});
+
+async function getApiToken() {
+    if (apiToken) return apiToken;
+    try {
+        const response = await fetch(`${baseUrl}/api/auth/token/session`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        });
+        if (!response.ok) throw new Error('Token fetch failed');
+        const data = await response.json();
+        apiToken = data.token;
+        return apiToken;
+    } catch (error) {
+        console.error("Token Error:", error);
+        alert("Authentication Error. Please refresh.");
+        return null;
+    }
+}
+
+async function handleExport() {
+    const token = await getApiToken();
+    if (!token) return;
+    fetch(`${baseUrl}/api/stages/export`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        }
+    })
+        .then(res => res.json())
+        .then(data => {
+            const blob = new Blob([ JSON.stringify(data, null, 2) ], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'stages-export.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+}
+
 

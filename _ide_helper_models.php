@@ -29,14 +29,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage wherePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereUpdatedAt($value)
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage query()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage whereInProd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage whereUpdatedAt($value)
  */
 	class LauncherImage extends \Eloquent {}
 }
@@ -63,16 +55,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereVersion($value)
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion query()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereInProd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereVersion($value)
  */
 	class LauncherVersion extends \Eloquent {}
 }
@@ -102,8 +84,8 @@ namespace App\Models{
  * @mixin \Eloquent
  * @property int $x
  * @property int $y
- * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereX($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereY($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereX($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereY($value)
  */
 	class Milestone extends \Eloquent {}
 }
@@ -121,7 +103,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereMilestoneId($value)
  * @mixin \Eloquent
  * @property int $id
- * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneClosure whereId($value)
  */
 	class MilestoneClosure extends \Eloquent {}
 }
@@ -146,7 +128,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUserId($value)
  * @mixin \Eloquent
  * @property int $id
- * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUser whereId($value)
  */
 	class MilestoneUser extends \Eloquent {}
 }
@@ -203,18 +185,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem query()
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereCategoryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereImgUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem wherePromoPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereRealPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereUpdatedAt($value)
  */
 	class ShopItem extends \Eloquent {}
 }
@@ -287,10 +257,6 @@ namespace App\Models{
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
- * @method static \Illuminate\Database\Eloquent\Builder|User whereDayStreak($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereGrade($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereRole($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereUuid($value)
  */
 	class User extends \Eloquent {}
 }
@@ -313,14 +279,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereUserId($value)
  * @mixin \Eloquent
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale query()
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereShopItemId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereUserId($value)
  */
 	class UserSale extends \Eloquent {}
 }
