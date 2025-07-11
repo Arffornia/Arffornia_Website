@@ -36,4 +36,10 @@ Route::post('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcAuth'])
 Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('stages/export', [StagesController::class, 'exportStages']);
     Route::put('milestones/{milestone}', [StagesController::class, 'updateMilestone']);
+
+    Route::post('milestones', [StagesController::class, 'storeMilestone']);
+    Route::delete('milestones/{milestone}', [StagesController::class, 'destroyMilestone']);
+
+    Route::post('milestone-closures', [StagesController::class, 'storeLink']);
+    Route::delete('milestone-closures', [StagesController::class, 'destroyLink']);
 });

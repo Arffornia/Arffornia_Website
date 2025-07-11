@@ -37,10 +37,10 @@ class Milestone extends Model
     protected $fillable = [
         'name',
         'description',
-        // 'stage_id',
+        'stage_id',
         'reward_progress_points',
-        // 'icon_type',
-        // 'x',
-        // 'y',
+        'icon_type',
+        'x',
+        'y',
     ];
 }

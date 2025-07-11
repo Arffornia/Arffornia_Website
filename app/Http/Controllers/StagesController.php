@@ -175,4 +175,101 @@ class StagesController extends Controller
     {
         return view('pages.stages', $this->playerStagesInfo($playerUuid));
     }
+
+    /**
+     * Store a new milestone.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function storeMilestone(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'stage_id' => 'required|integer|exists:stages,id',
+            'icon_type' => 'required|string|in:tech,pipe,magic,default',
+            'x' => 'required|integer',
+            'y' => 'required|integer',
+            'reward_progress_points' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $milestone = $this->stagesService->createMilestone($validator->validated());
+
+        return response()->json($milestone, Response::HTTP_CREATED);
+    }
+
+    /**
+     * Delete a milestone.
+     *
+     * @param Milestone $milestone
+     * @return JsonResponse
+     */
+    public function destroyMilestone(Milestone $milestone): JsonResponse
+    {
+        $this->stagesService->deleteMilestone($milestone->id);
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Store a new milestone link.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function storeLink(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'source_id' => 'required|integer|exists:milestones,id',
+            'target_id' => 'required|integer|exists:milestones,id|different:source_id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $link = $this->stagesService->createLink(
+            $validator->validated()['source_id'],
+            $validator->validated()['target_id']
+        );
+
+        if (!$link) {
+            return response()->json(['message' => 'Link already exists.'], Response::HTTP_CONFLICT);
+        }
+
+        return response()->json($link, Response::HTTP_CREATED);
+    }
+
+    /**
+     * Delete a milestone link.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function destroyLink(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'source_id' => 'required|integer|exists:milestones,id',
+            'target_id' => 'required|integer|exists:milestones,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $deleted = $this->stagesService->deleteLink(
+            $validator->validated()['source_id'],
+            $validator->validated()['target_id']
+        );
+
+        if (!$deleted) {
+            return response()->json(['message' => 'Link not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
 }

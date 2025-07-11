@@ -108,6 +108,16 @@ footer {
     stroke-width: 5px;
 }
 
+.link-path {
+    transition: stroke 0.2s ease-in-out, stroke-width 0.2s ease-in-out;
+}
+
+.canvas.unlink-mode .link-path:hover {
+    stroke: #e74c3c;
+    stroke-width: 8px;
+    cursor: not-allowed;
+}
+
 
 /*
     Info Display
@@ -250,4 +260,80 @@ footer {
 .info textarea.description-input {
     min-height: 80px;
     resize: vertical;
+}
+
+/*
+Admin Panel & Controls
+*/
+.admin-panel {
+    font-family: Montserrat, sans-serif;
+    font-weight: 500;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #2a2a2e;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.admin-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-controls p {
+    margin: 0;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.admin-mode-btn {
+    padding: 5px 10px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.admin-mode-btn:hover {
+    background-color: #555;
+    transform: translateY(-1px);
+}
+
+.admin-mode-btn.active {
+    background-color: #ff7300;
+    font-weight: bold;
+}
+
+.canvas.add-mode {
+    cursor: crosshair;
+}
+
+.canvas.delete-mode .node:hover {
+    cursor: not-allowed;
+}
+
+.canvas.link-mode .node:hover {
+    cursor: pointer;
+}
+
+.canvas.unlink-mode .node:hover {
+    cursor: pointer;
+}
+
+.node.selected {
+    border-color: #3498db;
+    box-shadow: 0 0 15px #3498db, 0 0 25px rgba(52, 152, 219, 0.5) inset;
+    transform: scale(1.1);
 }

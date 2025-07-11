@@ -69,7 +69,17 @@
         </div>
 
         @if ($isAdmin ?? false)
-            <button id="exportStagesBtn" class="export-btn">Export Stages</button>
+            <div class="admin-panel">
+                <button id="exportStagesBtn" class="export-btn">Export Stages</button>
+                <div class="admin-controls">
+                    <p>Mode:</p>
+                    <button class="admin-mode-btn active" data-mode="view">View</button>
+                    <button class="admin-mode-btn" data-mode="add">Add</button>
+                    <button class="admin-mode-btn" data-mode="delete">Delete</button>
+                    <button class="admin-mode-btn" data-mode="link">Link</button>
+                    <button class="admin-mode-btn" data-mode="unlink">Unlink</button>
+                </div>
+            </div>
         @endif
 
         <div class="canvas"></div>
