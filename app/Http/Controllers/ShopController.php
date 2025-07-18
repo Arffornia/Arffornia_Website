@@ -19,12 +19,15 @@ class ShopController extends Controller
      *
      * @return View
      */
-    public function shopView() {
-        return view('pages.shop',
+    public function shopView()
+    {
+        return view(
+            'pages.shop',
             [
-                'newestItems' => $this->shopItemsService->getNewest(3),
-                'saleItems' => $this->shopItemsService->getDiscounts(3),
-                'bestSellerItems' => $this->shopItemsService->getBestSellers(3),
-            ]);
+                'newestItems' => $this->shopItemsService->getNewest(6),
+                'saleItems' => $this->shopItemsService->getDiscounts(6),
+                'bestSellerItems' => $this->shopItemsService->getBestSellers(6),
+            ]
+        );
     }
 }

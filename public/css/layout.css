@@ -55,7 +55,7 @@ a {
     width: 45px;
     border-radius: 50%;
     background-color: darkgray;
-    border:3px solid #000000;
+    border: 3px solid #000000;
 }
 
 /*
@@ -101,12 +101,15 @@ a {
     0% {
         top: -100px;
     }
+
     16.67% {
         top: 0;
     }
+
     83.33% {
         top: 0;
     }
+
     100% {
         top: -100px;
     }

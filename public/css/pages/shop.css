@@ -1,8 +1,41 @@
+body {
+    background-image: url('../../images/screenshots1920x1080/old_spawn.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    flex-shrink: 0;
+}
+
+.shop-wrapper {
+    flex: 1 0 auto;
+    overflow-y: auto;
+}
+
+footer {
+    flex-shrink: 0;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+header .contentContainer a {
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
 .shop {
     display: flex;
+    flex-direction: column;
     padding-left: 5%;
-    position: absolute;
-    top: 75%;
+    padding-right: 5%;
+    padding-top: 100px;
+    max-width: 35%;
+    font-family: Montserrat, sans-serif;
 }
 
 .shop-item {
@@ -32,13 +65,7 @@
     font-size: 135%;
     font-weight: 730;
     margin: 0;
-
     white-space: nowrap;
-    overflow: hidden;
-}
-
-.section-title:nth-of-type(n + 2) {
-    margin-top: 75px;
 }
 
 .item-price {
@@ -49,7 +76,7 @@
 }
 
 .item-price-sale {
-    color: #261d31;
+    color: #a0a0a0;
     text-decoration: line-through;
     text-decoration-color: #ff0000;
     text-decoration-thickness: 3px;
@@ -57,27 +84,28 @@
 
 .item-icon {
     max-width: 90px;
+    height: 90px;
+    object-fit: contain;
 }
 
 .items-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 25px;
+    margin-bottom: 75px;
 }
 
 .item-container {
     display: flex;
     flex-direction: column;
-    background: linear-gradient(
-        135deg,
-        rgba(33, 33, 33, 0.737) 0%,
-        rgba(29, 29, 29, 0.236) 100%
-    );
+    background: linear-gradient(135deg,
+            rgba(33, 33, 33, 0.737) 0%,
+            rgba(29, 29, 29, 0.236) 100%);
     box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
         rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
     backdrop-filter: blur(4px);
     border-radius: 15px;
     border: 2px solid #ff7300;
-
     padding: 15px;
     text-align: center;
     align-items: center;
