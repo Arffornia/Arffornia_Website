@@ -83,7 +83,7 @@ class UserRepository
 
         $formFields['name'] = $name;
         $formFields['uuid'] = $uuid;
-        $formFields['money'] = 0;
+        $formFields['money'] = 10000; // TODO Remove on prod (only for testing purpose !!)
         $formFields['progress_point'] = 0;
         $formFields['stage_id'] = $startStageId;
         $formFields['day_streak'] = 0;

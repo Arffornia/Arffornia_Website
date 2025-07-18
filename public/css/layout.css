@@ -123,3 +123,27 @@ a {
     font-weight: 500;
     padding: 10px;
 }
+
+.dynamic-flash-message {
+    position: fixed;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+    z-index: 9999;
+    background-color: #27ae60;
+    transition: top 0.5s ease-in-out;
+}
+
+.dynamic-flash-message.error {
+    background-color: #c0392b;
+}
+
+.dynamic-flash-message .text {
+    font-family: Montserrat, sans-serif;
+    text-align: center;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 15px 25px;
+}

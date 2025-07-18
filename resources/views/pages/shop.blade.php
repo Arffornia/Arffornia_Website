@@ -2,56 +2,95 @@
 
 @section('extraHead')
     <link rel="stylesheet" href="{{ asset('css/pages/shop.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/skeleton.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section('content')
     <div class="shop-wrapper">
-        <div class="shop">
-            <div class="shop-section">
-                <p class="section-title">Arrivals: </p>
-                <div class="items-container">
-                    @foreach ($newestItems as $item)
-                        <a href="{{ $item->img_url }}" class="shop-item" title="See on Website">
-                            <div class="item-container">
-                                <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
-                                <p class="item-title">{{ $item->name }}</p>
-                                <p class="item-price">{{ $item->real_price }}</p>
+        <div class="shop-content-container">
+
+            <div class="shop">
+
+                <div class="shop-section">
+                    <p class="section-title">Arrivals: </p>
+                    <div class="items-container">
+                        @foreach ($newestItems as $item)
+                            <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
+                                <div class="item-container">
+                                    <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
+                                    <p class="item-title">{{ $item->name }}</p>
+                                    <p class="item-price">{{ $item->real_price }}</p>
+                                </div>
                             </div>
-                        </a>
-                    @endforeach
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="shop-section">
+                    <p class="section-title">This Week's Deals: </p>
+                    <div class="items-container">
+                        @foreach ($saleItems as $item)
+                            <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
+                                <div class="item-container">
+                                    <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
+                                    <p class="item-title">{{ $item->name }}</p>
+                                    <p class="item-price">
+                                        <span class="item-price-sale">
+                                            {{ $item->real_price }}
+                                        </span>
+                                        {{ $item->promo_price }}
+                                    </p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="shop-section">
+                    <p class="section-title">Best Sellers: </p>
+                    <div class="items-container">
+                        @foreach ($bestSellerItems as $item)
+                            <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
+                                <div class="item-container">
+                                    <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
+                                    <p class="item-title">{{ $item->name }}</p>
+                                    <p class="item-price">{{ $item->real_price }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
-            <div class="shop-section">
-                <p class="section-title">This Week's Deals: </p>
-                <div class="items-container">
-                    @foreach ($saleItems as $item)
-                        <a href="{{ $item->img_url }}" class="shop-item" title="See on Website">
-                            <div class="item-container">
-                                <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
-                                <p class="item-title">{{ $item->name }}</p>
-                                <p class="item-price">
-                                    <span class="item-price-sale">
-                                        {{ $item->real_price }}
-                                    </span>
-                                    {{ $item->promo_price }}
-                                </p>
-                            </div>
-                        </a>
-                    @endforeach
+
+            <div id="item-details-panel">
+                <div id="details-close-btn">×</div>
+
+                <div id="item-details-loader" class="skeleton" style="display: none;">
+                    <div class="skeleton-img"
+                        style="height: 180px; width: 180px; margin: 0 auto 20px auto; border-radius: 15px;"></div>
+                    <div class="skeleton-line heading" style="width: 70%; margin: 0 auto 15px auto;"></div>
+                    <div class="skeleton-line" style="width: 90%;"></div>
+                    <div class="skeleton-line" style="width: 80%;"></div>
+                    <div class="skeleton-line" style="width: 40%; margin-top: 20px;"></div>
+                    <div class="skeleton-button" style="width: 100%; height: 45px; margin-top: 30px; border-radius: 8px;">
+                    </div>
                 </div>
-            </div>
-            <div class="shop-section">
-                <p class="section-title">Best Sellers: </p>
-                <div class="items-container">
-                    @foreach ($bestSellerItems as $item)
-                        <a href="{{ $item->img_url }}" class="shop-item" title="See on Website">
-                            <div class="item-container">
-                                <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
-                                <p class="item-title">{{ $item->name }}</p>
-                                <p class="item-price">{{ $item->real_price }}</p>
-                            </div>
-                        </a>
-                    @endforeach
+
+                <div id="item-details-content" style="display: none;">
+                    <img id="details-image" src="" alt="Item Image" />
+                    <h2 id="details-name"></h2>
+                    <p id="details-description"></p>
+                    <div class="price-section">
+                        <span>Price:</span>
+                        <p id="details-price"></p>
+                    </div>
+
+                    @auth
+                        <button type="button" id="buy-button" data-item-id="">Purchase</button>
+                    @else
+                        <a href="{{ route('login') }}" class="login-prompt-btn">Login to Purchase</a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -59,4 +98,12 @@
 @endsection
 
 @section('script')
+    <script>
+        window.AppData = {
+            csrfToken: "{{ csrf_token() }}",
+            baseUrl: "{{ url('/') }}",
+            isAuth: "{{ auth()->user() }}"
+        };
+    </script>
+    <script src="{{ asset('js/shop.js') }}"></script>
 @endsection

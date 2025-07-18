@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ShopItemsController;
 
 // Home
 Route::get('/', [HomeController::class, 'homeView']);
@@ -31,6 +32,7 @@ Route::get('news/{newsId}', [NewsController::class, 'newsView']);
 
 // Shop
 Route::get('shop', [ShopController::class, 'shopView']);
+Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItemWeb'])->middleware('auth')->name('shop.buy');
 
 
 // Authentification

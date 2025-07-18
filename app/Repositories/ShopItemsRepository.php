@@ -48,4 +48,15 @@ class ShopItemsRepository
             ->limit($size)
             ->get();
     }
+
+    /**
+     * Find a single shop item by its ID.
+     *
+     * @param int $id
+     * @return ShopItem|null
+     */
+    public function findItemById(int $id): ?ShopItem
+    {
+        return ShopItem::find($id);
+    }
 }

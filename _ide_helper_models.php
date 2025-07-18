@@ -168,6 +168,7 @@ namespace App\Models{
  * @property int $category_id
  * @property int $real_price
  * @property int $promo_price
+ * @property bool $is_unique
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserSale> $userSales
@@ -185,6 +186,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereIsUnique($value)
  */
 	class ShopItem extends \Eloquent {}
 }

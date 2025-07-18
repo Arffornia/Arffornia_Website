@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger("category_id");
             $table->integer("real_price");
             $table->integer("promo_price");
+            $table->boolean("is_unique")->default(false);
             $table->timestamps();
         });
     }
