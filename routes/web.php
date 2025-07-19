@@ -49,9 +49,6 @@ Route::middleware(['auth', "anyRole:user"])->group(callback: function () {
 Route::middleware(['auth', "anyRole:admin"])->group(callback: function () {
     Route::get('/admin', [AdminPanelManager::class, 'adminPanelView'])->name("adminPanel");
 
-    Route::get('/admin/launcherVersions', [AdminPanelManager::class, 'launcherVersionsView'])->name("launcherVersions");
-    Route::post('/admin/launcherVersions', [AdminPanelManager::class, 'uploadNewLauncherVersion'])->name("launcherVersions.upload");
-
     Route::get('/admin/launcherImages', [AdminPanelManager::class, 'launcherImagesView'])->name("launcherImages");
     Route::post('/admin/launcherImages', [AdminPanelManager::class, 'uploadNewLauncherImage'])->name("launcherImages.upload");
 });

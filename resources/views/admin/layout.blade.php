@@ -25,7 +25,6 @@
 
         <div class="contentContainer">
             <a href="{{ route('adminPanel') }}">Admin Panel</a>
-            <a href="{{ route('launcherVersions') }}">Launcher Versions</a>
             <a href="{{ route('launcherImages') }}">Launcher Images</a>
         </div>
 

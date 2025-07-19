@@ -21,40 +21,9 @@ class AdminPanelManager extends Controller
      *
      * @return View
      */
-    public function adminPanelView() {
+    public function adminPanelView()
+    {
         return view('admin.admin_panel');
-    }
-
-    /**
-     * Load the launcher version view
-     *
-     * @return View
-     */
-    public function launcherVersionsView() {
-        return view('admin.launcher_versions', [
-            'launcherVersions' => $this->adminPanelService->getLauncherVersions(),
-        ]);
-    }
-
-    /**
-     * [Obsolete] Handle new launcher version upload
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function uploadNewLauncherVersion(Request $request) {
-        $request->validate([
-            'launcher_version' => 'required',
-            'launcher_file' => 'required|mimes:jar|max:2048',
-        ]);
-
-        $version = $request->string("launcher_version");
-        $in_prod = $request->has("in_prod");
-        $file = $request->file('launcher_file');
-
-        $this->adminPanelService->uploadNewLauncherVersion($version, $in_prod, $file);
-
-        return back()->with('message', 'Success to upload: ' . $file->getClientOriginalName() . ' !');
     }
 
     /**
@@ -62,7 +31,8 @@ class AdminPanelManager extends Controller
      *
      * @return View
      */
-    public function launcherImagesView() {
+    public function launcherImagesView()
+    {
         return view('admin.launcher_images', [
             'launcherImages' => $this->adminPanelService->getLauncherImages(),
         ]);
@@ -74,7 +44,8 @@ class AdminPanelManager extends Controller
      * @param Request $request
      * @return RedirectResponse
      */
-    public function uploadNewLauncherImage(Request $request) {
+    public function uploadNewLauncherImage(Request $request)
+    {
         $request->validate([
             'launcher_file' => 'required|max:2048',
         ]);

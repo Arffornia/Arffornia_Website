@@ -18,10 +18,7 @@ Route::get('stages', [StagesController::class, 'stagesJson']);
 Route::get('stages/player/get/{playerUuid}', [StagesController::class, 'playerStagesJson']);
 Route::get('milestone/get/{nodeId}', [StagesController::class, 'getMilestoneById']);
 
-Route::get('launcherVersionInfo/{dev?}', [LauncherController::class, 'getLauncherInfo'])->where('dev', 'dev');
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);
-Route::get('download/bootstrap', [LauncherController::class, 'downloadBootstrap']);
-Route::get('download/launcher', [LauncherController::class, 'downloadLauncher']);
 
 // Shop
 Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJson']);
