@@ -11,9 +11,8 @@
         <div class="shop-content-container">
 
             <div class="shop">
-
                 <div class="shop-section">
-                    <p class="section-title">Arrivals: </p>
+                    <p class="section-title">Arrivals:</p>
                     <div class="items-container">
                         @foreach ($newestItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
@@ -28,7 +27,7 @@
                 </div>
 
                 <div class="shop-section">
-                    <p class="section-title">This Week's Deals: </p>
+                    <p class="section-title">This Week's Deals:</p>
                     <div class="items-container">
                         @foreach ($saleItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
@@ -36,9 +35,7 @@
                                     <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
                                     <p class="item-title">{{ $item->name }}</p>
                                     <p class="item-price">
-                                        <span class="item-price-sale">
-                                            {{ $item->real_price }}
-                                        </span>
+                                        <span class="item-price-sale">{{ $item->real_price }}</span>
                                         {{ $item->promo_price }}
                                     </p>
                                 </div>
@@ -48,7 +45,7 @@
                 </div>
 
                 <div class="shop-section">
-                    <p class="section-title">Best Sellers: </p>
+                    <p class="section-title">Best Sellers:</p>
                     <div class="items-container">
                         @foreach ($bestSellerItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
@@ -63,33 +60,39 @@
                 </div>
             </div>
 
-            <div id="item-details-panel">
-                <div id="details-close-btn">×</div>
+            <div class="details-panel-container">
+                <div id="item-details-panel">
 
-                <div id="item-details-loader" class="skeleton" style="display: none;">
-                    <div class="skeleton-img"
-                        style="height: 180px; width: 180px; margin: 0 auto 20px auto; border-radius: 15px;"></div>
-                    <div class="skeleton-line heading" style="width: 70%; margin: 0 auto 15px auto;"></div>
-                    <div class="skeleton-line" style="width: 90%;"></div>
-                    <div class="skeleton-line" style="width: 80%;"></div>
-                    <div class="skeleton-line" style="width: 40%; margin-top: 20px;"></div>
-                    <div class="skeleton-button" style="width: 100%; height: 45px; margin-top: 30px; border-radius: 8px;">
-                    </div>
-                </div>
-
-                <div id="item-details-content" style="display: none;">
-                    <img id="details-image" src="" alt="Item Image" />
-                    <h2 id="details-name"></h2>
-                    <p id="details-description"></p>
-                    <div class="price-section">
-                        <span>Price:</span>
-                        <p id="details-price"></p>
+                    <div id="item-details-loader" class="skeleton" style="display: none;">
+                        <div class="skeleton-img"
+                            style="height: 180px; width: 180px; margin: 0 auto 20px auto; border-radius: 15px;"></div>
+                        <div class="skeleton-line heading" style="width: 70%; margin: 0 auto 15px auto;"></div>
+                        <div class="skeleton-line" style="width: 90%; margin-left: 5%"></div>
+                        <div class="skeleton-line" style="width: 80%; margin-left: 10%"></div>
+                        <div
+                            style="display: flex; justify-content: space-between; padding: 15px; margin-top: 20px; background-color: var(--skeleton-color); border-radius: 8px;">
+                            <div class="skeleton-line" style="width: 30%; margin-bottom: 0;"></div>
+                            <div class="skeleton-line" style="width: 40%; margin-bottom: 0;"></div>
+                        </div>
+                        <div class="skeleton-button"
+                            style="width: 100%; height: 45px; margin-top: 30px; border-radius: 8px;"></div>
                     </div>
 
-                    <button type="button" id="buy-button" data-item-id=""
-                        @guest disabled title="You must be logged in to purchase this item." @endguest>
-                        Purchase
-                    </button>
+                    <div id="item-details-content" style="display: none;">
+                        <img id="details-image" src="" alt="Item Image" />
+                        <h2 id="details-name"></h2>
+                        <p id="details-description"></p>
+                        <div class="price-section">
+                            <span>Price:</span>
+                            <p id="details-price"></p>
+                        </div>
+                        <button type="button" id="buy-button" data-item-id=""
+                            @guest
+disabled
+                                title="You must be logged in to purchase this item." @endguest>
+                            Purchase
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -101,7 +104,8 @@
         window.AppData = {
             csrfToken: "{{ csrf_token() }}",
             baseUrl: "{{ url('/') }}",
-            isAuth: "{{ auth()->user() }}"
+            isAuth: {{ auth()->check() ? 'true' : 'false' }},
+            bestSellerItems: @json($bestSellerItems->pluck('id'))
         };
     </script>
     <script src="{{ asset('js/shop.js') }}"></script>

@@ -4,37 +4,35 @@
  */
 let apiToken = null;
 
-const { csrfToken, baseUrl, isAuth } = window.AppData;
-
+const { csrfToken, baseUrl, isAuth, bestSellerItems } = window.AppData;
 
 document.addEventListener('DOMContentLoaded', () => {
+    let currentItemId = null;
+
+    const shopWrapper = document.querySelector('.shop-wrapper');
     const shopItems = document.querySelectorAll('.shop-item');
-    const detailsPanel = document.getElementById('item-details-panel');
     const detailsContent = document.getElementById('item-details-content');
     const detailsLoader = document.getElementById('item-details-loader');
-    const closeBtn = document.getElementById('details-close-btn');
 
+    /**
+     * Displays the details of an item in the panel.
+     * @param {string} itemId The ID of the item to display.
+     */
     const showDetails = (itemId) => {
-        detailsPanel.classList.add('visible');
+        currentItemId = itemId;
         detailsContent.style.display = 'none';
-        detailsLoader.style.display = 'block';
+        detailsLoader.style.display = 'flex';
 
-        fetch(`/api/shop/item/${itemId}`)
+        fetch(`${baseUrl}/api/shop/item/${itemId}`)
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
+                if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
             })
-            .then(data => {
-                return new Promise(resolve => {
-                    setTimeout(() => resolve(data), 1000 * 0.3);
-                });
-            })
+            .then(data => new Promise(resolve => setTimeout(() => resolve(data), 300)))
             .then(item => {
                 populateDetails(item);
                 detailsLoader.style.display = 'none';
-                detailsContent.style.display = 'block';
+                detailsContent.style.display = 'flex';
             })
             .catch(error => {
                 console.error('Error fetching item details:', error);
@@ -42,6 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     };
 
+    /**
+     * Populates the details panel with item information.
+     * @param {object} item The item object.
+     */
     const populateDetails = (item) => {
         document.getElementById('details-image').src = item.img_url;
         document.getElementById('details-name').textContent = item.name;
@@ -55,24 +57,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const buyButton = document.getElementById('buy-button');
-
         if (buyButton) {
             buyButton.dataset.itemId = item.id;
-
-            if (!isAuth) {
-                buyButton.disabled = true;
-                buyButton.title = 'You must be logged in to purchase this item.';
-            } else {
-                buyButton.disabled = false;
-                buyButton.title = '';
-            }
+            buyButton.disabled = !isAuth;
+            buyButton.title = isAuth ? '' : 'You must be logged in to purchase this item.';
         }
     };
 
-    const hideDetails = () => {
-        detailsPanel.classList.remove('visible');
+    /**
+     * Loads a random item from the best sellers list.
+     */
+    const loadRandomBestSeller = () => {
+        if (bestSellerItems && bestSellerItems.length > 0) {
+            const randomIndex = Math.floor(Math.random() * bestSellerItems.length);
+            const randomItemId = bestSellerItems[ randomIndex ];
+            showDetails(randomItemId);
+        } else {
+            console.warn('No best seller items available to display by default.');
+            detailsLoader.style.display = 'none';
+            detailsContent.innerHTML = '<p>No items to display.</p>';
+            detailsContent.style.display = 'flex';
+        }
     };
 
+    /**
+     * Handles the purchase of an item.
+     * @param {MouseEvent} event
+     */
     const handleBuy = async (event) => {
         const token = await getApiToken();
         if (!token) return;
@@ -81,31 +92,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const buyButton = event.target;
         const itemId = buyButton.dataset.itemId;
 
-        if (!isAuth) {
-            window.location.href = '/login';
-            return;
-        }
-
         const originalText = buyButton.textContent;
         buyButton.textContent = 'Processing...';
         buyButton.disabled = true;
 
         try {
-            const response = await fetch(`/shop/buy/${itemId}`, {
+            const response = await fetch(`${baseUrl}/shop/buy/${itemId}`, {
                 method: 'POST',
-                headers: createApiHeaders(token)
-
+                headers: createApiHeaders(token),
             });
-
             const result = await response.json();
-
             showFlashMessage(result.message, result.success);
-
-            if (response.ok) {
-                hideDetails();
-                // Optional: update the user's balance on the page
-            }
-
         } catch (error) {
             console.error('Purchase error:', error);
             showFlashMessage('An unexpected error occurred.', false);
@@ -115,87 +112,84 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const showFlashMessage = (message, isSuccess) => {
-        const existingFlash = document.querySelector('.dynamic-flash-message');
-        if (existingFlash) {
-            existingFlash.remove();
-        }
-
-        const flashDiv = document.createElement('div');
-        flashDiv.className = `flashMessage dynamic-flash-message ${isSuccess ? 'success' : 'error'}`;
-
-        const p = document.createElement('p');
-        p.className = 'text';
-        p.textContent = message;
-
-        flashDiv.appendChild(p);
-        document.body.prepend(flashDiv);
-
-        setTimeout(() => {
-            flashDiv.style.top = '0';
-        }, 100);
-
-        setTimeout(() => {
-            flashDiv.style.top = '-100px';
-            setTimeout(() => flashDiv.remove(), 500);
-        }, 5000);
-    };
-
-
     shopItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             const itemId = item.dataset.itemId;
-            if (itemId) {
+            if (itemId && itemId !== currentItemId) {
                 showDetails(itemId);
             }
         });
     });
 
-    if (closeBtn) {
-        closeBtn.addEventListener('click', hideDetails);
-    }
+    shopWrapper.addEventListener('click', (e) => {
+        if (!e.target.closest('.shop-item') && !e.target.closest('#item-details-panel')) {
+            loadRandomBestSeller();
+        }
+    });
 
     const buyButton = document.getElementById('buy-button');
     if (buyButton) {
         buyButton.addEventListener('click', handleBuy);
     }
 
-    /**
-     * Gets the Sanctum API token for authenticated requests. Caches the token.
-     * @returns {Promise<string|null>}
-     */
-    async function getApiToken() {
-        if (apiToken) return apiToken;
-        try {
-            const response = await fetch(`${baseUrl}/api/auth/token/session`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-            });
-            if (!response.ok) throw new Error('Token fetch failed');
-            const data = await response.json();
-            apiToken = data.token;
-            return apiToken;
-        } catch (error) {
-            console.error("Token Error:", error);
-            alert("Authentication Error. Please refresh the page and try again.");
-            return null;
-        }
-    }
-
-    /**
-     * Creates a standard set of headers for API requests.
-     * @param {string} token
-     * @returns {object}
-    */
-    function createApiHeaders(token) {
-        return {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        };
-    }
-
-
+    loadRandomBestSeller();
 });
+
+/**
+ * Displays a dynamic flash message at the top of the screen.
+ * @param {string} message The message to display.
+ * @param {boolean} isSuccess Whether the message is a success or error message.
+ */
+function showFlashMessage(message, isSuccess) {
+    const existingFlash = document.querySelector('.dynamic-flash-message');
+    if (existingFlash) existingFlash.remove();
+
+    const flashDiv = document.createElement('div');
+    flashDiv.className = `flashMessage dynamic-flash-message ${isSuccess ? 'success' : 'error'}`;
+    flashDiv.innerHTML = `<p class="text">${message}</p>`;
+    document.body.prepend(flashDiv);
+
+    setTimeout(() => { flashDiv.style.top = '20px'; }, 100);
+    setTimeout(() => {
+        flashDiv.style.top = '-100px';
+        setTimeout(() => flashDiv.remove(), 500);
+    }, 5000);
+}
+
+/**
+ * Gets the Sanctum API token for authenticated requests. Caches the token.
+ * @returns {Promise<string|null>}
+ */
+async function getApiToken() {
+    if (apiToken || !isAuth) return apiToken;
+    try {
+        const response = await fetch(`${baseUrl}/api/auth/token/session`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+        });
+        if (!response.ok) throw new Error('Token fetch failed');
+        const data = await response.json();
+        apiToken = data.token;
+        return apiToken;
+    } catch (error) {
+        console.error("Token Error:", error);
+        alert("Authentication Error. Please refresh the page and try again.");
+        return null;
+    }
+}
+
+/**
+ * Creates a standard set of headers for API requests.
+ * @param {string} token
+ * @returns {object}
+ */
+function createApiHeaders(token) {
+    return {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': csrfToken,
+    };
+}
