@@ -55,7 +55,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const buyButton = document.getElementById('buy-button');
-        buyButton.dataset.itemId = item.id;
+
+        if (buyButton) {
+            buyButton.dataset.itemId = item.id;
+
+            if (!isAuth) {
+                buyButton.disabled = true;
+                buyButton.title = 'You must be logged in to purchase this item.';
+            } else {
+                buyButton.disabled = false;
+                buyButton.title = '';
+            }
+        }
     };
 
     const hideDetails = () => {

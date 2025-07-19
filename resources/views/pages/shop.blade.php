@@ -86,11 +86,10 @@
                         <p id="details-price"></p>
                     </div>
 
-                    @auth
-                        <button type="button" id="buy-button" data-item-id="">Purchase</button>
-                    @else
-                        <a href="{{ route('login') }}" class="login-prompt-btn">Login to Purchase</a>
-                    @endauth
+                    <button type="button" id="buy-button" data-item-id=""
+                        @guest disabled title="You must be logged in to purchase this item." @endguest>
+                        Purchase
+                    </button>
                 </div>
             </div>
         </div>

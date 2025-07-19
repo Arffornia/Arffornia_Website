@@ -599,6 +599,10 @@ async function handleExport() {
  * @param {boolean} editing
  */
 function setEditMode(editing) {
+    if (!isAdmin) {
+        return;
+    }
+
     isEditing = editing;
     const titleContainer = milestoneInfo.querySelector('#milestone-title');
     const descriptionContainer = milestoneInfo.querySelector('#description');

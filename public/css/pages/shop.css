@@ -249,6 +249,13 @@ header .contentContainer a {
 #buy-button:disabled {
     background-color: #555;
     cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#buy-button:disabled:hover {
+    background-color: #555;
+    transform: none;
+    box-shadow: none;
 }
 
 .error-message {
