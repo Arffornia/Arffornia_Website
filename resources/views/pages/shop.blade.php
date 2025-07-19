@@ -66,30 +66,34 @@
                     <div id="item-details-loader" class="skeleton" style="display: none;">
                         <div class="skeleton-img"
                             style="height: 180px; width: 180px; margin: 0 auto 20px auto; border-radius: 15px;"></div>
-                        <div class="skeleton-line heading" style="width: 70%; margin: 0 auto 15px auto;"></div>
-                        <div class="skeleton-line" style="width: 90%; margin-left: 5%"></div>
-                        <div class="skeleton-line" style="width: 80%; margin-left: 10%"></div>
-                        <div
-                            style="display: flex; justify-content: space-between; padding: 15px; margin-top: 20px; background-color: var(--skeleton-color); border-radius: 8px;">
-                            <div class="skeleton-line" style="width: 30%; margin-bottom: 0;"></div>
-                            <div class="skeleton-line" style="width: 40%; margin-bottom: 0;"></div>
+
+                        <div class="details-header-skeleton">
+                            <div class="skeleton-line heading" style="width: 60%; margin: 0;"></div>
+                            <div class="skeleton-line" style="width: 25%; height: 1.5rem; margin: 0;"></div>
                         </div>
+
+                        <div class="skeleton-line" style="width: 90%; margin-left: 5%; margin-top: 15px;"></div>
+                        <div class="skeleton-line" style="width: 80%; margin-left: 10%;"></div>
+
                         <div class="skeleton-button"
                             style="width: 100%; height: 45px; margin-top: 30px; border-radius: 8px;"></div>
                     </div>
 
+
                     <div id="item-details-content" style="display: none;">
                         <img id="details-image" src="" alt="Item Image" />
-                        <h2 id="details-name"></h2>
-                        <p id="details-description"></p>
-                        <div class="price-section">
-                            <span>Price:</span>
+
+                        <div class="details-header">
+                            <h2 id="details-name"></h2>
                             <p id="details-price"></p>
                         </div>
+
+                        <p id="details-description"></p>
+
                         <button type="button" id="buy-button" data-item-id=""
                             @guest
 disabled
-                                title="You must be logged in to purchase this item." @endguest>
+            title="You must be logged in to purchase this item." @endguest>
                             Purchase
                         </button>
                     </div>
