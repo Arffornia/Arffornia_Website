@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer("real_price");
             $table->integer("promo_price");
             $table->boolean("is_unique")->default(false);
+            $table->json('commands')->nullable();
             $table->timestamps();
         });
     }

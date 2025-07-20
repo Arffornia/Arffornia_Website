@@ -38,32 +38,6 @@ namespace App\Models{
  * 
  *
  * @property int $id
- * @property string $version
- * @property string $hash
- * @property int $in_prod
- * @property string $path
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereInProd($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherVersion whereVersion($value)
- * @mixin \Eloquent
- */
-	class LauncherVersion extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * 
- *
- * @property int $id
  * @property string $name
  * @property string $description
  * @property int $stage_id
@@ -162,6 +136,31 @@ namespace App\Models{
  * 
  *
  * @property int $id
+ * @property int $user_id
+ * @property int $shop_item_id
+ * @property array<array-key, mixed> $commands
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereCommands($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereShopItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereUserId($value)
+ */
+	class PendingReward extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
  * @property string $name
  * @property string $description
  * @property string $img_url
@@ -186,6 +185,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property array<array-key, mixed>|null $commands
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCommands($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereIsUnique($value)
  */
 	class ShopItem extends \Eloquent {}

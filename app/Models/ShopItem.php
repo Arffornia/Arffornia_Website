@@ -47,11 +47,16 @@ class ShopItem extends Model
         'category_id',
         'real_price',
         'promo_price',
-        'is_unique'
+        'is_unique',
+        'commands'
     ];
 
     public function userSales()
     {
         return $this->hasMany(UserSale::class);
     }
+
+    protected $casts = [
+        'commands' => 'array',
+    ];
 }

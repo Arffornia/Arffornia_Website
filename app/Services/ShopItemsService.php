@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-
+use App\Models\PendingReward;
 use App\Models\ShopItem;
 use App\Models\User;
 use App\Models\UserSale;
@@ -102,7 +102,7 @@ class ShopItemsService
     public function purchaseItem(User $user, ShopItem $item): array
     {
         if ($item->is_unique) {
-            $isAlreadyOwned = UserSale::where('user_id', operator: $user->id)
+            $isAlreadyOwned = UserSale::where('user_id', $user->id)
                 ->where('shop_item_id', $item->id)
                 ->exists();
 
@@ -117,23 +117,36 @@ class ShopItemsService
             return ['success' => false, 'message' => 'You do not have enough money.'];
         }
 
+        // Ensure the item has commands to execute
+        if (empty($item->commands)) {
+            return ['success' => false, 'message' => 'This item is not configured for delivery.'];
+        }
+
         try {
             DB::transaction(function () use ($user, $item, $price) {
+                // 1. Deduct money from the user
                 $user->money -= $price;
                 $user->save();
 
+                // 2. Log the sale
                 UserSale::create([
                     'user_id' => $user->id,
                     'shop_item_id' => $item->id,
                 ]);
 
-                // TODO add event to give player's items
+                // 3. Create the pending reward for the in-game mod to pick up
+                PendingReward::create([
+                    'user_id' => $user->id,
+                    'shop_item_id' => $item->id,
+                    'commands' => $item->commands, // The commands are stored directly
+                    'status' => 'pending',
+                ]);
             });
         } catch (Exception $e) {
             report($e);
             return ['success' => false, 'message' => 'An error occurred during the transaction. Please try again.'];
         }
 
-        return ['success' => true, 'message' => 'You have successfully purchased ' . $item->name . '!'];
+        return ['success' => true, 'message' => 'You have successfully purchased ' . $item->name . '! Your items will be delivered in-game shortly.'];
     }
 }
