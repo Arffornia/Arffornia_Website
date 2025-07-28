@@ -59,9 +59,10 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(f
     Route::post('/progression/add', [ProgressionController::class, 'addMilestone']);
     Route::post('/progression/remove', [ProgressionController::class, 'removeMilestone']);
     Route::post('/progression/list', [ProgressionController::class, 'listMilestones']);
+
+    Route::post('/progression/set-target', [ProgressionController::class, 'setTargetMilestone']);
 });
 
-Route::post('/progression/set-target', [ProgressionController::class, 'setTargetMilestone']);
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,user_editor'])->group(function () {
     Route::post('/player/ensure-exists', [UserController::class, 'ensurePlayerExists']);
