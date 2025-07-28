@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $name
@@ -32,6 +32,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePromoPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
+ * @property array<array-key, mixed>|null $commands
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCommands($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereIsUnique($value)
  * @mixin \Eloquent
  */
 class ShopItem extends Model

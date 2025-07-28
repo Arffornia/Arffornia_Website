@@ -6,6 +6,33 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $milestone_id
+ * @property string $item_id
+ * @property string|null $display_name
+ * @property string $recipe_id_to_ban
+ * @property int|null $shop_price
+ * @property string|null $image_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string|null $image_url
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereDisplayName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereImagePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereMilestoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereRecipeIdToBan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereShopPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class MilestoneUnlock extends Model
 {
     use HasFactory;

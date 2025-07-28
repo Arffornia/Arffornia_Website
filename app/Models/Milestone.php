@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $name
@@ -27,6 +27,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereRewardProgressPoints($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereStageId($value)
+ * @property int $x
+ * @property int $y
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MilestoneRequirement> $requirements
+ * @property-read int|null $requirements_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MilestoneUnlock> $unlocks
+ * @property-read int|null $unlocks_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereX($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereY($value)
  * @mixin \Eloquent
  */
 class Milestone extends Model

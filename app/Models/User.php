@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property string $name
@@ -50,6 +50,17 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGrade($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUuid($value)
+ * @property int|null $solo_progression_id
+ * @property int|null $active_progression_id
+ * @property string|null $team_id
+ * @property-read \App\Models\Progression|null $activeProgression
+ * @property-read \App\Models\Progression|null $soloProgression
+ * @property-read \App\Models\Team|null $team
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereActiveProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereSoloProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTeamId($value)
  * @mixin \Eloquent
  */
 class User extends Authenticatable
