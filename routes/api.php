@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\LauncherController;
-use App\Http\Controllers\ShopItemsController;
-use App\Http\Controllers\StagesController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StagesController;
+use App\Http\Controllers\LauncherController;
+use App\Http\Controllers\ShopItemsController;
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('best_player_point/{size}', [UserController::class, 'bestPlayerByPointJson']);
@@ -16,7 +17,9 @@ Route::get('checkNewPlayer/{playerUuid}', [UserController::class, 'checkNewPlaye
 
 Route::get('stages', [StagesController::class, 'stagesJson']);
 Route::get('stages/player/get/{playerUuid}', [StagesController::class, 'playerStagesJson']);
-Route::get('milestone/get/{nodeId}', [StagesController::class, 'getMilestoneById']);
+Route::get('milestone/get/{milestone}', [StagesController::class, 'getMilestoneById']);
+
+Route::get('progression/config', [StagesController::class, 'getProgressionConfigForMod']);
 
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);
 
@@ -43,3 +46,10 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('milestone-closures', [StagesController::class, 'storeLink']);
     Route::delete('milestone-closures', [StagesController::class, 'destroyLink']);
 });
+
+// Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () { // TODO Add svc account with default creds in dataseeder
+Route::post('/teams/create', [TeamController::class, 'create']);
+Route::post('/teams/player/join', [TeamController::class, 'playerJoin']);
+Route::post('/teams/player/leave', [TeamController::class, 'playerLeave']);
+Route::post('/teams/disband', [TeamController::class, 'disband']);
+// });

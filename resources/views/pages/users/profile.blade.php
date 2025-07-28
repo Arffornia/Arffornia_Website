@@ -20,7 +20,9 @@
                 <div class="info">
                     <p> <span class="sectionTitle">Pseudo :</span> {{ $user->name }}</p>
                     <p> <span class="sectionTitle">Argent :</span> {{ $user->money }}</p>
-                    <p> <span class="sectionTitle">Stages :</span> {{ $stage_number }}</p>
+                    <p> <span class="sectionTitle">Équipe :</span> {{ $user->team->name ?? 'Aucune' }}</p>
+                    <p> <span class="sectionTitle">Stage actuel :</span> {{ $stage_number }}</p>
+                    <p> <span class="sectionTitle">Objectif actuel :</span> {{ $current_milestone_name }}</p>
                     <p> <span class="sectionTitle">Progress points :</span> {{ $user->progress_point }} </p>
                     <p> <span class="sectionTitle">Account created date :</span> {{ $user->created_at }}</p>
                     <p> <span class="sectionTitle">User Roles :</span> {{ implode(', ', $user->getRoles()) }}</p>

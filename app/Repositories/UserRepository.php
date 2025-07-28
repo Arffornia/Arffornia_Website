@@ -81,16 +81,24 @@ class UserRepository
     {
         $startStageId = Stage::where('number', 1)->first()->id;
 
-        $formFields['name'] = $name;
-        $formFields['uuid'] = $uuid;
-        $formFields['money'] = 10000; // TODO Remove on prod (only for testing purpose !!)
-        $formFields['progress_point'] = 0;
-        $formFields['stage_id'] = $startStageId;
-        $formFields['day_streak'] = 0;
-        $formFields['grade'] = 'citizen';
-        $formFields['role'] = 'user';
+        $progression = \App\Models\Progression::create([
+            'max_stage_id' => $startStageId,
+            'completed_milestones' => [],
+        ]);
 
-        // Create User
-        return User::create($formFields);
+        $user = User::create([
+            'name' => $name,
+            'uuid' => $uuid,
+            'money' => 100000, //! TODO Remove that (For testing purposes only!)
+            'progress_point' => 0,
+            'stage_id' => $startStageId,
+            'day_streak' => 0,
+            'grade' => 'citizen',
+            'role' => 'user',
+            'solo_progression_id' => $progression->id,
+            'active_progression_id' => $progression->id, # Default active progression is the player's solo progression
+        ]);
+
+        return $user;
     }
 }

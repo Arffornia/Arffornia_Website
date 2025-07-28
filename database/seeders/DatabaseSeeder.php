@@ -2,18 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\LauncherImage;
 use App\Models\News;
 use App\Models\User;
 use App\Models\Vote;
 use App\Models\Stage;
+use App\Models\ShopItem;
 use App\Models\Milestone;
-use App\Models\MilestoneUser;
+use App\Models\LauncherImage;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\MilestoneUser;
+use App\Models\MilestoneUnlock;
 use Illuminate\Database\Seeder;
 use App\Models\MilestoneClosure;
-use App\Models\ShopItem;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,6 +23,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(SvcUserSeeder::class);
+
         Stage::factory(3)->create();
 
         Milestone::create([
@@ -138,6 +141,33 @@ class DatabaseSeeder extends Seeder
         for ($i = 0; $i < 10; $i++) {
             MilestoneUser::factory()->create();
         }
+
+        MilestoneUnlock::create([
+            'milestone_id' => 1,
+            'item_id' => 'minecraft:oak_planks',
+            'display_name' => 'Oak Planks',
+            'recipe_id_to_ban' => 'minecraft:oak_planks',
+            'shop_price' => 10,
+            'image_path' => 'minecraft_oak_planks.png'
+        ]);
+
+        MilestoneUnlock::create([
+            'milestone_id' => 1,
+            'item_id' => 'minecraft:oak_slab',
+            'display_name' => 'Oak Slab',
+            'recipe_id_to_ban' => 'minecraft:oak_slab',
+            'shop_price' => 5,
+            'image_path' => 'minecraft_oak_slab.png'
+        ]);
+
+        MilestoneUnlock::create([
+            'milestone_id' => 2,
+            'item_id' => 'minecraft:iron_ingot',
+            'display_name' => 'Iron Ingot',
+            'recipe_id_to_ban' => 'minecraft:iron_ingot',
+            'shop_price' => 42,
+            'image_path' => 'minecraft_iron_ingot.png'
+        ]);
 
         News::create([
             'title' => "Un magnifique article 1 !",

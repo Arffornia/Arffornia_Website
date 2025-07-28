@@ -145,12 +145,15 @@ class UserController extends Controller
         }
 
         if (!$user) {
-            abort(404);
+            abort(404, 'User not found.');
         }
+
+        $user->load('activeProgression.maxStage');
 
         return view('pages.users.profile', [
             'user' => $user,
-            'stage_number' => $this->stageService->getStageById($user->stage_id)->number,
+            'stage_number' => $user->activeProgression->maxStage->number ?? 1,
+            'current_milestone_name' => $user->activeProgression->currentTargetedMilestone->name ?? 'None', // Assurez-vous d'ajouter la relation 'currentTargetedMilestone' dans votre modèle Progression si ce n'est pas déjà fait.
         ]);
     }
 

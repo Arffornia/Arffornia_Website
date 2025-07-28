@@ -404,6 +404,23 @@ function showNilestonesInfo(milestone) {
             milestoneInfo.querySelector("#stageNumber").textContent = data.stage_id;
             milestoneInfo.querySelector("#reward_progress_points").textContent = data.reward_progress_points;
             milestoneInfo.querySelector("#iconContent").innerHTML = getIconSvgByType(data.icon_type);
+
+            const itemsContainer = milestoneInfo.querySelector("#itemsContainer ul");
+            itemsContainer.innerHTML = '';
+
+            if (data.unlocks && data.unlocks.length > 0) {
+                data.unlocks.forEach(unlock => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <img src="${unlock.image_url}" alt="${unlock.display_name}" width="32" height="32" style="vertical-align: middle;">
+                        <span>${unlock.display_name} (Prix: ${unlock.shop_price || 'N/A'})</span>
+                    `;
+
+                    itemsContainer.appendChild(li);
+                });
+            } else {
+                itemsContainer.innerHTML = '<li>No items unlocked by this milestone.</li>';
+            }
         })
         .catch(err => {
             console.error("Fetch Error:", err);

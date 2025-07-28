@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  *
@@ -43,4 +44,20 @@ class Milestone extends Model
         'x',
         'y',
     ];
+
+    /**
+     * Get the items unlocked by this milestone.
+     */
+    public function unlocks(): HasMany
+    {
+        return $this->hasMany(MilestoneUnlock::class);
+    }
+
+    /**
+     * Get the resources required to unlock this milestone.
+     */
+    public function requirements(): HasMany
+    {
+        return $this->hasMany(MilestoneRequirement::class);
+    }
 }

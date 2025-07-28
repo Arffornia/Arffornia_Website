@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Stage;
 use App\Models\Milestone;
-use App\Services\UserService;
-use App\Services\StagesService;
-use App\Models\MilestoneClosure;
-use Illuminate\Contracts\View\View;
-use Illuminate\Http\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-
+use App\Services\UserService;
+use App\Models\MilestoneUnlock;
+use App\Services\StagesService;
 use function PHPSTORM_META\map;
+use App\Models\MilestoneClosure;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Contracts\View\View;
+
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class StagesController extends Controller
 {
@@ -81,15 +82,21 @@ class StagesController extends Controller
     private function playerStagesInfo(string $playerUuid)
     {
         $user = $this->userService->getUserByUuid($playerUuid);
-        $playerProgress = $this->stagesService->getMilestoneByUsername($user);
+        if (!$user) {
+            abort(404, 'User not found');
+        }
+
+        $user->load('activeProgression');
         $isAdmin = auth()->check() && auth()->user()->hasRole('admin');
 
         if ($user) {
             return [
                 'stages' =>  Stage::all(),
-                'milestones' =>  Milestone::all(),
+                'milestones' => Milestone::all(),
                 'milestone_closure' => MilestoneClosure::all(),
-                'playerProgress' => $playerProgress,
+                'playerProgress' => [
+                    'completed_milestones' => $user->activeProgression->completed_milestones ?? []
+                ],
                 'isAdmin' => $isAdmin,
             ];
         }
@@ -118,16 +125,19 @@ class StagesController extends Controller
     }
 
 
+
     /**
-     * Get node by node ID
+     * Get detailed information for a single milestone, including its unlocks and requirements.
      *
-     * @param int $nodeId
+     * @param Milestone $milestone
      * @return JsonResponse
      */
-    public function getMilestoneById(int $nodeId)
+    public function getMilestoneById(Milestone $milestone): JsonResponse
     {
+        // Eager load the relationships to prevent N+1 query problems.
+        $milestone->load(['unlocks', 'requirements']);
 
-        return response()->json($this->stagesService->getMilestoneById($nodeId));
+        return response()->json($milestone);
     }
 
     /**
@@ -271,5 +281,20 @@ class StagesController extends Controller
         }
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Provides a lean JSON response specifically for the NeoForge mod.
+     * Contains only the data necessary for the mod to function, like the banned recipe list.
+     *
+     * @return JsonResponse
+     */
+    public function getProgressionConfigForMod(): JsonResponse
+    {
+        $bannedRecipes = MilestoneUnlock::pluck('recipe_id_to_ban')->all();
+
+        return response()->json([
+            'banned_recipes' => $bannedRecipes
+        ]);
     }
 }

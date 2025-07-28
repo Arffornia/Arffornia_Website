@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('solo_progression_id')->nullable()->constrained('progressions');
+            $table->foreignId('active_progression_id')->nullable()->constrained('progressions');
+            $table->uuid('team_id')->nullable()->constrained('teams')->onDelete('set null');
+
             $table->string("name");
             $table->string("uuid");
             $table->string("role");

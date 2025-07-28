@@ -58,6 +58,10 @@ namespace App\Models{
  * @mixin \Eloquent
  * @property int $x
  * @property int $y
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MilestoneRequirement> $requirements
+ * @property-read int|null $requirements_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MilestoneUnlock> $unlocks
+ * @property-read int|null $unlocks_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereX($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereY($value)
  */
@@ -80,6 +84,59 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneClosure whereId($value)
  */
 	class MilestoneClosure extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $milestone_id
+ * @property string $item_id
+ * @property int $amount
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereMilestoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereUpdatedAt($value)
+ */
+	class MilestoneRequirement extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $milestone_id
+ * @property string $item_id
+ * @property string|null $display_name
+ * @property string $recipe_id_to_ban
+ * @property int|null $shop_price
+ * @property string|null $image_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string|null $image_url
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereDisplayName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereImagePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereMilestoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereRecipeIdToBan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereShopPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereUpdatedAt($value)
+ */
+	class MilestoneUnlock extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -161,6 +218,29 @@ namespace App\Models{
  * 
  *
  * @property int $id
+ * @property int $max_stage_id
+ * @property int|null $current_milestone_id
+ * @property array<array-key, mixed>|null $completed_milestones
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereCompletedMilestones($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereCurrentMilestoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereMaxStageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereUpdatedAt($value)
+ */
+	class Progression extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
  * @property string $name
  * @property string $description
  * @property string $img_url
@@ -219,6 +299,35 @@ namespace App\Models{
 /**
  * 
  *
+ * @property string $id
+ * @property string $name
+ * @property int $progression_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $members
+ * @property-read int|null $members_count
+ * @property-read \App\Models\Progression $progression
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withoutTrashed()
+ */
+	class Team extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
  * @property int $id
  * @property string $name
  * @property mixed $password
@@ -258,8 +367,17 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUuid($value)
  * @mixin \Eloquent
+ * @property int|null $solo_progression_id
+ * @property int|null $active_progression_id
+ * @property string|null $team_id
+ * @property-read \App\Models\Progression|null $activeProgression
+ * @property-read \App\Models\Progression|null $soloProgression
+ * @property-read \App\Models\Team|null $team
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereActiveProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereSoloProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTeamId($value)
  */
 	class User extends \Eloquent {}
 }

@@ -101,6 +101,21 @@ class User extends Authenticatable
         return $this->hasMany(Vote::class);
     }
 
+    public function soloProgression()
+    {
+        return $this->belongsTo(Progression::class, 'solo_progression_id');
+    }
+
+    public function activeProgression()
+    {
+        return $this->belongsTo(Progression::class, 'active_progression_id');
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
     /**
      * Get user's role as an array of roles.
      *
