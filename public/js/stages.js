@@ -405,8 +405,8 @@ function showNilestonesInfo(milestone) {
             milestoneInfo.querySelector("#reward_progress_points").textContent = data.reward_progress_points;
             milestoneInfo.querySelector("#iconContent").innerHTML = getIconSvgByType(data.icon_type);
 
-            const itemsContainer = milestoneInfo.querySelector("#itemsContainer ul");
-            itemsContainer.innerHTML = '';
+            const newItemsContainer = milestoneInfo.querySelector("#newItemsContainer ul");
+            newItemsContainer.innerHTML = '';
 
             if (data.unlocks && data.unlocks.length > 0) {
                 data.unlocks.forEach(unlock => {
@@ -416,10 +416,27 @@ function showNilestonesInfo(milestone) {
                         <span>${unlock.display_name} (Prix: ${unlock.shop_price || 'N/A'})</span>
                     `;
 
-                    itemsContainer.appendChild(li);
+                    newItemsContainer.appendChild(li);
                 });
             } else {
-                itemsContainer.innerHTML = '<li>No items unlocked by this milestone.</li>';
+                newItemsContainer.innerHTML = '<li>No items unlocked by this milestone.</li>';
+            }
+
+            const requiredItemsContainer = milestoneInfo.querySelector("#requiredItemsContainer ul");
+            requiredItemsContainer.innerHTML = '';
+
+            if (data.requirements && data.requirements.length > 0) {
+                data.requirements.forEach(required => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <img src="${required.image_url}" alt="${required.display_name}" width="32" height="32" style="vertical-align: middle;">
+                        <span>${required.display_name} — x${required.amount}</span>
+                    `;
+
+                    requiredItemsContainer.appendChild(li);
+                });
+            } else {
+                requiredItemsContainer.innerHTML = '<li>No items required by this milestone.</li>';
             }
         })
         .catch(err => {

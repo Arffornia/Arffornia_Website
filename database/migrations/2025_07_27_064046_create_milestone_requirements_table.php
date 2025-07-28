@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('milestone_id')->constrained()->onDelete('cascade');
             $table->string('item_id'); // e.g., "minecraft:oak_log"
+            $table->string('display_name')->nullable(); // e.g., "Oak Planks"
+            $table->string('image_path')->nullable();
             $table->integer('amount');
             $table->timestamps();
         });

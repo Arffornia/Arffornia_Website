@@ -52,11 +52,18 @@
                     <p><span class="textTitle">Stage: </span><span id="stageNumber" class="textDescription"></span></p>
                     <p><span class="textTitle">Points: </span><span id="reward_progress_points"
                             class="textDescription"></span></p>
-                    <p class="textTitle">Items:</p>
+                    <p class="textTitle">New items:</p>
                 </div>
-                <div id="itemsContainer">
+                <div id="newItemsContainer">
                     <ul></ul>
                 </div>
+                <div class="textContainer">
+                    <p class="textTitle">Required items:</p>
+                </div>
+                <div id="requiredItemsContainer">
+                    <ul></ul>
+                </div>
+
 
                 @if ($isAdmin ?? false)
                     <div class="admin-actions">

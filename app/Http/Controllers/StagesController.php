@@ -146,7 +146,6 @@ class StagesController extends Controller
      */
     public function getMilestoneById(Milestone $milestone): JsonResponse
     {
-        // Eager load the relationships to prevent N+1 query problems.
         $milestone->load(['unlocks', 'requirements']);
 
         return response()->json($milestone);

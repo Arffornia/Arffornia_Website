@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $milestone_id
@@ -28,5 +28,27 @@ use Illuminate\Database\Eloquent\Model;
 class MilestoneRequirement extends Model
 {
     use HasFactory;
-    protected $fillable = ['milestone_id', 'item_id', 'amount'];
+    protected $fillable = ['milestone_id', 'item_id', 'display_name', 'image_path', 'amount'];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['image_url'];
+
+    /**
+     * Get the full URL to the item's image.
+     *
+     * @return string|null
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if ($this->image_path) {
+            return asset('images/item_textures/' . $this->image_path);
+        }
+
+        // Fallback image
+        return asset('images/Crafting_Table.png');
+    }
 }

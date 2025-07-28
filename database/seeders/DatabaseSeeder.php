@@ -15,6 +15,7 @@ use App\Models\MilestoneUser;
 use App\Models\MilestoneUnlock;
 use Illuminate\Database\Seeder;
 use App\Models\MilestoneClosure;
+use App\Models\MilestoneRequirement;
 
 class DatabaseSeeder extends Seeder
 {
@@ -149,6 +150,22 @@ class DatabaseSeeder extends Seeder
             'recipe_id_to_ban' => 'minecraft:oak_planks',
             'shop_price' => 10,
             'image_path' => 'minecraft_oak_planks.png'
+        ]);
+
+        MilestoneRequirement::create([
+            'milestone_id' => 1,
+            'item_id' => 'minecraft:oak_log',
+            'display_name' => 'Oak Log',
+            'image_path' => 'minecraft_oak_log.png',
+            'amount' => 10
+        ]);
+
+        MilestoneRequirement::create([
+            'milestone_id' => 2,
+            'item_id' => 'minecraft:iron_ore',
+            'display_name' => 'Iron Ore',
+            'image_path' => 'minecraft_iron_ore.png',
+            'amount' => 64
         ]);
 
         MilestoneUnlock::create([
