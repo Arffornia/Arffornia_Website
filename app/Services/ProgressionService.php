@@ -117,4 +117,28 @@ class ProgressionService
             Log::info("Progression {$progression->id} advanced to stage {$nextStage->number} (ID: {$nextStage->id}). Ratio: {$completionRatio}");
         }
     }
+
+    /**
+     * Sets the currently targeted milestone for a user's active progression.
+     *
+     * @param User $user The user to update.
+     * @param int|null $milestoneId The ID of the new target milestone, or null to clear it.
+     * @return bool True on success.
+     */
+    public function setTargetMilestone(User $user, ?int $milestoneId): bool
+    {
+        $progression = $user->activeProgression;
+        if (!$progression) {
+            return false;
+        }
+
+        // Ensure the milestone exists if it's not null
+        if ($milestoneId !== null && !Milestone::where('id', $milestoneId)->exists()) {
+            Log::debug("setTargetMilestone: Milestones not found");
+            return false;
+        }
+
+        $progression->current_milestone_id = $milestoneId;
+        return $progression->save();
+    }
 }

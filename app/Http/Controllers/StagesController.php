@@ -89,19 +89,31 @@ class StagesController extends Controller
         $user->load('activeProgression');
         $isAdmin = auth()->check() && auth()->user()->hasRole('admin');
 
-        if ($user) {
-            return [
-                'stages' =>  Stage::all(),
-                'milestones' => Milestone::all(),
-                'milestone_closure' => MilestoneClosure::all(),
-                'playerProgress' => [
-                    'completed_milestones' => $user->activeProgression->completed_milestones ?? []
-                ],
-                'isAdmin' => $isAdmin,
-            ];
-        }
+        return [
+            'milestones' => Milestone::all()->map(function ($milestone) {
+                return [
+                    'id' => $milestone->id,
+                    'icon_type' => $milestone->icon_type,
+                    'x' => $milestone->x,
+                    'y' => $milestone->y,
+                ];
+            }),
 
-        abort(404, 'Username not found');
+            'milestone_closure' => MilestoneClosure::all()->map(function ($closure) {
+                return [
+                    'milestone_id' => $closure->milestone_id,
+                    'descendant_id' => $closure->descendant_id,
+                ];
+            }),
+
+            'playerProgress' => [
+                'completed_milestones' => $user->activeProgression->completed_milestones ?? [],
+                'current_target_id' => $user->activeProgression->current_milestone_id ?? null,
+            ],
+
+            'isAdmin' => $isAdmin,
+            'stages' => Stage::all(),
+        ];
     }
     /**
      * Get all stages information as JSON

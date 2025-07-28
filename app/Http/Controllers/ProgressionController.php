@@ -10,6 +10,7 @@ use App\Services\ProgressionService;
 use Illuminate\Support\Facades\Validator;
 use Log;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\User;
 
 class ProgressionController extends Controller
 {
@@ -81,5 +82,30 @@ class ProgressionController extends Controller
         return response()->json([
             'completed_milestones' => $user->activeProgression->completed_milestones ?? []
         ]);
+    }
+
+    /**
+     * Sets the player's currently targeted milestone.
+     * This is called by the player from the in-game GUI.
+     */
+    public function setTargetMilestone(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            // The milestone_id can be nullable to allow clearing the target
+            'milestone_id' => 'nullable|integer|exists:milestones,id',
+        ]);
+
+        $user = $this->getUserFromRequest($request);
+        if (!$user) {
+            return response()->json(['message' => 'Player not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $success = $this->progressionService->setTargetMilestone($user, $validated['milestone_id'] ?? null);
+
+        if ($success) {
+            return response()->json(['message' => 'Target milestone updated successfully.']);
+        }
+
+        return response()->json(['message' => 'Failed to update target milestone.'], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
