@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -81,6 +81,8 @@ class User extends Authenticatable
         'day_streak',
         'grade',
         'role',
+        'solo_progression_id',
+        'active_progression_id',
     ];
 
     /**

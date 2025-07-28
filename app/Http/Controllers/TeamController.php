@@ -22,10 +22,6 @@ class TeamController extends Controller
      */
     public function playerJoin(Request $request): JsonResponse
     {
-        // if (!$request->user()->hasRole('team_editor')) {
-        // return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
-        // }
-
         $validator = Validator::make($request->all(), [
             'player_uuid' => 'required|string|size:32',
             'team_uuid' => 'required|string|uuid',
@@ -51,10 +47,6 @@ class TeamController extends Controller
      */
     public function playerLeave(Request $request): JsonResponse
     {
-        if (!$request->user()->hasRole('team_editor')) {
-            return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
-        }
-
         $validator = Validator::make($request->all(), [
             'player_uuid' => 'required|string|size:32',
         ]);
@@ -77,10 +69,6 @@ class TeamController extends Controller
      */
     public function disband(Request $request): JsonResponse
     {
-        if (!$request->user()->hasRole('team_editor')) {
-            return response()->json(['message' => 'Forbidden'], Response::HTTP_FORBIDDEN);
-        }
-
         $validator = Validator::make($request->all(), [
             'team_uuid' => 'required|string|uuid',
         ]);

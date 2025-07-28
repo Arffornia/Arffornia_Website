@@ -55,7 +55,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereRewardProgressPoints($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereStageId($value)
- * @mixin \Eloquent
  * @property int $x
  * @property int $y
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MilestoneRequirement> $requirements
@@ -64,6 +63,7 @@ namespace App\Models{
  * @property-read int|null $unlocks_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereX($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereY($value)
+ * @mixin \Eloquent
  */
 	class Milestone extends \Eloquent {}
 }
@@ -79,9 +79,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure query()
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereDescendantId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereMilestoneId($value)
- * @mixin \Eloquent
  * @property int $id
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneClosure whereId($value)
+ * @mixin \Eloquent
  */
 	class MilestoneClosure extends \Eloquent {}
 }
@@ -105,6 +105,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereItemId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereMilestoneId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class MilestoneRequirement extends \Eloquent {}
 }
@@ -135,6 +136,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereRecipeIdToBan($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereShopPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class MilestoneUnlock extends \Eloquent {}
 }
@@ -157,9 +159,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereMilestoneId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUserId($value)
- * @mixin \Eloquent
  * @property int $id
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUser whereId($value)
+ * @mixin \Eloquent
  */
 	class MilestoneUser extends \Eloquent {}
 }
@@ -209,6 +211,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereUserId($value)
+ * @mixin \Eloquent
  */
 	class PendingReward extends \Eloquent {}
 }
@@ -232,6 +235,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereMaxStageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class Progression extends \Eloquent {}
 }
@@ -264,10 +268,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePromoPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
- * @mixin \Eloquent
  * @property array<array-key, mixed>|null $commands
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCommands($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereIsUnique($value)
+ * @mixin \Eloquent
  */
 	class ShopItem extends \Eloquent {}
 }
@@ -307,7 +311,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $members
  * @property-read int|null $members_count
- * @property-read \App\Models\Progression $progression
+ * @property-read Progression $progression
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team onlyTrashed()
@@ -320,6 +324,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withoutTrashed()
+ * @mixin \Eloquent
  */
 	class Team extends \Eloquent {}
 }
@@ -366,7 +371,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGrade($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUuid($value)
- * @mixin \Eloquent
  * @property int|null $solo_progression_id
  * @property int|null $active_progression_id
  * @property string|null $team_id
@@ -378,6 +382,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereActiveProgressionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereSoloProgressionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTeamId($value)
+ * @mixin \Eloquent
  */
 	class User extends \Eloquent {}
 }

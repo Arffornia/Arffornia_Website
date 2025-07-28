@@ -7,6 +7,7 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\LauncherController;
 use App\Http\Controllers\ShopItemsController;
+use App\Http\Controllers\ProgressionController;
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('best_player_point/{size}', [UserController::class, 'bestPlayerByPointJson']);
@@ -47,9 +48,15 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::delete('milestone-closures', [StagesController::class, 'destroyLink']);
 });
 
-// Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () { // TODO Add svc account with default creds in dataseeder
-Route::post('/teams/create', [TeamController::class, 'create']);
-Route::post('/teams/player/join', [TeamController::class, 'playerJoin']);
-Route::post('/teams/player/leave', [TeamController::class, 'playerLeave']);
-Route::post('/teams/disband', [TeamController::class, 'disband']);
+Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
+    Route::post('/teams/create', [TeamController::class, 'create']);
+    Route::post('/teams/player/join', [TeamController::class, 'playerJoin']);
+    Route::post('/teams/player/leave', [TeamController::class, 'playerLeave']);
+    Route::post('/teams/disband', [TeamController::class, 'disband']);
+});
+
+// Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(function () {
+Route::post('/progression/add', [ProgressionController::class, 'addMilestone']);
+Route::post('/progression/remove', [ProgressionController::class, 'removeMilestone']);
+Route::post('/progression/list', [ProgressionController::class, 'listMilestones']);
 // });

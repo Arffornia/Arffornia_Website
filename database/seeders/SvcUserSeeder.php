@@ -17,14 +17,14 @@ class SvcUserSeeder extends Seeder
     public function run()
     {
         // Generate a secure secret. DISPLAY ONLY DURING SEEDING.
-        $secret = Str::random(40);
+        $secret = "minecraft-server-svc"; // TODO Remove this (For testing purpose only)
         $svc_id = 'minecraft-server-svc';
 
         User::updateOrCreate(
             ['name' => $svc_id],
             [
                 'uuid' => Hash::make($secret),
-                'role' => 'svc,team_editor',
+                'role' => 'svc,team_editor,progression_editor',
                 'grade' => 'system',
                 'money' => 0,
                 'progress_point' => 0,
