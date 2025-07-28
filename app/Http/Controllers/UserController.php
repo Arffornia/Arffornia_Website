@@ -9,13 +9,15 @@ use App\Services\UserService;
 use Illuminate\Http\Response;
 
 use App\Services\StagesService;
-use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
 
 
@@ -336,5 +338,50 @@ class UserController extends Controller
     {
         $data = $this->bestPlayerByPoint($size);
         return response()->json($data);
+    }
+
+    /**
+     * Ensures a player exists in the database. If not, it creates them.
+     * This is called by the Minecraft server on player join.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function ensurePlayerExists(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'uuid' => 'required|string|size:32',
+            'username' => 'required|string|max:16',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $data = $validator->validated();
+        $cleanUuid = $this->userService->getCleanPlayerUuid($data['uuid']);
+
+        $user = $this->userService->getUserByUuid($cleanUuid);
+        $username = $data['username'];
+
+        if ($user) {
+            if ($user->name !== $username) {
+                $user->name = $username;
+                $user->save();
+
+                return response()->json(['status' => 'updated']);
+            }
+
+            return response()->json(['status' => 'exists']);
+        }
+
+        try {
+            $this->userService->createUser($username, $cleanUuid);
+            Log::info("User created on first join: " . $username);
+            return response()->json(['status' => 'created'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            Log::error("Failed to create user on first join for UUID {$cleanUuid}: " . $e->getMessage());
+            return response()->json(['message' => 'Failed to create user.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

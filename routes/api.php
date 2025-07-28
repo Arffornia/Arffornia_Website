@@ -55,8 +55,12 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function
     Route::post('/teams/disband', [TeamController::class, 'disband']);
 });
 
-// Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(function () {
-Route::post('/progression/add', [ProgressionController::class, 'addMilestone']);
-Route::post('/progression/remove', [ProgressionController::class, 'removeMilestone']);
-Route::post('/progression/list', [ProgressionController::class, 'listMilestones']);
-// });
+Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(function () {
+    Route::post('/progression/add', [ProgressionController::class, 'addMilestone']);
+    Route::post('/progression/remove', [ProgressionController::class, 'removeMilestone']);
+    Route::post('/progression/list', [ProgressionController::class, 'listMilestones']);
+});
+
+Route::middleware(['auth:sanctum', 'anyRole:admin,user_editor'])->group(function () {
+    Route::post('/player/ensure-exists', [UserController::class, 'ensurePlayerExists']);
+});
