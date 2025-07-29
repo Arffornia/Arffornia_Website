@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereMilestoneId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUserId($value)
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUser whereId($value)
  * @mixin \Eloquent
  */
 class MilestoneUser extends Model

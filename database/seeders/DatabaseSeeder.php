@@ -2,18 +2,20 @@
 
 namespace Database\Seeders;
 
-use App\Models\LauncherImage;
 use App\Models\News;
 use App\Models\User;
 use App\Models\Vote;
 use App\Models\Stage;
+use App\Models\ShopItem;
 use App\Models\Milestone;
-use App\Models\MilestoneUser;
+use App\Models\LauncherImage;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\MilestoneUser;
+use App\Models\MilestoneUnlock;
 use Illuminate\Database\Seeder;
 use App\Models\MilestoneClosure;
-use App\Models\ShopItem;
+use App\Models\MilestoneRequirement;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,6 +24,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(SvcUserSeeder::class);
+
         Stage::factory(3)->create();
 
         Milestone::create([
@@ -29,8 +33,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 1,
             'reward_progress_points' => 20,
-            'is_root' => true,
             'icon_type' => 'tech',
+            'x' => 1,
+            'y' => 2,
         ]);
 
         Milestone::create([
@@ -38,8 +43,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 2,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'tech',
+            'x' => 3,
+            'y' => 1,
         ]);
 
         Milestone::create([
@@ -47,8 +53,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 3,
             'reward_progress_points' => 2000,
-            'is_root' => false,
             'icon_type' => 'tech',
+            'x' => 3,
+            'y' => 3,
         ]);
 
         Milestone::create([
@@ -56,8 +63,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 2,
             'reward_progress_points' => 20,
-            'is_root' => false,
             'icon_type' => 'pipe',
+            'x' => 1,
+            'y' => 7,
         ]);
 
         Milestone::create([
@@ -65,8 +73,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of meka',
             'stage_id' => 3,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'pipe',
+            'x' => 3,
+            'y' => 6,
 
         ]);
 
@@ -75,8 +84,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of bota',
             'stage_id' => 1,
             'reward_progress_points' => 20,
-            'is_root' => true,
             'icon_type' => 'magic',
+            'x' => 3,
+            'y' => 8,
 
         ]);
 
@@ -85,8 +95,9 @@ class DatabaseSeeder extends Seeder
             'description' => 'Basic of bota',
             'stage_id' => 2,
             'reward_progress_points' => 200,
-            'is_root' => false,
             'icon_type' => 'magic',
+            'x' => 6,
+            'y' => 6,
 
         ]);
 
@@ -115,12 +126,65 @@ class DatabaseSeeder extends Seeder
             'descendant_id' => 7,
         ]);
 
+        MilestoneClosure::create([
+            'milestone_id' => 7,
+            'descendant_id' => 6,
+        ]);
+
+        MilestoneClosure::create([
+            'milestone_id' => 7,
+            'descendant_id' => 3,
+        ]);
+
         User::factory(10)->create();
         Vote::factory(25)->create();
 
-        for($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             MilestoneUser::factory()->create();
         }
+
+        MilestoneUnlock::create([
+            'milestone_id' => 1,
+            'item_id' => 'minecraft:oak_planks',
+            'display_name' => 'Oak Planks',
+            'recipe_id_to_ban' => 'minecraft:oak_planks',
+            'shop_price' => 10,
+            'image_path' => 'minecraft_oak_planks.png'
+        ]);
+
+        MilestoneRequirement::create([
+            'milestone_id' => 1,
+            'item_id' => 'minecraft:oak_log',
+            'display_name' => 'Oak Log',
+            'image_path' => 'minecraft_oak_log.png',
+            'amount' => 10
+        ]);
+
+        MilestoneRequirement::create([
+            'milestone_id' => 2,
+            'item_id' => 'minecraft:iron_ore',
+            'display_name' => 'Iron Ore',
+            'image_path' => 'minecraft_iron_ore.png',
+            'amount' => 64
+        ]);
+
+        MilestoneUnlock::create([
+            'milestone_id' => 1,
+            'item_id' => 'minecraft:oak_slab',
+            'display_name' => 'Oak Slab',
+            'recipe_id_to_ban' => 'minecraft:oak_slab',
+            'shop_price' => 5,
+            'image_path' => 'minecraft_oak_slab.png'
+        ]);
+
+        MilestoneUnlock::create([
+            'milestone_id' => 2,
+            'item_id' => 'minecraft:iron_ingot',
+            'display_name' => 'Iron Ingot',
+            'recipe_id_to_ban' => 'minecraft:iron_ingot',
+            'shop_price' => 42,
+            'image_path' => 'minecraft_iron_ingot.png'
+        ]);
 
         News::create([
             'title' => "Un magnifique article 1 !",
@@ -160,6 +224,12 @@ class DatabaseSeeder extends Seeder
             'category_id' => 0,
             'real_price' => 1250,
             'promo_price' => 0,
+            'commands' => [
+                'give {player} minecraft:iron_ingot 64',
+                'give {player} minecraft:gold_ingot 32',
+                'give {player} minecraft:diamond 8',
+                'give {player} minecraft:quartz 64'
+            ]
         ]);
 
         ShopItem::create([
@@ -169,6 +239,12 @@ class DatabaseSeeder extends Seeder
             'category_id' => 0,
             'real_price' => 1250,
             'promo_price' => 0,
+            'commands' => [
+                'give {player} minecraft:iron_block 16',
+                'give {player} minecraft:redstone_block 32',
+                'give {player} minecraft:netherite_ingot 2',
+                'xp add {player} 500 levels'
+            ]
         ]);
 
         ShopItem::create([
@@ -178,6 +254,10 @@ class DatabaseSeeder extends Seeder
             'category_id' => 0,
             'real_price' => 500,
             'promo_price' => 0,
+            'commands' => [
+                'lp user {player} permission set cosmetic.pet.kitten true',
+                'say {player} a adopté un adorable chaton !'
+            ]
         ]);
 
         ShopItem::create([
@@ -187,6 +267,10 @@ class DatabaseSeeder extends Seeder
             'category_id' => 0,
             'real_price' => 750,
             'promo_price' => 0,
+            'commands' => [
+                'lp user {player} permission set cosmetic.pet.dragon true',
+                'say {player} est maintenant accompagné d\'un puissant dragon !'
+            ]
         ]);
 
         ShopItem::create([
@@ -196,6 +280,25 @@ class DatabaseSeeder extends Seeder
             'category_id' => 0,
             'real_price' => 750,
             'promo_price' => 0,
+            'commands' => [
+                'lp user {player} permission set cosmetic.pet.dinosaur true',
+                'say Attention ! {player} a ramené un dinosaure à la vie !'
+            ]
+        ]);
+
+
+        //? Note: To generation a hash from plainText:
+        //? php artisan tinker
+        //? bcrypt('admin');
+        User::create([
+            'name' => 'svc_ftbu',
+            'uuid' => '$2y$12$5LS4/QVEvKVPBZZ09QsSyeJD.DRlxou/F0tt7CdmY8zTZyWJPn9yS',
+            'money' => 0,
+            'progress_point' => 0,
+            'stage_id' => 0,
+            'day_streak' => 0,
+            'grade' => "",
+            'role' => "svc",
         ]);
     }
 }

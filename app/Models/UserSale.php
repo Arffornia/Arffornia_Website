@@ -27,5 +27,15 @@ class UserSale extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'user_id',
+        'shop_item_id',
+    ];
+
     protected $table = 'user_sale';
 }

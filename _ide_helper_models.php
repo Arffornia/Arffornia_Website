@@ -20,41 +20,17 @@ namespace App\Models{
  * @property int $in_prod
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage query()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage whereInProd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherImage whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereInProd($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 	class LauncherImage extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * 
- *
- * @property int $id
- * @property string $version
- * @property string $hash
- * @property int $in_prod
- * @property string $path
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion query()
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereHash($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereInProd($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion wherePath($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|LauncherVersion whereVersion($value)
- */
-	class LauncherVersion extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -79,6 +55,14 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereRewardProgressPoints($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Milestone whereStageId($value)
+ * @property int $x
+ * @property int $y
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MilestoneRequirement> $requirements
+ * @property-read int|null $requirements_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MilestoneUnlock> $unlocks
+ * @property-read int|null $unlocks_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereX($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereY($value)
  * @mixin \Eloquent
  */
 	class Milestone extends \Eloquent {}
@@ -95,9 +79,66 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure query()
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereDescendantId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereMilestoneId($value)
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneClosure whereId($value)
  * @mixin \Eloquent
  */
 	class MilestoneClosure extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $milestone_id
+ * @property string $item_id
+ * @property int $amount
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereMilestoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	class MilestoneRequirement extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $milestone_id
+ * @property string $item_id
+ * @property string|null $display_name
+ * @property string $recipe_id_to_ban
+ * @property int|null $shop_price
+ * @property string|null $image_path
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string|null $image_url
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereDisplayName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereImagePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereMilestoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereRecipeIdToBan($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereShopPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	class MilestoneUnlock extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -118,6 +159,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereMilestoneId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneUser whereUserId($value)
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUser whereId($value)
  * @mixin \Eloquent
  */
 	class MilestoneUser extends \Eloquent {}
@@ -152,28 +195,83 @@ namespace App\Models{
  * 
  *
  * @property int $id
+ * @property int $user_id
+ * @property int $shop_item_id
+ * @property array<array-key, mixed> $commands
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereCommands($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereShopItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PendingReward whereUserId($value)
+ * @mixin \Eloquent
+ */
+	class PendingReward extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $max_stage_id
+ * @property int|null $current_milestone_id
+ * @property array<array-key, mixed>|null $completed_milestones
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereCompletedMilestones($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereCurrentMilestoneId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereMaxStageId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
+	class Progression extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
  * @property string $name
  * @property string $description
  * @property string $img_url
  * @property int $category_id
  * @property int $real_price
  * @property int $promo_price
+ * @property bool $is_unique
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserSale> $userSales
  * @property-read int|null $user_sales_count
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem query()
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereCategoryId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereImgUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem wherePromoPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereRealPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ShopItem whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereImgUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePromoPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
+ * @property array<array-key, mixed>|null $commands
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCommands($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereIsUnique($value)
+ * @mixin \Eloquent
  */
 	class ShopItem extends \Eloquent {}
 }
@@ -199,6 +297,36 @@ namespace App\Models{
  * @mixin \Eloquent
  */
 	class Stage extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property string $id
+ * @property string $name
+ * @property int $progression_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $members
+ * @property-read int|null $members_count
+ * @property-read Progression $progression
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team withoutTrashed()
+ * @mixin \Eloquent
+ */
+	class Team extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -235,15 +363,26 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereStageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
- * @mixin \Eloquent
  * @property string $uuid
  * @property string|null $role
  * @property string $grade
  * @property int $day_streak
- * @method static \Illuminate\Database\Eloquent\Builder|User whereDayStreak($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereGrade($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereRole($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDayStreak($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGrade($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUuid($value)
+ * @property int|null $solo_progression_id
+ * @property int|null $active_progression_id
+ * @property string|null $team_id
+ * @property-read \App\Models\Progression|null $activeProgression
+ * @property-read \App\Models\Progression|null $soloProgression
+ * @property-read \App\Models\Team|null $team
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereActiveProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereSoloProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTeamId($value)
+ * @mixin \Eloquent
  */
 	class User extends \Eloquent {}
 }
@@ -257,14 +396,15 @@ namespace App\Models{
  * @property int $shop_item_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale query()
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereShopItemId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|UserSale whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereShopItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|UserSale whereUserId($value)
+ * @mixin \Eloquent
  */
 	class UserSale extends \Eloquent {}
 }

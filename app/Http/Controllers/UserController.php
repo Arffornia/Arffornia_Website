@@ -11,9 +11,13 @@ use Illuminate\Http\Response;
 use App\Services\StagesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 
 
 
@@ -143,12 +147,15 @@ class UserController extends Controller
         }
 
         if (!$user) {
-            abort(404);
+            abort(404, 'User not found.');
         }
+
+        $user->load('activeProgression.maxStage');
 
         return view('pages.users.profile', [
             'user' => $user,
-            'stage_number' => $this->stageService->getStageById($user->stage_id)->number,
+            'stage_number' => $user->activeProgression->maxStage->number ?? 1,
+            'current_milestone_name' => $user->activeProgression->currentTargetedMilestone->name ?? 'None',
         ]);
     }
 
@@ -186,17 +193,119 @@ class UserController extends Controller
         return redirect()->away($this->userService->getMsAuthRedirectUrl());
     }
 
+    /**
+     * Login the User with the MS OAuth UI Flow
+     *
+     * @return RedirectResponse|View
+     */
     public function msAuthCallback()
     {
-        $user = $this->userService->getUserFromMsAuthCallback();
+        try {
+            $user = $this->userService->getUserFromMsAuthCallback();
 
-        if ($user) {
-            return redirect('/')->with('message', 'Welcome ' . $user->name . ' !');
+            if ($user) {
+                return redirect('/')->with('message', 'Welcome ' . $user->name . ' !');
+            }
+
+
+            // TODO add message with error
+            return view('pages.users.login');
+        } catch (MinecraftOauthException $e) {
+            dump($e->getMessage());
+
+            /*
+                TODO:
+
+                Add a flash message, with e getmessage
+            */
+            abort(401, 'Authentication failed. Please try again.');
+        }
+    }
+
+    /**
+     * Get auth token using a Microsoft access_token
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAuthTokenByMSAuth(Request $request)
+    {
+        $request->validate([
+            'access_token' => 'required|string',
+        ]);
+
+        try {
+            // Validate the access token and get Mojang user
+            $user = $this->userService->getUserWithAccessToken($request->input('access_token'));
+
+            if (!$user) {
+                return response()->json(['message' => 'Not authenticated'], 401);
+            }
+
+            $token = $this->genApiTokenWithUserScope($user);
+
+            return response()->json(['token' => $token]);
+        } catch (MinecraftOauthException) {
+            return response()->json(['message' => 'Authentication failed. Please try again.'], 401);
+        }
+    }
+
+    /**
+     * Get auth token using the current user session (laravel session)
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAuthTokenBySession(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
+        $token = $this->genApiTokenWithUserScope($user);
 
-        // TODO add message with error
-        return view('pages.users.login');
+        return response()->json(['token' => $token]);
+    }
+
+    /**
+     * Get auth token using special SVC account credentials
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function getAuthTokenBySvcAuth(Request $request)
+    {
+        $request->validate([
+            'svc_id' => 'required|string',
+            'secret' => 'required|string',
+        ]);
+
+        $user = User::where('name', $request->input('svc_id'))
+            ->where('role', 'like', '%svc%')
+            ->first();
+
+        if (!$user || !Hash::check($request->input('secret'), $user->uuid)) {
+            return response()->json(['message' => 'Invalid SVC credentials'], 401);
+        }
+
+        $token = $this->genApiTokenWithUserScope($user);
+
+        return response()->json(['token' => $token]);
+    }
+
+    /**
+     * Generate the API token with User's scope
+     * @param \App\Models\User $user
+     * @return string
+     */
+    private function genApiTokenWithUserScope(User $user)
+    {
+        return $user->createToken('api--oken', $user->getRoles())->plainTextToken;
     }
 
     /**
@@ -229,5 +338,50 @@ class UserController extends Controller
     {
         $data = $this->bestPlayerByPoint($size);
         return response()->json($data);
+    }
+
+    /**
+     * Ensures a player exists in the database. If not, it creates them.
+     * This is called by the Minecraft server on player join.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function ensurePlayerExists(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'uuid' => 'required|string|size:32',
+            'username' => 'required|string|max:16',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $data = $validator->validated();
+        $cleanUuid = $this->userService->getCleanPlayerUuid($data['uuid']);
+
+        $user = $this->userService->getUserByUuid($cleanUuid);
+        $username = $data['username'];
+
+        if ($user) {
+            if ($user->name !== $username) {
+                $user->name = $username;
+                $user->save();
+
+                return response()->json(['status' => 'updated']);
+            }
+
+            return response()->json(['status' => 'exists']);
+        }
+
+        try {
+            $this->userService->createUser($username, $cleanUuid);
+            Log::info("User created on first join: " . $username);
+            return response()->json(['status' => 'created'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            Log::error("Failed to create user on first join for UUID {$cleanUuid}: " . $e->getMessage());
+            return response()->json(['message' => 'Failed to create user.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

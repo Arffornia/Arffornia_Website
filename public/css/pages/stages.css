@@ -1,34 +1,82 @@
-.bg {   
-    height: 89vh;
-    width: 94%;
-    background-color: #3d267d;;
-    border-radius: 15px;
-    border: solid 5px #ff7300;
+:root {
+    /* Colors */
+    --color-background: #f2f2f2;
+    --color-line-thin: rgba(0, 0, 0, 0.05);
+    --color-line-thin-alt: rgba(0, 0, 0, 0.07);
+    --color-line-thick: #aaa;
+
+    /* Grid size */
+    --grid-small-size: 4px;
+    --grid-large-size: 80px;
+
+    /* Grid thickness */
+    --line-thin-width: 1px;
+    --line-thick-width: 1px;
+    --grid-padding: 3px;
+    --grid-cell-size: 78px;
+}
+
+html {
+    max-width: none;
+}
+
+header {
+    position: absolute;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    max-width: 1620px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    z-index: 100;
+    width: 100%;
+    max-width: 1620px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.bg {
+    height: 100vh;
+    width: 100%;
     box-sizing: border-box;
-    margin-left: 3%;
-    margin-right: 3%;
     position: relative;
     overflow: hidden;
 }
 
 .canvas {
     position: absolute;
-    border-radius: 10px;
-    top: 50%;
-    left: 0%; 
-    transform: translateY(-50%); 
-    cursor: -webkit-grabbing;
-    cursor: grab; 
-    background-color: #ffffff00;
-    display: grid;
-    gap: 100px;    
+    top: 0;
+    left: 0;
+    background:
+        linear-gradient(-90deg, var(--color-line-thin) var(--line-thin-width), transparent var(--line-thin-width)),
+        linear-gradient(var(--color-line-thin) var(--line-thin-width), transparent var(--line-thin-width)),
+        linear-gradient(-90deg, var(--color-line-thin-alt) var(--line-thin-width), transparent var(--line-thin-width)),
+        linear-gradient(var(--color-line-thin-alt) var(--line-thin-width), transparent var(--line-thin-width)),
+        linear-gradient(transparent var(--grid-padding), var(--color-background) var(--grid-padding), var(--color-background) var(--grid-cell-size), transparent var(--grid-cell-size)),
+        linear-gradient(-90deg, var(--color-line-thick) var(--line-thick-width), transparent var(--line-thick-width)),
+        linear-gradient(-90deg, transparent var(--grid-padding), var(--color-background) var(--grid-padding), var(--color-background) var(--grid-cell-size), transparent var(--grid-cell-size)),
+        linear-gradient(var(--color-line-thick) var(--line-thick-width), transparent var(--line-thick-width)),
+        var(--color-background);
+    background-size:
+        var(--grid-small-size) var(--grid-small-size),
+        var(--grid-small-size) var(--grid-small-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size),
+        var(--grid-large-size) var(--grid-large-size);
+    z-index: 0;
 }
 
 .canvas:active {
-    cursor: grabbing; 
+    cursor: grabbing;
 }
-
-
 
 .node {
     width: 70px;
@@ -39,16 +87,6 @@
     margin-top: auto;
     margin-bottom: auto;
     cursor: pointer;
-}
-
-.nodeContainer {
-    display: flex;
-    gap: 50px;
-}
-
-.nodeChildren {
-    display: grid;
-    gap: 30px;
 }
 
 .layer_line {
@@ -70,6 +108,16 @@
     stroke-width: 5px;
 }
 
+.link-path {
+    transition: stroke 0.2s ease-in-out, stroke-width 0.2s ease-in-out;
+}
+
+.canvas.unlink-mode .link-path:hover {
+    stroke: #e74c3c;
+    stroke-width: 8px;
+    cursor: not-allowed;
+}
+
 
 /*
     Info Display
@@ -79,25 +127,29 @@
     color: #fff;
     font-family: Montserrat, sans-serif;
     font-weight: 500;
-    top: 4%;
+    top: 12%;
     right: 2%;
     z-index: 3;
     width: 350px;
-    
+
     background-color: #000;
     border-radius: 15px;
     padding: 30px;
-}
 
-.info-hidden {
-    position: none;
-    visibility: hidden;
-    
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+    position: absolute;
 }
 
 .info-show {
-    position: absolute;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
+
+
 
 .info .closeBtn {
     width: 30px;
@@ -106,6 +158,12 @@
     top: 5px;
     right: 5px;
     cursor: pointer;
+    transition: opacity 0.3s ease;
+    opacity: 0.75;
+}
+
+.info .closeBtn:hover {
+    opacity: 1;
 }
 
 .info .iconContainer {
@@ -120,9 +178,9 @@
     align-items: center;
 }
 
-.info #title {
+.info .title {
     padding-left: 10px;
-    font-size: 125%;
+    font-size: 100%;
     font-weight: 700;
 }
 
@@ -134,19 +192,246 @@
 
 .info .textContainer .textTitle {
     font-weight: 700;
-    font-size: 125%;
+    font-size: 100%;
 }
 
-.info #description,
-.info #stageNumber,
-.info #stageNumber,
-.icon #itemsContainer
-{
-    transition: opacity 0.3s ease;
-
-    font-weight: 500;
+.info .textDescription {
+    font-weight: 300;
 }
 
 .info .itemsContainer {
     padding-top: 3%;
+}
+
+.export-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 999;
+    transition: transform 0.3s ease;
+}
+
+.export-btn:hover {
+    transform: scale(1.05);
+}
+
+.info .admin-actions {
+    margin-top: 20px;
+    display: flex;
+    /* Changed from none to flex by JS if admin */
+    gap: 10px;
+}
+
+.info .admin-actions button {
+    padding: 8px 12px;
+    background-color: #ff7300;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.info .admin-actions button#cancelBtn {
+    background-color: #555;
+}
+
+.info input.title-input,
+.info input.points-input,
+.info textarea.description-input {
+    width: 100%;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-top: 5px;
+}
+
+.info input.stage-input {
+    width: 60px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.info textarea.description-input {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/*
+Admin Panel & Controls
+*/
+.admin-panel {
+    font-family: Montserrat, sans-serif;
+    font-weight: 500;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #2a2a2e;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.admin-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-controls p {
+    margin: 0;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.admin-mode-btn {
+    padding: 5px 10px;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.admin-mode-btn:hover {
+    background-color: #555;
+    transform: translateY(-1px);
+}
+
+.admin-mode-btn.active {
+    background-color: #ff7300;
+    font-weight: bold;
+}
+
+.canvas.add-mode {
+    cursor: crosshair;
+}
+
+.canvas.delete-mode .node:hover {
+    cursor: not-allowed;
+}
+
+.canvas.link-mode .node:hover {
+    cursor: pointer;
+}
+
+.canvas.unlink-mode .node:hover {
+    cursor: pointer;
+}
+
+.node.selected {
+    border-color: #3498db;
+    box-shadow: 0 0 15px #3498db, 0 0 25px rgba(52, 152, 219, 0.5) inset;
+    transform: scale(1.1);
+}
+
+.canvas.move-mode .node {
+    cursor: grab;
+}
+
+.node.dragging {
+    cursor: grabbing !important;
+    z-index: 1000;
+    border-color: #3498db;
+    box-shadow: 0 0 20px #3498db;
+}
+
+.modal-hidden {
+    display: none;
+}
+
+#item-editor-modal {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    font-family: Montserrat, sans-serif;
+}
+
+.modal-content {
+    background-color: #1e1e1e;
+    margin: 10% auto;
+    padding: 25px;
+    border: 1px solid #ff7300;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    color: white;
+    position: relative;
+}
+
+.modal-close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#item-editor-form label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+#item-editor-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: white;
+}
+
+.modal-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-actions button[type="submit"] {
+    background-color: #ff7300;
+    color: white;
+}
+
+.modal-actions button.cancel-btn {
+    background-color: #555;
+    color: white;
+    margin-left: 10px;
 }

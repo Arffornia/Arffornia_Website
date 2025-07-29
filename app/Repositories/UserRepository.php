@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Repositories;
 
 use App\Models\User;
@@ -6,7 +7,8 @@ use App\Models\Stage;
 use Illuminate\Support\Collection;
 
 
-class UserRepository {
+class UserRepository
+{
 
     /**
      * Get size best user by progress points
@@ -14,7 +16,8 @@ class UserRepository {
      * @param integer $size
      * @return Collection<User>
      */
-    public function getBestUsersByProgressPoints(int $size) {
+    public function getBestUsersByProgressPoints(int $size)
+    {
         return User::orderBy('progress_point', 'desc')->take($size)->get();
     }
 
@@ -24,7 +27,8 @@ class UserRepository {
      * @param string $username
      * @return user
      */
-    public function getUserByName($username) {
+    public function getUserByName($username)
+    {
         return User::where('name', $username)->first();
     }
 
@@ -34,7 +38,8 @@ class UserRepository {
      * @param int $uuid
      * @return User
      */
-    public function getUserByUuid($uuid) {
+    public function getUserByUuid($uuid)
+    {
         return User::where('uuid', $uuid)->first();
     }
 
@@ -44,11 +49,12 @@ class UserRepository {
      * @param integer $size
      * @return Collection<User>
      */
-    public function getTopVoters(int $size) {
+    public function getTopVoters(int $size)
+    {
         return User::withCount('votes')
-                        ->orderByDesc('votes_count')
-                        ->limit($size)
-                        ->get();
+            ->orderByDesc('votes_count')
+            ->limit($size)
+            ->get();
     }
 
     /**
@@ -57,10 +63,11 @@ class UserRepository {
      * @param integer $size
      * @return Collection<User>
      */
-    public function getTopUsersByPoint(int $size) {
+    public function getTopUsersByPoint(int $size)
+    {
         return User::orderByDesc('progress_point')
-                        ->limit($size)
-                        ->get();
+            ->limit($size)
+            ->get();
     }
 
     /**
@@ -70,18 +77,28 @@ class UserRepository {
      * @param string $uuid
      * @return User
      */
-    public function createUser(string $name, string $uuid) {
+    public function createUser(string $name, string $uuid)
+    {
         $startStageId = Stage::where('number', 1)->first()->id;
 
-        $formFields['name'] = $name;
-        $formFields['uuid'] = $uuid;
-        $formFields['money'] = 0;
-        $formFields['progress_point'] = 0;
-        $formFields['stage_id'] = $startStageId;
-        $formFields['day_streak'] = 0;
-        $formFields['grade'] = 'citizen';
+        $progression = \App\Models\Progression::create([
+            'max_stage_id' => $startStageId,
+            'completed_milestones' => [],
+        ]);
 
-        // Create User
-        return User::create($formFields);
+        $user = User::create([
+            'name' => $name,
+            'uuid' => $uuid,
+            'money' => 100000, //! TODO Remove that (For testing purposes only!)
+            'progress_point' => 0,
+            'stage_id' => $startStageId,
+            'day_streak' => 0,
+            'grade' => 'citizen',
+            'role' => 'user',
+            'solo_progression_id' => $progression->id,
+            'active_progression_id' => $progression->id, # Default active progression is the player's solo progression
+        ]);
+
+        return $user;
     }
 }

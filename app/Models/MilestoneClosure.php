@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure query()
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereDescendantId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|MilestoneClosure whereMilestoneId($value)
+ * @property int $id
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneClosure whereId($value)
  * @mixin \Eloquent
  */
 class MilestoneClosure extends Model

@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -49,11 +50,22 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGrade($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUuid($value)
+ * @property int|null $solo_progression_id
+ * @property int|null $active_progression_id
+ * @property string|null $team_id
+ * @property-read \App\Models\Progression|null $activeProgression
+ * @property-read \App\Models\Progression|null $soloProgression
+ * @property-read \App\Models\Team|null $team
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereActiveProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereSoloProgressionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTeamId($value)
  * @mixin \Eloquent
  */
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -68,6 +80,9 @@ class User extends Authenticatable
         'stage_id',
         'day_streak',
         'grade',
+        'role',
+        'solo_progression_id',
+        'active_progression_id',
     ];
 
     /**
@@ -89,15 +104,71 @@ class User extends Authenticatable
         return [];
     }
 
-    public function getVoteCount() {
+    public function getVoteCount()
+    {
         return $this->votes()->count();
     }
 
-    public function votes() {
+    public function votes()
+    {
         return $this->hasMany(Vote::class);
     }
 
-    public function hasRole(string $role) : bool {
-        return $this->role == $role;
+    public function soloProgression()
+    {
+        return $this->belongsTo(Progression::class, 'solo_progression_id');
+    }
+
+    public function activeProgression()
+    {
+        return $this->belongsTo(Progression::class, 'active_progression_id');
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    /**
+     * Get user's role as an array of roles.
+     *
+     * @return array<string>
+     */
+    public function getRoles(): array
+    {
+        return explode(',', $this->role);
+    }
+
+    /**
+     * Check if the user has a specific role.
+     *
+     * @param string $role
+     * @return bool
+     */
+    public function hasRole(string $role): bool
+    {
+        return in_array($role, $this->getRoles());
+    }
+
+    /**
+     * Check if the user has any of the specified roles.
+     *
+     * @param array<string> $rolesToCheck
+     * @return bool
+     */
+    public function hasAnyRole(array $rolesToCheck): bool
+    {
+        return !empty(array_intersect($this->getRoles(), $rolesToCheck));
+    }
+
+    /**
+     * Check if the user has all of the specified roles.
+     *
+     * @param array<string> $requiredRoles
+     * @return bool
+     */
+    public function hasAllRoles(array $requiredRoles): bool
+    {
+        return empty(array_diff($requiredRoles, $this->getRoles()));
     }
 }

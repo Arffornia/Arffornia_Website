@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $category_id
  * @property int $real_price
  * @property int $promo_price
+ * @property bool $is_unique
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserSale> $userSales
@@ -31,6 +32,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePromoPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
+ * @property array<array-key, mixed>|null $commands
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCommands($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereIsUnique($value)
  * @mixin \Eloquent
  */
 class ShopItem extends Model
@@ -45,10 +49,17 @@ class ShopItem extends Model
         'img_url',
         'category_id',
         'real_price',
-        'promo_price'
+        'promo_price',
+        'is_unique',
+        'commands'
     ];
 
-    public function userSales() {
+    public function userSales()
+    {
         return $this->hasMany(UserSale::class);
     }
+
+    protected $casts = [
+        'commands' => 'array',
+    ];
 }

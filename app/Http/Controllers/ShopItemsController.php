@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Response;
+use App\Models\ShopItem;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Services\ShopItemsService;
-use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Database\Eloquent\Collection;
 
 class ShopItemsController extends Controller
@@ -84,5 +85,32 @@ class ShopItemsController extends Controller
     {
         $data = $this->sales($size);
         return response()->json($data);
+    }
+
+    /**
+     * Return a single shop item as JSON
+     *
+     * @param ShopItem $item
+     * @return JsonResponse
+     */
+    public function itemDetailsJson(ShopItem $item): JsonResponse
+    {
+        $item->img_url = url($item->img_url);
+        return response()->json($item);
+    }
+
+    /**
+     * Handle the item purchase logic for web routes.
+     *
+     * @param Request $request
+     * @param ShopItem $item
+     * @return JsonResponse
+     */
+    public function buyItemWeb(Request $request, ShopItem $item): JsonResponse
+    {
+        $user = $request->user();
+        $result = $this->shopItemsService->purchaseItem($user, $item);
+
+        return response()->json($result);
     }
 }
