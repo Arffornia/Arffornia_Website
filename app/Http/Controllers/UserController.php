@@ -155,7 +155,7 @@ class UserController extends Controller
         return view('pages.users.profile', [
             'user' => $user,
             'stage_number' => $user->activeProgression->maxStage->number ?? 1,
-            'current_milestone_name' => $user->activeProgression->currentTargetedMilestone->name ?? 'None', // Assurez-vous d'ajouter la relation 'currentTargetedMilestone' dans votre modèle Progression si ce n'est pas déjà fait.
+            'current_milestone_name' => $user->activeProgression->currentTargetedMilestone->name ?? 'None',
         ]);
     }
 

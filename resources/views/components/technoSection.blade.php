@@ -2,7 +2,7 @@
     'title' => 'Technologies',
     'blocks' => [],
     'limit' => 3,
-    'showAll' => false, // optionnel : si tu veux pré-afficher tout direct
+    'showAll' => false,
 ])
 
 @php

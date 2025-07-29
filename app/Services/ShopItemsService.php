@@ -138,7 +138,7 @@ class ShopItemsService
                 PendingReward::create([
                     'user_id' => $user->id,
                     'shop_item_id' => $item->id,
-                    'commands' => $item->commands, // The commands are stored directly
+                    'commands' => $item->commands,
                     'status' => 'pending',
                 ]);
             });
