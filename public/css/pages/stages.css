@@ -257,6 +257,18 @@ footer {
     margin-top: 5px;
 }
 
+.info input.stage-input {
+    width: 60px;
+    background-color: #333;
+    color: white;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
 .info textarea.description-input {
     min-height: 80px;
     resize: vertical;
@@ -336,4 +348,15 @@ Admin Panel & Controls
     border-color: #3498db;
     box-shadow: 0 0 15px #3498db, 0 0 25px rgba(52, 152, 219, 0.5) inset;
     transform: scale(1.1);
+}
+
+.canvas.move-mode .node {
+    cursor: grab;
+}
+
+.node.dragging {
+    cursor: grabbing !important;
+    z-index: 1000;
+    border-color: #3498db;
+    box-shadow: 0 0 20px #3498db;
 }

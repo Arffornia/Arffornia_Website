@@ -165,7 +165,7 @@ class StagesController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'reward_progress_points' => 'required|integer|min:0',
-            // 'icon_type' => 'required|string|in:tech,pipe,magic,default',
+            'stage_id' => 'sometimes|required|integer|exists:stages,id'
         ]);
 
         if ($validator->fails()) {
@@ -308,5 +308,28 @@ class StagesController extends Controller
         return response()->json([
             'banned_recipes' => $bannedRecipes
         ]);
+    }
+
+    /**
+     * Update the position of a milestone.
+     *
+     * @param Request $request
+     * @param Milestone $milestone
+     * @return JsonResponse
+     */
+    public function updateMilestonePosition(Request $request, Milestone $milestone): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'x' => 'required|integer',
+            'y' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $milestone->update($validator->validated());
+
+        return response()->json($milestone);
     }
 }

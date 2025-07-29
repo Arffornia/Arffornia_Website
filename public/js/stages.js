@@ -50,6 +50,14 @@ let isEditing = false;
  * @type {string|null}
  */
 let apiToken = null;
+
+/**
+ * Editor move vars
+ */
+let isDraggingNode = false;
+let draggedNode = null;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
 // --- END: Global state variables ---
 
 
@@ -85,6 +93,12 @@ function setupEventListeners() {
     document.addEventListener("mouseup", () => {
         dragging = false;
     });
+
+    // Move mode event listerners
+    document.addEventListener('mousedown', startDragNode);
+    document.addEventListener('mousemove', dragNode);
+    document.addEventListener('mouseup', endDragNode);
+
 
     // Main click handler for the canvas
     canvas.addEventListener('click', handleCanvasClick);
@@ -361,7 +375,7 @@ function resetSelection() {
  * Updates the canvas cursor style based on the current mode.
  */
 function updateCanvasCursor() {
-    canvas.classList.remove('add-mode', 'delete-mode', 'link-mode', 'unlink-mode');
+    canvas.classList.remove('add-mode', 'delete-mode', 'link-mode', 'unlink-mode', 'move-mode');
     if (isAdmin && currentMode !== 'view') {
         canvas.classList.add(`${currentMode}-mode`);
     }
@@ -642,6 +656,7 @@ function setEditMode(editing) {
     const titleContainer = milestoneInfo.querySelector('#milestone-title');
     const descriptionContainer = milestoneInfo.querySelector('#description');
     const pointsContainer = milestoneInfo.querySelector('#reward_progress_points');
+    const stageContainer = milestoneInfo.querySelector('#stageNumber');
 
     document.getElementById('editBtn').style.display = editing ? 'none' : 'inline-block';
     document.getElementById('saveBtn').style.display = editing ? 'inline-block' : 'none';
@@ -651,10 +666,12 @@ function setEditMode(editing) {
         titleContainer.innerHTML = `<input type="text" class="title-input" value="${window.currentMilestoneData.name}">`;
         descriptionContainer.innerHTML = `<textarea class="description-input">${window.currentMilestoneData.description}</textarea>`;
         pointsContainer.innerHTML = `<input type="number" class="points-input" value="${window.currentMilestoneData.reward_progress_points}">`;
+        stageContainer.innerHTML = `<input type="number" class="stage-input" value="${window.currentMilestoneData.stage_id}">`;
     } else if (window.currentMilestoneData) {
         titleContainer.textContent = window.currentMilestoneData.name;
         descriptionContainer.textContent = window.currentMilestoneData.description;
         pointsContainer.textContent = window.currentMilestoneData.reward_progress_points;
+        stageContainer.textContent = window.currentMilestoneData.stage_id;
     }
 }
 
@@ -669,6 +686,7 @@ async function handleSave() {
         name: milestoneInfo.querySelector('.title-input').value,
         description: milestoneInfo.querySelector('.description-input').value,
         reward_progress_points: parseInt(milestoneInfo.querySelector('.points-input').value, 10),
+        stage_id: parseInt(milestoneInfo.querySelector('.stage-input').value, 10),
     };
 
     try {
@@ -692,6 +710,95 @@ async function handleSave() {
     } catch (error) {
         console.error('Save Error:', error);
         alert(`Failed to save changes: ${error.message}`);
+    }
+}
+
+/**
+ * Starts dragging a node if in 'move' mode.
+ * @param {MouseEvent} e
+ */
+function startDragNode(e) {
+    if (currentMode !== 'move' || !e.target.closest('.node')) return;
+
+    isDraggingNode = true;
+    draggedNode = e.target.closest('.node');
+
+    const canvasRect = canvas.getBoundingClientRect();
+    const nodeRect = draggedNode.getBoundingClientRect();
+
+    dragOffsetX = e.clientX - nodeRect.left;
+    dragOffsetY = e.clientY - nodeRect.top;
+
+    draggedNode.classList.add('dragging');
+    canvas.style.cursor = 'grabbing';
+}
+
+/**
+ * Moves the node on the canvas.
+ * @param {MouseEvent} e
+ */
+function dragNode(e) {
+    if (!isDraggingNode || !draggedNode) return;
+
+    e.preventDefault();
+    const canvasRect = canvas.getBoundingClientRect();
+
+    let newX = e.clientX - canvasRect.left - dragOffsetX;
+    let newY = e.clientY - canvasRect.top - dragOffsetY;
+
+    draggedNode.style.left = `${newX}px`;
+    draggedNode.style.top = `${newY}px`;
+
+    redrawAllLinks();
+}
+
+/**
+ * Ends the drag operation, snaps to grid, and saves the new position.
+ * @param {MouseEvent} e
+ */
+async function endDragNode(e) {
+    if (!isDraggingNode || !draggedNode) return;
+
+    const nodeId = draggedNode.id;
+    draggedNode.classList.remove('dragging');
+    canvas.style.cursor = '';
+
+    const finalLeft = parseInt(draggedNode.style.left, 10);
+    const finalTop = parseInt(draggedNode.style.top, 10);
+
+    const gridX = Math.round((finalLeft + NODE_ACTUAL_DIAMETER / 2) / GRID_CELL_SPACING);
+    const gridY = Math.round((finalTop + NODE_ACTUAL_DIAMETER / 2) / GRID_CELL_SPACING);
+
+    const snappedLeft = (gridX * GRID_CELL_SPACING) - (NODE_ACTUAL_DIAMETER / 2);
+    const snappedTop = (gridY * GRID_CELL_SPACING) - (NODE_ACTUAL_DIAMETER / 2);
+    draggedNode.style.left = `${snappedLeft}px`;
+    draggedNode.style.top = `${snappedTop}px`;
+
+    redrawAllLinks();
+
+    try {
+        const token = await getApiToken();
+        if (!token) throw new Error("API token not available.");
+
+        await fetch(`${baseUrl}/api/milestones/${nodeId}/position`, {
+            method: 'PUT',
+            headers: createApiHeaders(token),
+            body: JSON.stringify({ x: gridX, y: gridY })
+        });
+
+        const milestoneData = milestones.find(m => m.id == nodeId);
+        if (milestoneData) {
+            milestoneData.x = gridX;
+            milestoneData.y = gridY;
+        }
+        console.log(`Node ${nodeId} moved to (${gridX}, ${gridY})`);
+
+    } catch (error) {
+        console.error('Failed to update node position:', error);
+        alert('Error saving new position. Please check the console.');
+    } finally {
+        isDraggingNode = false;
+        draggedNode = null;
     }
 }
 

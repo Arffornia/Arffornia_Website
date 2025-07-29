@@ -85,6 +85,7 @@
                     <button class="admin-mode-btn" data-mode="delete">Delete</button>
                     <button class="admin-mode-btn" data-mode="link">Link</button>
                     <button class="admin-mode-btn" data-mode="unlink">Unlink</button>
+                    <button class="admin-mode-btn" data-mode="move">Move</button>
                 </div>
             </div>
         @endif

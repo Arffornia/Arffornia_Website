@@ -46,6 +46,8 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
 
     Route::post('milestone-closures', [StagesController::class, 'storeLink']);
     Route::delete('milestone-closures', [StagesController::class, 'destroyLink']);
+
+    Route::put('milestones/{milestone}/position', [StagesController::class, 'updateMilestonePosition']);
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
