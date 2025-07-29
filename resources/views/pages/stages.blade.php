@@ -92,6 +92,43 @@
 
         <div class="canvas"></div>
     </div>
+
+    <div id="item-editor-modal" class="modal-hidden">
+        <div class="modal-content">
+            <span class="modal-close-btn">×</span>
+            <h3 id="modal-title">Edit Item</h3>
+            <form id="item-editor-form">
+                <input type="hidden" id="modal-item-id">
+                <input type="hidden" id="modal-item-type">
+
+                <label for="modal-item-id-input">Item ID (e.g., minecraft:iron_ingot)</label>
+                <input type="text" id="modal-item-id-input" required>
+
+                <label for="modal-display-name">Display Name</label>
+                <input type="text" id="modal-display-name">
+
+                <label for="modal-image-path">Image Path (in public/images/item_textures/)</label>
+                <input type="text" id="modal-image-path">
+
+                <div id="unlock-fields">
+                    <label for="modal-recipe-id">Recipe to Ban</label>
+                    <input type="text" id="modal-recipe-id">
+                    <label for="modal-shop-price">Shop Price</label>
+                    <input type="number" id="modal-shop-price">
+                </div>
+
+                <div id="requirement-fields">
+                    <label for="modal-amount">Amount</label>
+                    <input type="number" id="modal-amount" min="1">
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit">Save</button>
+                    <button type="button" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 @section('script')
     <script>

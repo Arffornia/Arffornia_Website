@@ -48,6 +48,16 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::delete('milestone-closures', [StagesController::class, 'destroyLink']);
 
     Route::put('milestones/{milestone}/position', [StagesController::class, 'updateMilestonePosition']);
+
+    // Unlock Milestones managment
+    Route::post('milestones/{milestone}/unlocks', [StagesController::class, 'storeUnlock']);
+    Route::put('unlocks/{unlock}', [StagesController::class, 'updateUnlock']);
+    Route::delete('unlocks/{unlock}', [StagesController::class, 'destroyUnlock']);
+
+    // Required Milestones managment
+    Route::post('milestones/{milestone}/requirements', [StagesController::class, 'storeRequirement']);
+    Route::put('requirements/{requirement}', [StagesController::class, 'updateRequirement']);
+    Route::delete('requirements/{requirement}', [StagesController::class, 'destroyRequirement']);
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {

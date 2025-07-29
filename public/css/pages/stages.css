@@ -360,3 +360,78 @@ Admin Panel & Controls
     border-color: #3498db;
     box-shadow: 0 0 20px #3498db;
 }
+
+.modal-hidden {
+    display: none;
+}
+
+#item-editor-modal {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    font-family: Montserrat, sans-serif;
+}
+
+.modal-content {
+    background-color: #1e1e1e;
+    margin: 10% auto;
+    padding: 25px;
+    border: 1px solid #ff7300;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    color: white;
+    position: relative;
+}
+
+.modal-close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#item-editor-form label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+#item-editor-form input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: white;
+}
+
+.modal-actions {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-actions button[type="submit"] {
+    background-color: #ff7300;
+    color: white;
+}
+
+.modal-actions button.cancel-btn {
+    background-color: #555;
+    color: white;
+    margin-left: 10px;
+}

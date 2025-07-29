@@ -13,6 +13,7 @@ use App\Models\MilestoneClosure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 
+use App\Models\MilestoneRequirement;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -331,5 +332,71 @@ class StagesController extends Controller
         $milestone->update($validator->validated());
 
         return response()->json($milestone);
+    }
+
+    public function storeUnlock(Request $request, Milestone $milestone): JsonResponse
+    {
+        $data = $request->validate([
+            'item_id' => 'required|string',
+            'display_name' => 'nullable|string',
+            'recipe_id_to_ban' => 'required|string',
+            'shop_price' => 'nullable|integer',
+            'image_path' => 'nullable|string',
+        ]);
+
+        $unlock = $milestone->unlocks()->create($data);
+        return response()->json($unlock, Response::HTTP_CREATED);
+    }
+
+    public function updateUnlock(Request $request, MilestoneUnlock $unlock): JsonResponse
+    {
+        $data = $request->validate([
+            'item_id' => 'required|string',
+            'display_name' => 'nullable|string',
+            'recipe_id_to_ban' => 'required|string',
+            'shop_price' => 'nullable|integer',
+            'image_path' => 'nullable|string',
+        ]);
+
+        $unlock->update($data);
+        return response()->json($unlock);
+    }
+
+    public function destroyUnlock(MilestoneUnlock $unlock): JsonResponse
+    {
+        $unlock->delete();
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function storeRequirement(Request $request, Milestone $milestone): JsonResponse
+    {
+        $data = $request->validate([
+            'item_id' => 'required|string',
+            'display_name' => 'nullable|string',
+            'amount' => 'required|integer|min:1',
+            'image_path' => 'nullable|string',
+        ]);
+
+        $requirement = $milestone->requirements()->create($data);
+        return response()->json($requirement, Response::HTTP_CREATED);
+    }
+
+    public function updateRequirement(Request $request, MilestoneRequirement $requirement): JsonResponse
+    {
+        $data = $request->validate([
+            'item_id' => 'required|string',
+            'display_name' => 'nullable|string',
+            'amount' => 'required|integer|min:1',
+            'image_path' => 'nullable|string',
+        ]);
+
+        $requirement->update($data);
+        return response()->json($requirement);
+    }
+
+    public function destroyRequirement(MilestoneRequirement $requirement): JsonResponse
+    {
+        $requirement->delete();
+        return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

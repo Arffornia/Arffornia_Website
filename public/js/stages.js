@@ -3,6 +3,8 @@ import { getIconSvgByType } from "./mod_icons.js";
 const canvas = document.querySelector(".canvas");
 const milestoneInfo = document.querySelector(".info");
 const infoCloseBtnDiv = milestoneInfo.querySelector(".closeBtn");
+const itemModal = document.getElementById('item-editor-modal');
+const itemForm = document.getElementById('item-editor-form');
 
 // Destructure AppData passed from Blade view
 const { milestones, milestone_closure, isAdmin, csrfToken, baseUrl } = window.AppData;
@@ -112,6 +114,74 @@ function setupEventListeners() {
     if (isAdmin) {
         setupAdminEventListeners();
     }
+
+    itemModal.querySelector('.modal-close-btn').addEventListener('click', closeItemModal);
+    itemModal.querySelector('.cancel-btn').addEventListener('click', closeItemModal);
+
+    itemForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const type = document.getElementById('modal-item-type').value;
+        const itemId = document.getElementById('modal-item-id').value;
+        const milestoneId = milestoneInfo.dataset.milestoneId;
+
+        let url, method;
+        let body = {
+            item_id: document.getElementById('modal-item-id-input').value,
+            display_name: document.getElementById('modal-display-name').value,
+            image_path: document.getElementById('modal-image-path').value,
+        };
+
+        if (type === 'unlocks') {
+            body.recipe_id_to_ban = document.getElementById('modal-recipe-id').value;
+            body.shop_price = parseInt(document.getElementById('modal-shop-price').value) || null;
+            url = itemId ? `${baseUrl}/api/unlocks/${itemId}` : `${baseUrl}/api/milestones/${milestoneId}/unlocks`;
+        } else {
+            body.amount = parseInt(document.getElementById('modal-amount').value);
+            url = itemId ? `${baseUrl}/api/requirements/${itemId}` : `${baseUrl}/api/milestones/${milestoneId}/requirements`;
+        }
+
+        method = itemId ? 'PUT' : 'POST';
+
+        try {
+            const token = await getApiToken();
+            const response = await fetch(url, { method, headers: createApiHeaders(token), body: JSON.stringify(body) });
+            if (!response.ok) throw new Error(`API error: ${response.statusText}`);
+
+            showMilestonesInfo(milestones.find(m => m.id == milestoneId));
+            closeItemModal();
+
+        } catch (error) {
+            console.error('Failed to save item:', error);
+            alert('Error: ' + error.message);
+        }
+    });
+
+    milestoneInfo.addEventListener('click', async (e) => {
+        if (e.target.matches('.item-action-btn.edit')) {
+            const itemId = parseInt(e.target.dataset.itemId, 10);
+            const itemType = e.target.dataset.itemType;
+            openItemModal(itemType, itemId);
+        }
+        if (e.target.matches('.item-action-btn.delete')) {
+            if (!confirm('Are you sure you want to delete this item?')) return;
+
+            const itemId = e.target.dataset.itemId;
+            const itemType = e.target.dataset.itemType;
+            const url = `${baseUrl}/api/${itemType}/${itemId}`;
+
+            try {
+                const token = await getApiToken();
+                const response = await fetch(url, { method: 'DELETE', headers: createApiHeaders(token) });
+                if (!response.ok) throw new Error('Failed to delete item');
+
+                showMilestonesInfo(milestones.find(m => m.id == milestoneInfo.dataset.milestoneId));
+            } catch (error) {
+                console.error(error);
+                alert('Error deleting item.');
+            }
+        }
+    });
 }
 
 /**
@@ -453,6 +523,10 @@ function showMilestonesInfo(milestone) {
             } else {
                 requiredItemsContainer.innerHTML = '<li>No items required by this milestone.</li>';
             }
+
+            milestoneInfo.dataset.milestoneId = data.id;
+            updateItemsList(data.unlocks, 'unlocks', newItemsContainer);
+            updateItemsList(data.requirements, 'requirements', requiredItemsContainer);
         })
         .catch(err => {
             console.error("Fetch Error:", err);
@@ -673,6 +747,11 @@ function setEditMode(editing) {
         pointsContainer.textContent = window.currentMilestoneData.reward_progress_points;
         stageContainer.textContent = window.currentMilestoneData.stage_id;
     }
+
+    if (window.currentMilestoneData) {
+        updateItemsList(window.currentMilestoneData.unlocks, 'unlocks', milestoneInfo.querySelector("#newItemsContainer"));
+        updateItemsList(window.currentMilestoneData.requirements, 'requirements', milestoneInfo.querySelector("#requiredItemsContainer"));
+    }
 }
 
 /**
@@ -801,6 +880,85 @@ async function endDragNode(e) {
         draggedNode = null;
     }
 }
+
+function updateItemsList(items, type, container) {
+    const list = container.querySelector('ul');
+    list.innerHTML = '';
+    const addBtnId = `add-${type}-btn`;
+
+    if (isEditing) {
+        container.insertAdjacentHTML('afterbegin', `<button class="item-action-btn" id="${addBtnId}">Add New</button>`);
+        document.getElementById(addBtnId).addEventListener('click', () => openItemModal(type));
+    } else {
+        document.getElementById(addBtnId)?.remove();
+    }
+
+    if (items && items.length > 0) {
+        items.forEach(item => {
+            const li = document.createElement('li');
+            li.dataset.itemId = item.id;
+            let itemText = `
+                <img src="${item.image_url}" alt="${item.display_name}" width="32" height="32" style="vertical-align: middle;">
+                <span>${item.display_name}</span>`;
+            if (type === 'requirements') {
+                itemText += `<span> — x${item.amount}</span>`;
+            }
+
+            li.innerHTML = itemText;
+
+            if (isEditing) {
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'item-actions-inline';
+                actionsDiv.innerHTML = `
+                    <button class="item-action-btn edit" data-item-id="${item.id}" data-item-type="${type}">Edit</button>
+                    <button class="item-action-btn delete" data-item-id="${item.id}" data-item-type="${type}">Delete</button>
+                `;
+                li.appendChild(actionsDiv);
+            }
+            list.appendChild(li);
+        });
+    } else {
+        list.innerHTML = `<li>No ${type} defined for this milestone.</li>`;
+    }
+}
+
+
+function openItemModal(type, itemId = null) {
+    itemModal.classList.remove('modal-hidden');
+    itemForm.reset();
+
+    document.getElementById('modal-item-type').value = type;
+    document.getElementById('unlock-fields').style.display = type === 'unlocks' ? 'block' : 'none';
+    document.getElementById('requirement-fields').style.display = type === 'requirements' ? 'block' : 'none';
+
+    if (itemId) {
+        document.getElementById('modal-title').textContent = `Edit ${type.slice(0, -1)}`;
+        document.getElementById('modal-item-id').value = itemId;
+
+        const itemData = window.currentMilestoneData[ type ].find(i => i.id === itemId);
+        if (!itemData) return;
+
+        document.getElementById('modal-item-id-input').value = itemData.item_id;
+        document.getElementById('modal-display-name').value = itemData.display_name;
+        document.getElementById('modal-image-path').value = itemData.image_path;
+
+        if (type === 'unlocks') {
+            document.getElementById('modal-recipe-id').value = itemData.recipe_id_to_ban;
+            document.getElementById('modal-shop-price').value = itemData.shop_price;
+        } else {
+            document.getElementById('modal-amount').value = itemData.amount;
+        }
+
+    } else {
+        document.getElementById('modal-title').textContent = `Add New ${type.slice(0, -1)}`;
+        document.getElementById('modal-item-id').value = '';
+    }
+}
+
+function closeItemModal() {
+    itemModal.classList.add('modal-hidden');
+}
+
 
 // --- Initialisation ---
 document.addEventListener("DOMContentLoaded", function () {
