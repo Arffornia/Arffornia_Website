@@ -159,7 +159,7 @@ function handleCanvasClick(event) {
     // Default 'view' mode interaction for everyone
     if (clickedNodeEl) {
         if (clickedNodeEl.id !== currentNodeId) {
-            showNilestonesInfo(milestones.find(m => m.id == clickedNodeEl.id));
+            showMilestonesInfo(milestones.find(m => m.id == clickedNodeEl.id));
             currentNodeId = clickedNodeEl.id;
         }
     } else if (!clickedPathEl) { // Hide info panel only if clicking the background
@@ -379,7 +379,7 @@ function hideMilestoneInfo() {
  * Fetches and displays information for a given milestone.
  * @param {object} milestone The milestone object from the initial data.
  */
-function showNilestonesInfo(milestone) {
+function showMilestonesInfo(milestone) {
     if (!milestone) return;
 
     milestoneInfo.classList.add("info-show");
@@ -388,7 +388,7 @@ function showNilestonesInfo(milestone) {
 
     loader.style.display = "block";
     content.style.display = "none";
-    setEditMode(false); // Ensure we are not in edit mode when showing new info
+    setEditMode(false);
 
     fetch(`${baseUrl}/api/milestone/get/${milestone.id}`)
         .then(response => response.ok ? response.json() : Promise.reject('API Error'))
@@ -398,12 +398,15 @@ function showNilestonesInfo(milestone) {
             });
         })
         .then(data => {
-            window.currentMilestoneData = data; // Store for editing
+            window.currentMilestoneData = data;
             milestoneInfo.querySelector('#milestone-title').textContent = data.name;
             milestoneInfo.querySelector("#description").textContent = data.description;
             milestoneInfo.querySelector("#stageNumber").textContent = data.stage_id;
             milestoneInfo.querySelector("#reward_progress_points").textContent = data.reward_progress_points;
-            milestoneInfo.querySelector("#iconContent").innerHTML = getIconSvgByType(data.icon_type);
+
+            const iconContentElement = milestoneInfo.querySelector("#iconContent");
+            iconContentElement.innerHTML = getIconSvgByType(data.icon_type);
+            iconContentElement.title = `Milestone ID: ${data.id}`;
 
             const newItemsContainer = milestoneInfo.querySelector("#newItemsContainer ul");
             newItemsContainer.innerHTML = '';
@@ -415,7 +418,6 @@ function showNilestonesInfo(milestone) {
                         <img src="${unlock.image_url}" alt="${unlock.display_name}" width="32" height="32" style="vertical-align: middle;">
                         <span>${unlock.display_name} (Prix: ${unlock.shop_price || 'N/A'})</span>
                     `;
-
                     newItemsContainer.appendChild(li);
                 });
             } else {
@@ -432,7 +434,6 @@ function showNilestonesInfo(milestone) {
                         <img src="${required.image_url}" alt="${required.display_name}" width="32" height="32" style="vertical-align: middle;">
                         <span>${required.display_name} — x${required.amount}</span>
                     `;
-
                     requiredItemsContainer.appendChild(li);
                 });
             } else {

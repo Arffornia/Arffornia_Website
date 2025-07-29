@@ -47,6 +47,7 @@ class StagesController extends Controller
             'milestones' => Milestone::all()->map(function ($milestone) {
                 return [
                     'id' => $milestone->id,
+                    'name' => $milestone->name,
                     'stage_id' => $milestone->stage_id,
                     'icon_type' => $milestone->icon_type,
                     'x' => $milestone->x,
