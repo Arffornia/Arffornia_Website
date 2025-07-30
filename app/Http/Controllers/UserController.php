@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Services\UserService;
 use Illuminate\Http\Response;
 
+use App\Models\ServiceAccount;
 use App\Services\StagesService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
@@ -272,40 +273,41 @@ class UserController extends Controller
     }
 
     /**
-     * Get auth token using special SVC account credentials
+     * Get auth token using service account credentials.
      *
      * @param Request $request
-     *
      * @return JsonResponse
      */
-    public function getAuthTokenBySvcAuth(Request $request)
+    public function getAuthTokenBySvcCredentials(Request $request): JsonResponse
     {
         $request->validate([
-            'svc_id' => 'required|string',
-            'secret' => 'required|string',
+            'client_id' => 'required|string|uuid',
+            'client_secret' => 'required|string',
         ]);
 
-        $user = User::where('name', $request->input('svc_id'))
-            ->where('role', 'like', '%svc%')
-            ->first();
+        $serviceAccount = ServiceAccount::where('client_id', $request->input('client_id'))->first();
 
-        if (!$user || !Hash::check($request->input('secret'), $user->uuid)) {
-            return response()->json(['message' => 'Invalid SVC credentials'], 401);
+        if (!$serviceAccount || !Hash::check($request->input('client_secret'), $serviceAccount->client_secret)) {
+            return response()->json(['message' => 'Invalid service account credentials'], 401);
         }
 
-        $token = $this->genApiTokenWithUserScope($user);
+        $token = $serviceAccount->createToken(
+            $serviceAccount->name,
+            $serviceAccount->getRoles()
+        )->plainTextToken;
 
         return response()->json(['token' => $token]);
     }
+
 
     /**
      * Generate the API token with User's scope
      * @param \App\Models\User $user
      * @return string
      */
-    private function genApiTokenWithUserScope(User $user)
+    private function genApiTokenWithUserScope(User $user): string
     {
-        return $user->createToken('api--oken', $user->getRoles())->plainTextToken;
+        return $user->createToken('api-token', $user->getRoles())->plainTextToken;
     }
 
     /**

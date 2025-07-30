@@ -129,7 +129,7 @@ return [
     | Azure oauth settings
     |--------------------------------------------------------------------------
     |
-    | Those settings allow the authentification by Microsoft / Mojang 
+    | Those settings allow the authentification by Microsoft / Mojang
     | for a Minecraft Account
     |
     */
@@ -143,4 +143,15 @@ return [
             'redirect_uri' => env('AZURE_OAUTH_REDIRECT_URI', ''),
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Service Accounts
+    |--------------------------------------------------------------------------
+    |
+    | A JSON array of service accounts to be provisioned for API access.
+    | Each object should contain: client_id, client_secret, roles, name.
+    |
+    */
+    'svc_accounts' => env('SVC_ACCOUNTS'),
 ];

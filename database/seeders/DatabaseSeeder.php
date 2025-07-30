@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(SvcUserSeeder::class);
+        // $this->call(SvcUserSeeder::class);
 
         Stage::factory(3)->create();
 

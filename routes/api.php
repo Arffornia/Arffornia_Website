@@ -34,8 +34,7 @@ Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItem'])->middlew
 // Get auth token routes:
 Route::post('/auth/token/session', [UserController::class, 'getAuthTokenBySession'])->middleware('auth:sanctum');;
 Route::post('/auth/token/ms', [UserController::class, 'getAuthTokenByMSAuth']);
-Route::post('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcAuth']);
-
+Route::post('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcCredentials']);
 
 Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('stages/export', [StagesController::class, 'exportStages']);

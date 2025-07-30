@@ -106,6 +106,11 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereMilestoneId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $display_name
+ * @property string|null $image_path
+ * @property-read string|null $image_url
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereDisplayName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneRequirement whereImagePath($value)
  */
 	class MilestoneRequirement extends \Eloquent {}
 }
@@ -238,6 +243,33 @@ namespace App\Models{
  * @mixin \Eloquent
  */
 	class Progression extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $name A human-readable name for the service account.
+ * @property string $client_id The public identifier for the service account.
+ * @property string $client_secret The hashed secret for the service account.
+ * @property string $roles Comma-separated list of roles/permissions.
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read int|null $tokens_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount whereClientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount whereClientSecret($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount whereRoles($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ServiceAccount whereUpdatedAt($value)
+ */
+	class ServiceAccount extends \Eloquent {}
 }
 
 namespace App\Models{

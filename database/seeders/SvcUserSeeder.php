@@ -16,20 +16,20 @@ class SvcUserSeeder extends Seeder
      */
     public function run()
     {
-        $secret = env('SVC_ID', 'minecraft-server-svc');
-        $svc_id = env('SVC_PASSWORD', 'minecraft-server-svc');
+        // $secret = env('SVC_ID', 'minecraft-server-svc');
+        // $svc_id = env('SVC_PASSWORD', 'minecraft-server-svc');
 
-        User::updateOrCreate(
-            ['name' => $svc_id],
-            [
-                'uuid' => Hash::make($secret),
-                'role' => 'svc,team_editor,progression_editor,user_editor',
-                'grade' => 'system',
-                'money' => 0,
-                'progress_point' => 0,
-                'stage_id' => 1,
-                'day_streak' => 0
-            ]
-        );
+        // User::updateOrCreate(
+        //     ['name' => $svc_id],
+        //     [
+        //         'uuid' => Hash::make($secret),
+        //         'role' => 'svc,team_editor,progression_editor,user_editor',
+        //         'grade' => 'system',
+        //         'money' => 0,
+        //         'progress_point' => 0,
+        //         'stage_id' => 1,
+        //         'day_streak' => 0
+        //     ]
+        // );
     }
 }
