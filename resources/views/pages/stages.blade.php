@@ -52,15 +52,13 @@
                     <p><span class="textTitle">Stage: </span><span id="stageNumber" class="textDescription"></span></p>
                     <p><span class="textTitle">Points: </span><span id="reward_progress_points"
                             class="textDescription"></span></p>
-                    <p class="textTitle">New items:</p>
                 </div>
                 <div id="newItemsContainer">
+                    <p class="textTitle">New items:</p>
                     <ul></ul>
                 </div>
-                <div class="textContainer">
-                    <p class="textTitle">Required items:</p>
-                </div>
                 <div id="requiredItemsContainer">
+                    <p class="textTitle">Required items:</p>
                     <ul></ul>
                 </div>
 

@@ -492,39 +492,11 @@ function showMilestonesInfo(milestone) {
             iconContentElement.innerHTML = getIconSvgByType(data.icon_type);
             iconContentElement.title = `Milestone ID: ${data.id}`;
 
-            const newItemsContainer = milestoneInfo.querySelector("#newItemsContainer ul");
-            newItemsContainer.innerHTML = '';
-
-            if (data.unlocks && data.unlocks.length > 0) {
-                data.unlocks.forEach(unlock => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <img src="${unlock.image_url}" alt="${unlock.display_name}" width="32" height="32" style="vertical-align: middle;">
-                        <span>${unlock.display_name} (Prix: ${unlock.shop_price || 'N/A'})</span>
-                    `;
-                    newItemsContainer.appendChild(li);
-                });
-            } else {
-                newItemsContainer.innerHTML = '<li>No items unlocked by this milestone.</li>';
-            }
-
-            const requiredItemsContainer = milestoneInfo.querySelector("#requiredItemsContainer ul");
-            requiredItemsContainer.innerHTML = '';
-
-            if (data.requirements && data.requirements.length > 0) {
-                data.requirements.forEach(required => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <img src="${required.image_url}" alt="${required.display_name}" width="32" height="32" style="vertical-align: middle;">
-                        <span>${required.display_name} — x${required.amount}</span>
-                    `;
-                    requiredItemsContainer.appendChild(li);
-                });
-            } else {
-                requiredItemsContainer.innerHTML = '<li>No items required by this milestone.</li>';
-            }
+            const newItemsContainer = milestoneInfo.querySelector("#newItemsContainer");
+            const requiredItemsContainer = milestoneInfo.querySelector("#requiredItemsContainer");
 
             milestoneInfo.dataset.milestoneId = data.id;
+
             updateItemsList(data.unlocks, 'unlocks', newItemsContainer);
             updateItemsList(data.requirements, 'requirements', requiredItemsContainer);
         })
@@ -882,7 +854,14 @@ async function endDragNode(e) {
 }
 
 function updateItemsList(items, type, container) {
+    if (!container) return;
+
     const list = container.querySelector('ul');
+    if (!list) {
+        console.error(`Could not find a 'ul' inside the provided container for type '${type}'.`, container);
+        return;
+    }
+
     list.innerHTML = '';
     const addBtnId = `add-${type}-btn`;
 
@@ -902,6 +881,8 @@ function updateItemsList(items, type, container) {
                 <span>${item.display_name}</span>`;
             if (type === 'requirements') {
                 itemText += `<span> — x${item.amount}</span>`;
+            } else if (type === 'unlocks') {
+                itemText += `<span> (Prix: ${item.shop_price || 'N/A'})</span>`;
             }
 
             li.innerHTML = itemText;
