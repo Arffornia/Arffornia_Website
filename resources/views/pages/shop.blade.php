@@ -109,7 +109,8 @@ disabled
             csrfToken: "{{ csrf_token() }}",
             baseUrl: "{{ url('/') }}",
             isAuth: {{ auth()->check() ? 'true' : 'false' }},
-            bestSellerItems: @json($bestSellerItems->pluck('id'))
+            bestSellerItems: @json($bestSellerItems->pluck('id')),
+            initialItemId: {{ $initialItemId ?? 'null' }}
         };
     </script>
     <script src="{{ asset('js/shop.js') }}"></script>

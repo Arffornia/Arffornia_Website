@@ -4,7 +4,7 @@
  */
 let apiToken = null;
 
-const { csrfToken, baseUrl, isAuth, bestSellerItems } = window.AppData;
+const { csrfToken, baseUrl, isAuth, bestSellerItems, initialItemId } = window.AppData;
 
 document.addEventListener('DOMContentLoaded', () => {
     let currentItemId = null;
@@ -134,7 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
         buyButton.addEventListener('click', handleBuy);
     }
 
-    loadRandomBestSeller();
+    if (initialItemId) {
+        showDetails(initialItemId);
+    } else {
+        loadRandomBestSeller();
+    }
 });
 
 /**

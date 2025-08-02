@@ -32,6 +32,7 @@ Route::get('news/{newsId}', [NewsController::class, 'newsView']);
 
 // Shop
 Route::get('shop', [ShopController::class, 'shopView']);
+Route::get('shop/{item}', [ShopController::class, 'shopItemView'])->name('shop.item');
 Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItemWeb'])->middleware('auth')->name('shop.buy');
 
 
