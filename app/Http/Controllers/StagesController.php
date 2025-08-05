@@ -89,7 +89,7 @@ class StagesController extends Controller
         }
 
         $user->load('activeProgression');
-        $isAdmin = auth()->check() && auth()->user()->hasRole('admin');
+        $progression = $user->activeProgression;
 
         return [
             'milestones' => Milestone::all()->map(function ($milestone) {
@@ -109,12 +109,10 @@ class StagesController extends Controller
             }),
 
             'playerProgress' => [
-                'completed_milestones' => $user->activeProgression->completed_milestones ?? [],
-                'current_target_id' => $user->activeProgression->current_milestone_id ?? null,
-            ],
-
-            'isAdmin' => $isAdmin,
-            'stages' => Stage::all(),
+                'completed_milestones' => $progression->completed_milestones ?? [],
+                'current_target_id' => $progression->current_milestone_id ?? null,
+                'max_stage_number' => $progression->maxStage->number
+            ]
         ];
     }
     /**
@@ -397,6 +395,51 @@ class StagesController extends Controller
     public function destroyRequirement(MilestoneRequirement $requirement): JsonResponse
     {
         $requirement->delete();
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * Store a new stage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function storeStage(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'reward_progress_points' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $validatedData = $validator->validated();
+
+        $validatedData['number'] = $this->stagesService->getNextStageNumber();
+
+        $stage = $this->stagesService->createStage($validatedData);
+
+        return response()->json($stage, Response::HTTP_CREATED);
+    }
+
+
+    /**
+     * Delete a stage.
+     *
+     * @param Stage $stage
+     * @return JsonResponse
+     */
+    public function destroyStage(Stage $stage): JsonResponse
+    {
+        $result = $this->stagesService->deleteStage($stage);
+
+        if (!$result['success']) {
+            return response()->json(['message' => $result['message']], Response::HTTP_CONFLICT);
+        }
+
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
 }

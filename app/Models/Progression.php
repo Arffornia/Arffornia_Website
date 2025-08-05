@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $max_stage_id
@@ -30,4 +30,9 @@ class Progression extends Model
     use HasFactory;
     protected $fillable = ['max_stage_id', 'current_milestone_id', 'completed_milestones'];
     protected $casts = ['completed_milestones' => 'array'];
+
+    public function maxStage()
+    {
+        return $this->belongsTo(Stage::class, 'max_stage_id');
+    }
 }

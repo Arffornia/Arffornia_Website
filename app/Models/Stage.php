@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $number
@@ -29,4 +30,13 @@ class Stage extends Model
     use HasFactory;
 
     public $timestamps = false;
+    protected $fillable = ['number', 'name', 'description', 'reward_progress_points'];
+
+    /**
+     * Get the milestones for the stage.
+     */
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(Milestone::class);
+    }
 }

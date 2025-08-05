@@ -241,6 +241,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereMaxStageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Stage $maxStage
  */
 	class Progression extends \Eloquent {}
 }
@@ -327,6 +328,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Stage whereNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Stage whereRewardProgressPoints($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Milestone> $milestones
+ * @property-read int|null $milestones_count
  */
 	class Stage extends \Eloquent {}
 }

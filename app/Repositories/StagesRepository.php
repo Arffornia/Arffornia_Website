@@ -129,4 +129,37 @@ class StagesRepository
 
         return $deletedCount > 0;
     }
+
+    /**
+     * Create a new stage.
+     *
+     * @param array $data
+     * @return Stage
+     */
+    public function createStage(array $data): Stage
+    {
+        return Stage::create($data);
+    }
+
+    /**
+     * Delete a stage.
+     *
+     * @param Stage $stage
+     * @return bool|null
+     */
+    public function deleteStage(Stage $stage): ?bool
+    {
+        return $stage->delete();
+    }
+
+
+    /**
+     * Get the maximum stage number from the database.
+     *
+     * @return int
+     */
+    public function getMaxStageNumber(): int
+    {
+        return Stage::max('number') ?? 0;
+    }
 }

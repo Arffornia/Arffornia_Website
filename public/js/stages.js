@@ -5,6 +5,8 @@ const milestoneInfo = document.querySelector(".info");
 const infoCloseBtnDiv = milestoneInfo.querySelector(".closeBtn");
 const itemModal = document.getElementById('item-editor-modal');
 const itemForm = document.getElementById('item-editor-form');
+const stageModal = document.getElementById('stage-editor-modal');
+const stageForm = document.getElementById('stage-editor-form');
 
 // Destructure AppData passed from Blade view
 const { milestones, milestone_closure, isAdmin, csrfToken, baseUrl } = window.AppData;
@@ -118,6 +120,10 @@ function setupEventListeners() {
     itemModal.querySelector('.modal-close-btn').addEventListener('click', closeItemModal);
     itemModal.querySelector('.cancel-btn').addEventListener('click', closeItemModal);
 
+    stageModal.querySelector('.modal-close-btn').addEventListener('click', closeStageModal);
+    stageModal.querySelector('.cancel-btn').addEventListener('click', closeStageModal);
+    stageForm.addEventListener('submit', handleStageFormSubmit);
+
     itemForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -192,6 +198,9 @@ function setupAdminEventListeners() {
     if (exportBtn) {
         exportBtn.addEventListener('click', handleExport);
     }
+
+    document.getElementById('addStageBtn').addEventListener('click', handleAddStage);
+    document.getElementById('deleteStageBtn').addEventListener('click', handleDeleteStage);
 
     // Edit/Save/Cancel buttons in the info panel
     document.getElementById('editBtn').addEventListener('click', () => setEditMode(true));
@@ -341,7 +350,18 @@ async function handleAddNode(event) {
             headers: createApiHeaders(token),
             body: JSON.stringify(newNodeData)
         });
-        if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+
+        if (!response.ok) {
+            if (response.status === 422) {
+                const errorData = await response.json();
+
+                if (errorData.errors && errorData.errors.stage_id) {
+                    throw new Error(errorData.errors.stage_id[ 0 ]);
+                }
+            }
+            throw new Error(`Server responded with ${response.status}`);
+        }
+
         const createdNode = await response.json();
 
         milestones.push(createdNode);
@@ -352,6 +372,7 @@ async function handleAddNode(event) {
         alert(`Error creating node: ${error.message}`);
     }
 }
+
 
 /**
  * Handles deleting a node after confirmation.
@@ -428,7 +449,119 @@ async function handleLinkNode(targetNodeEl) {
     }
 }
 
-// --- END: Admin Action Functions ---
+/**
+ * Handles adding a new stage by opening the modal.
+ */
+function handleAddStage() {
+    openStageModal();
+}
+
+/**
+ * Handles deleting a stage by prompting for its NUMBER.
+ */
+async function handleDeleteStage() {
+    const stageNumber = prompt("Enter the NUMBER of the stage to delete:");
+    if (!stageNumber || isNaN(parseInt(stageNumber))) {
+        alert("Invalid stage number provided.");
+        return;
+    }
+
+    // Find the stage in our AppData to get its ID for the API endpoint
+    const stageToDelete = window.AppData.stages.find(s => s.number == stageNumber);
+
+    if (!stageToDelete) {
+        alert(`Stage with number ${stageNumber} not found.`);
+        return;
+    }
+
+    if (!confirm(`Are you sure you want to delete Stage ${stageNumber} (ID: ${stageToDelete.id})? This will only work if no milestones are assigned to it.`)) {
+        return;
+    }
+
+    const token = await getApiToken();
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${baseUrl}/api/stages/${stageToDelete.id}`, {
+            method: 'DELETE',
+            headers: createApiHeaders(token)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Server responded with ${response.status}`);
+        }
+
+        const index = window.AppData.stages.findIndex(s => s.id == stageToDelete.id);
+        if (index > -1) {
+            window.AppData.stages.splice(index, 1);
+        }
+        alert(`Stage ${stageNumber} deleted successfully.`);
+
+    } catch (error) {
+        console.error('Delete Stage Error:', error);
+        alert(`Error deleting stage: ${error.message}`);
+    }
+}
+
+
+/**
+ * Opens the stage editor modal for creation.
+ */
+function openStageModal() {
+    stageModal.classList.remove('modal-hidden');
+    stageForm.reset();
+
+    const nextNumber = (Math.max(...window.AppData.stages.map(s => s.number), 0)) + 1;
+    document.getElementById('stage-modal-title').textContent = `Create Stage #${nextNumber}`;
+    document.getElementById('stage-modal-id').value = ''; // Clear ID for creation
+}
+
+/**
+ * Closes the stage editor modal.
+ */
+function closeStageModal() {
+    stageModal.classList.add('modal-hidden');
+}
+
+/**
+ * Handles the submission of the stage creation/edit form.
+ * @param {Event} e
+ */
+async function handleStageFormSubmit(e) {
+    e.preventDefault();
+    const token = await getApiToken();
+    if (!token) return;
+
+    const stageData = {
+        name: document.getElementById('stage-modal-name').value,
+        description: document.getElementById('stage-modal-description').value,
+        reward_progress_points: parseInt(document.getElementById('stage-modal-points').value)
+    };
+
+    const url = `${baseUrl}/api/stages`;
+    const method = 'POST';
+
+    try {
+        const response = await fetch(url, { method, headers: createApiHeaders(token), body: JSON.stringify(stageData) });
+        if (!response.ok) {
+            if (response.status === 422) {
+                const errorData = await response.json();
+                const firstErrorKey = Object.keys(errorData.errors)[ 0 ];
+                throw new Error(errorData.errors[ firstErrorKey ][ 0 ]);
+            }
+            throw new Error(`Server error: ${response.statusText}`);
+        }
+        const newStage = await response.json();
+        window.AppData.stages.push(newStage);
+        alert(`Stage "${newStage.name}" (Number: ${newStage.number}) created successfully!`);
+        closeStageModal();
+
+    } catch (error) {
+        console.error('Failed to save stage:', error);
+        alert('Error: ' + error.message);
+    }
+}
 
 
 /**

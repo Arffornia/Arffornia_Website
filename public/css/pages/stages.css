@@ -89,16 +89,6 @@ footer {
     cursor: pointer;
 }
 
-.layer_line {
-    margin-top: 10%;
-    margin-bottom: 10%;
-    position: relative;
-    width: 3px;
-    flex: 1;
-    border-radius: 50px;
-    background-color: #959595;
-}
-
 .icon {
     margin: 10px;
 }
@@ -131,11 +121,9 @@ footer {
     right: 2%;
     z-index: 3;
     width: 350px;
-
     background-color: #000;
     border-radius: 15px;
     padding: 30px;
-
     opacity: 0;
     transform: translateY(-20px);
     transition: opacity 0.4s ease, transform 0.4s ease;
@@ -148,8 +136,6 @@ footer {
     transform: translateY(0);
     pointer-events: auto;
 }
-
-
 
 .info .closeBtn {
     width: 30px;
@@ -224,7 +210,6 @@ footer {
 .info .admin-actions {
     margin-top: 20px;
     display: flex;
-    /* Changed from none to flex by JS if admin */
     gap: 10px;
 }
 
@@ -244,6 +229,7 @@ footer {
 
 .info input.title-input,
 .info input.points-input,
+.info input.stage-input,
 .info textarea.description-input {
     width: 100%;
     background-color: #333;
@@ -295,13 +281,21 @@ Admin Panel & Controls
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-.admin-controls {
+.admin-controls,
+.stage-controls {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.admin-controls p {
+.stage-controls {
+    padding-bottom: 5px;
+    border-bottom: 1px solid #444;
+    margin-bottom: 5px;
+}
+
+.admin-controls p,
+.stage-controls p {
     margin: 0;
     font-weight: bold;
     font-size: 0.9em;
@@ -344,6 +338,10 @@ Admin Panel & Controls
     cursor: pointer;
 }
 
+.canvas.move-mode .node {
+    cursor: grab;
+}
+
 .node.selected {
     border-color: #3498db;
     box-shadow: 0 0 15px #3498db, 0 0 25px rgba(52, 152, 219, 0.5) inset;
@@ -361,11 +359,25 @@ Admin Panel & Controls
     box-shadow: 0 0 20px #3498db;
 }
 
-.modal-hidden {
-    display: none;
+.export-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 999;
+    transition: transform 0.3s ease;
 }
 
-#item-editor-modal {
+.export-btn:hover {
+    transform: scale(1.05);
+}
+
+.editor-modal {
     position: fixed;
     z-index: 1001;
     left: 0;
@@ -377,7 +389,7 @@ Admin Panel & Controls
     font-family: Montserrat, sans-serif;
 }
 
-.modal-content {
+.editor-modal .modal-content {
     background-color: #1e1e1e;
     margin: 10% auto;
     padding: 25px;
@@ -389,7 +401,7 @@ Admin Panel & Controls
     position: relative;
 }
 
-.modal-close-btn {
+.editor-modal .modal-close-btn {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -397,41 +409,57 @@ Admin Panel & Controls
     cursor: pointer;
 }
 
-#item-editor-form label {
+.editor-modal form label {
     display: block;
     margin-top: 15px;
     margin-bottom: 5px;
     font-weight: 500;
 }
 
-#item-editor-form input {
-    width: calc(100% - 20px);
+.editor-modal form input[type="text"],
+.editor-modal form input[type="number"],
+.editor-modal form textarea {
+    width: calc(100% - 22px);
     padding: 10px;
     background-color: #333;
     border: 1px solid #555;
     border-radius: 5px;
     color: white;
+    font-family: inherit;
 }
 
-.modal-actions {
+.editor-modal form textarea {
+    resize: vertical;
+}
+
+.editor-modal .modal-actions {
     margin-top: 20px;
     text-align: right;
 }
 
-.modal-actions button {
+.editor-modal .modal-actions button {
     padding: 10px 20px;
     border-radius: 5px;
     border: none;
     cursor: pointer;
 }
 
-.modal-actions button[type="submit"] {
+.editor-modal .modal-actions button[type="submit"] {
     background-color: #ff7300;
     color: white;
 }
 
-.modal-actions button.cancel-btn {
+.editor-modal .modal-actions button.cancel-btn {
     background-color: #555;
     color: white;
     margin-left: 10px;
+}
+
+#unlock-fields,
+#requirement-fields {
+    display: none;
+}
+
+.modal-hidden {
+    display: none;
 }

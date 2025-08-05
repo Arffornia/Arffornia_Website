@@ -111,4 +111,42 @@ class StagesService
     {
         return $this->repository->deleteLink($sourceId, $targetId);
     }
+
+    /**
+     * Get the next available stage number.
+     *
+     * @return int
+     */
+    public function getNextStageNumber(): int
+    {
+        $maxNumber = $this->repository->getMaxStageNumber();
+        return $maxNumber + 1;
+    }
+
+    /**
+     * Create a new stage.
+     *
+     * @param array $data
+     * @return Stage
+     */
+    public function createStage(array $data): Stage
+    {
+        return $this->repository->createStage($data);
+    }
+
+    /**
+     * Delete a stage after checking it's not in use.
+     *
+     * @param Stage $stage
+     * @return array
+     */
+    public function deleteStage(Stage $stage): array
+    {
+        if ($stage->milestones()->exists()) {
+            return ['success' => false, 'message' => 'Cannot delete stage: It still contains milestones.'];
+        }
+
+        $this->repository->deleteStage($stage);
+        return ['success' => true, 'message' => 'Stage deleted successfully.'];
+    }
 }

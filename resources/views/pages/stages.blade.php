@@ -7,6 +7,7 @@
 
 @section('content')
     <div class="bg">
+        {{-- Milestone Info Panel --}}
         <div class="info info-hidden">
             <div class="closeBtn">
                 <svg fill="#000000" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -26,7 +27,6 @@
                     </div>
                     <div class="skeleton-line heading" style="width: 60%; margin-left: 3%"></div>
                 </div>
-
 
                 <div class="textContainer">
                     <div class="skeleton-line" style="width: 70%"></div>
@@ -61,11 +61,9 @@
                     <p class="textTitle">Required items:</p>
                     <ul></ul>
                 </div>
-
-
                 @if ($isAdmin ?? false)
                     <div class="admin-actions">
-                        <button id="editBtn">Edit</button>
+                        <button id="editBtn">Edit Milestone</button>
                         <button id="saveBtn" style="display: none;">Save</button>
                         <button id="cancelBtn" style="display: none;">Cancel</button>
                     </div>
@@ -73,11 +71,17 @@
             </div>
         </div>
 
+        {{-- Admin Control Panel --}}
         @if ($isAdmin ?? false)
             <div class="admin-panel">
-                <button id="exportStagesBtn" class="export-btn">Export Stages</button>
+                <button id="exportStagesBtn" class="export-btn">Export Data</button>
+                <div class="stage-controls">
+                    <p>Stages:</p>
+                    <button id="addStageBtn" class="admin-mode-btn">Add Stage</button>
+                    <button id="deleteStageBtn" class="admin-mode-btn">Delete Stage by Number</button>
+                </div>
                 <div class="admin-controls">
-                    <p>Mode:</p>
+                    <p>Milestones:</p>
                     <button class="admin-mode-btn active" data-mode="view">View</button>
                     <button class="admin-mode-btn" data-mode="add">Add</button>
                     <button class="admin-mode-btn" data-mode="delete">Delete</button>
@@ -91,7 +95,8 @@
         <div class="canvas"></div>
     </div>
 
-    <div id="item-editor-modal" class="modal-hidden">
+    {{-- Milestone Items Modal --}}
+    <div id="item-editor-modal" class="editor-modal modal-hidden">
         <div class="modal-content">
             <span class="modal-close-btn">×</span>
             <h3 id="modal-title">Edit Item</h3>
@@ -127,7 +132,33 @@
             </form>
         </div>
     </div>
+
+    {{-- Stage Creation Modal --}}
+    <div id="stage-editor-modal" class="editor-modal modal-hidden">
+        <div class="modal-content">
+            <span class="modal-close-btn">×</span>
+            <h3 id="stage-modal-title">Create Stage</h3>
+            <form id="stage-editor-form">
+                <input type="hidden" id="stage-modal-id">
+
+                <label for="stage-modal-name">Stage Name</label>
+                <input type="text" id="stage-modal-name" required>
+
+                <label for="stage-modal-description">Description</label>
+                <textarea id="stage-modal-description" rows="4"></textarea>
+
+                <label for="stage-modal-points">Reward Points</label>
+                <input type="number" id="stage-modal-points" min="0" required>
+
+                <div class="modal-actions">
+                    <button type="submit">Save Stage</button>
+                    <button type="button" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
+
 @section('script')
     <script>
         window.AppData = {
@@ -139,6 +170,5 @@
             baseUrl: "{{ url('/') }}"
         };
     </script>
-
     <script type="module" src="{{ asset('js/stages.js') }}"></script>
 @endsection
