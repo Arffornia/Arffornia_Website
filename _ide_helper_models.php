@@ -64,6 +64,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereX($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereY($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Stage|null $stage
  */
 	class Milestone extends \Eloquent {}
 }

@@ -127,13 +127,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         MilestoneClosure::create([
-            'milestone_id' => 7,
-            'descendant_id' => 6,
-        ]);
-
-        MilestoneClosure::create([
-            'milestone_id' => 7,
-            'descendant_id' => 3,
+            'milestone_id' => 3,
+            'descendant_id' => 7,
         ]);
 
         User::factory(10)->create();

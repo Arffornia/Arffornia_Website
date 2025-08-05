@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Stage;
 use App\Models\Milestone;
 use App\Models\Progression;
+use App\Models\MilestoneClosure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -119,7 +120,7 @@ class ProgressionService
     }
 
     /**
-     * Sets the currently targeted milestone for a user's active progression.
+     * Sets the currently targeted milestone for a user's active progression after validation.
      *
      * @param User $user The user to update.
      * @param int|null $milestoneId The ID of the new target milestone, or null to clear it.
@@ -129,13 +130,46 @@ class ProgressionService
     {
         $progression = $user->activeProgression;
         if (!$progression) {
+            Log::warning("ProgressionService: Could not find active progression for user {$user->uuid} to set target.");
             return false;
         }
 
-        // Ensure the milestone exists if it's not null
-        if ($milestoneId !== null && !Milestone::where('id', $milestoneId)->exists()) {
-            Log::debug("setTargetMilestone: Milestones not found");
+        if ($milestoneId === null) {
+            $progression->current_milestone_id = null;
+            return $progression->save();
+        }
+
+
+        $targetMilestone = Milestone::with('stage')->find($milestoneId);
+        if (!$targetMilestone) {
+            Log::debug("setTargetMilestone: Target milestone with ID {$milestoneId} not found.");
             return false;
+        }
+
+        $maxStage = $progression->maxStage;
+        if (!$maxStage) {
+            Log::error("ProgressionService: Progression {$progression->id} has an invalid max_stage_id.");
+            return false;
+        }
+
+        $completedMilestones = $progression->completed_milestones ?? [];
+
+        // The player cannot target a milestone from a stage higher than their maximum unlocked stage.
+        if ($targetMilestone->stage->number > $maxStage->number) {
+            Log::info("Player {$user->uuid} tried to target milestone {$milestoneId} from stage {$targetMilestone->stage->number}, but max stage is {$maxStage->number}.");
+            return false;
+        }
+
+        // We collect all milestones that have a direct link to our target.
+        $predecessorIds = MilestoneClosure::where('descendant_id', $milestoneId)->pluck('milestone_id')->all();
+
+        if (!empty($predecessorIds)) {
+            $intersection = array_intersect($predecessorIds, $completedMilestones);
+
+            if (empty($intersection)) {
+                Log::info("Player {$user->uuid} tried to target milestone {$milestoneId} without completing any prerequisite.");
+                return false;
+            }
         }
 
         $progression->current_milestone_id = $milestoneId;

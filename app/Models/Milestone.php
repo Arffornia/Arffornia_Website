@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -67,5 +67,10 @@ class Milestone extends Model
     public function requirements(): HasMany
     {
         return $this->hasMany(MilestoneRequirement::class);
+    }
+
+    public function stage()
+    {
+        return $this->belongsTo(Stage::class, 'stage_id');
     }
 }

@@ -3,11 +3,12 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\Models\Milestone;
 use App\Models\Stage;
+use App\Models\Milestone;
+use App\Models\MilestoneClosure;
+use Illuminate\Support\Facades\Log;
 use App\Repositories\StagesRepository;
 use Illuminate\Database\Eloquent\Collection;
-use App\Models\MilestoneClosure;
 
 class StagesService
 {
@@ -89,15 +90,37 @@ class StagesService
     }
 
     /**
-     * Create a link between two milestones.
+     * Create a link between two milestones with validation.
+     * It will auto-flip the link if it's created "backwards" (high stage -> low stage)
+     * and prevent circular dependencies.
      *
      * @param int $sourceId
      * @param int $targetId
-     * @return MilestoneClosure|null
+     * @return array Result array with success status, message, and link data.
      */
-    public function createLink(int $sourceId, int $targetId): ?MilestoneClosure
+    public function createLink(int $sourceId, int $targetId): array
     {
-        return $this->repository->createLink($sourceId, $targetId);
+        $sourceMilestone = Milestone::with('stage')->find($sourceId);
+        $targetMilestone = Milestone::with('stage')->find($targetId);
+
+        if (!$sourceMilestone || !$targetMilestone) {
+            return ['success' => false, 'message' => 'One or both milestones not found.'];
+        }
+
+        if ($sourceMilestone->stage->number > $targetMilestone->stage->number) {
+            $tempId = $sourceId;
+            $sourceId = $targetId;
+            $targetId = $tempId;
+            Log::info("Milestone link creation: Flipped link from {$tempId}->{$sourceId} to {$sourceId}->{$targetId} due to stage order.");
+        }
+
+        $link = $this->repository->createLink($sourceId, $targetId);
+
+        if (!$link) {
+            return ['success' => false, 'message' => 'Link already exists.'];
+        }
+
+        return ['success' => true, 'link' => $link, 'message' => 'Link created successfully.'];
     }
 
     /**

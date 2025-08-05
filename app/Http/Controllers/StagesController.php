@@ -92,15 +92,17 @@ class StagesController extends Controller
         $progression = $user->activeProgression;
 
         return [
-            'milestones' => Milestone::all()->map(function ($milestone) {
+            'milestones' => Milestone::with('stage')->get()->map(function ($milestone) {
+                $stageNumber = $milestone->stage ? $milestone->stage->number : 1;
+
                 return [
                     'id' => $milestone->id,
                     'icon_type' => $milestone->icon_type,
                     'x' => $milestone->x,
                     'y' => $milestone->y,
+                    'stage_number' => $stageNumber,
                 ];
             }),
-
             'milestone_closure' => MilestoneClosure::all()->map(function ($closure) {
                 return [
                     'milestone_id' => $closure->milestone_id,
@@ -252,17 +254,16 @@ class StagesController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        $link = $this->stagesService->createLink(
+        $result = $this->stagesService->createLink(
             $validator->validated()['source_id'],
             $validator->validated()['target_id']
         );
 
-        if (!$link) {
-            return response()->json(['message' => 'Link already exists.'], Response::HTTP_CONFLICT);
+        if (!$result['success']) {
+            return response()->json(['message' => $result['message']], Response::HTTP_CONFLICT);
         }
 
-        return response()->json($link, Response::HTTP_CREATED);
+        return response()->json($result['link'], Response::HTTP_CREATED);
     }
 
     /**
