@@ -35,4 +35,9 @@ class Progression extends Model
     {
         return $this->belongsTo(Stage::class, 'max_stage_id');
     }
+
+    public function currentTargetedMilestone()
+    {
+        return $this->belongsTo(Milestone::class, 'current_milestone_id');
+    }
 }

@@ -242,6 +242,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereMaxStageId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Progression whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Milestone|null $currentTargetedMilestone
  * @property-read \App\Models\Stage $maxStage
  */
 	class Progression extends \Eloquent {}

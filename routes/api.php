@@ -21,6 +21,7 @@ Route::get('stages/player/get/{playerUuid}', [StagesController::class, 'playerSt
 Route::get('milestone/get/{milestone}', [StagesController::class, 'getMilestoneById']);
 
 Route::get('progression/config', [StagesController::class, 'getProgressionConfigForMod']);
+Route::get('progression/{progression}', [ProgressionController::class, 'getProgressionById']);
 
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);
 

@@ -33,7 +33,6 @@ class UserController extends Controller
         $this->stageService = $stageService;
     }
 
-    // [API] Get player profil
     /**
      * Get player profile information
      *
@@ -52,7 +51,7 @@ class UserController extends Controller
                 'grade' => $user->grade,
                 'day_streak' => $user->day_streak,
                 'vote_count' => $user->getVoteCount(),
-
+                'active_progression_id' => $user->active_progression_id,
             ]);
         }
 
@@ -77,6 +76,7 @@ class UserController extends Controller
                 'grade' => $user->grade,
                 'day_streak' => $user->day_streak,
                 'vote_count' => $user->getVoteCount(),
+                'active_progression_id' => $user->active_progression_id,
             ]);
         }
 

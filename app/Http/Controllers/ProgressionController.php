@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Milestone;
 use Illuminate\Http\Request;
 use App\Services\UserService;
+use App\Models\Progression;
 use Illuminate\Http\JsonResponse;
 use App\Services\ProgressionService;
 use Illuminate\Support\Facades\Validator;
@@ -36,6 +37,18 @@ class ProgressionController extends Controller
         }
 
         return $this->userService->getUserByUuid($uuid);
+    }
+
+    /**
+     * Get a progression by its ID.
+     *
+     * @param Progression $progression
+     * @return JsonResponse
+     */
+    public function getProgressionById(Progression $progression): JsonResponse
+    {
+        $progression->load('currentTargetedMilestone');
+        return response()->json($progression);
     }
 
     public function addMilestone(Request $request): JsonResponse
