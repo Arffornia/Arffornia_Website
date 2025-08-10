@@ -4,10 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
+use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\LauncherController;
 use App\Http\Controllers\ShopItemsController;
 use App\Http\Controllers\ProgressionController;
+use App\Http\Controllers\AdminPanelManager;
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('best_player_point/{size}', [UserController::class, 'bestPlayerByPointJson']);
@@ -37,6 +39,10 @@ Route::post('/auth/token/session', [UserController::class, 'getAuthTokenBySessio
 Route::post('/auth/token/ms', [UserController::class, 'getAuthTokenByMSAuth']);
 Route::post('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcCredentials']);
 
+// Recipes
+Route::get('recipes', [RecipeController::class, 'index']);
+Route::get('recipes/type/{type}', [RecipeController::class, 'showByType']);
+
 Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('stages/export', [StagesController::class, 'exportStages']);
 
@@ -62,6 +68,12 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('milestones/{milestone}/requirements', [StagesController::class, 'storeRequirement']);
     Route::put('requirements/{requirement}', [StagesController::class, 'updateRequirement']);
     Route::delete('requirements/{requirement}', [StagesController::class, 'destroyRequirement']);
+
+    // Recipe Management
+    Route::post('unlocks/{unlock}/recipe', [RecipeController::class, 'storeOrUpdate']);
+
+    // Launcher images Management
+    Route::put('launcherImages/{image}/toggle-prod', [AdminPanelManager::class, 'toggleProdStatus']);
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {

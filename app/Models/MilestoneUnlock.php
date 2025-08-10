@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $milestone_id
@@ -58,5 +59,13 @@ class MilestoneUnlock extends Model
 
         // Fallback image
         return asset('images/Crafting_Table.png');
+    }
+
+    /**
+     * Get the recipe associated with the milestone unlock.
+     */
+    public function recipe(): HasOne
+    {
+        return $this->hasOne(Recipe::class);
     }
 }

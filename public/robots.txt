@@ -1,2 +1,10 @@
 User-agent: *
-Disallow:
+
+Disallow: /admin/
+Disallow: /login
+Disallow: /profile/
+Disallow: /storage/
+
+Allow: /
+
+Sitemap: https://arffornia.com/sitemap.xml

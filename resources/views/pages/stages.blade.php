@@ -157,6 +157,42 @@
             </form>
         </div>
     </div>
+
+    {{-- Recipe Editor Modal --}}
+    <div id="recipe-editor-modal" class="editor-modal modal-hidden">
+        <div class="modal-content">
+            <span class="modal-close-btn">×</span>
+            <h3 id="recipe-modal-title">Edit Recipe</h3>
+            <form id="recipe-editor-form">
+                <input type="hidden" id="recipe-modal-unlock-id">
+
+                <h4>Ingredients</h4>
+                <div id="recipe-ingredients-container">
+                </div>
+                <button type="button" id="add-ingredient-btn" class="add-btn">Add Ingredient</button>
+
+                <hr style="margin: 20px 0;">
+
+                <h4>Results</h4>
+                <div id="recipe-results-container">
+                </div>
+                <button type="button" id="add-result-btn" class="add-btn">Add Result</button>
+
+                <hr style="margin: 20px 0;">
+
+                <label for="recipe-energy">Energy consumption</label>
+                <input type="number" id="recipe-energy" min="0">
+
+                <label for="recipe-time">Production time (ticks)</label>
+                <input type="number" id="recipe-time" min="0">
+
+                <div class="modal-actions">
+                    <button type="submit">Save Recipe</button>
+                    <button type="button" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @section('script')

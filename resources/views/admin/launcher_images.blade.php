@@ -3,6 +3,7 @@
 @section('extraHead')
     <link rel="stylesheet" href="{{ asset('css/pages/adminPanel.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/inputText/input01.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section('content')
@@ -52,22 +53,24 @@
         </div>
 
         <div class="images">
-
             @foreach ($launcherImages as $launcherImage)
                 <div class="item">
                     <div class="content">
                         <div class="name">name: <a
                                 href="/{{ $launcherImage->path }}"><b>{{ basename($launcherImage->path) }}</b></a></div>
-                        <div class="in_prod">in prod: <input type="checkbox" onclick="return false;"
-                                {{ $launcherImage->in_prod ? 'checked' : '' }} /></div>
+                        <div class="in_prod">
+                            <label for="prod-{{ $launcherImage->id }}">in prod:</label>
+                            <input type="checkbox" class="prod-toggle-checkbox" id="prod-{{ $launcherImage->id }}"
+                                data-id="{{ $launcherImage->id }}" {{ $launcherImage->in_prod ? 'checked' : '' }} />
+                        </div>
                         <div class="date">date: <b>{{ $launcherImage->created_at }}</b></div>
                     </div>
                 </div>
             @endforeach
-
         </div>
     </div>
 @endsection
 
 @section('script')
+    <script src="{{ asset('js/admin_launcher.js') }}" defer></script>
 @endsection

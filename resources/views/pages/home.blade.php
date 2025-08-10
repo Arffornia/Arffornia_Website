@@ -3,6 +3,7 @@
 @section('extraHead')
     <link rel="stylesheet" href="{{ asset('css/pages/home.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/gridSection.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/homePresentationSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/presentationSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/technoSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/discord_widget.css') }}">
@@ -35,6 +36,48 @@
             <div class="sloganStatueContainer"></div>
         </div>
 
+        <x-technoSection title="Les dernières News" :blocks="[
+            [
+                'title' => 'Laravel',
+                'description' => 'Framework PHP',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+                'link' => 'https://laravel.com',
+            ],
+            [
+                'title' => 'VueJS',
+                'description' => 'Frontend réactif',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+            ],
+            [
+                'title' => 'AlpineJS',
+                'description' => 'JS léger',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+            ],
+            [
+                'title' => 'TailwindCSS',
+                'description' => 'CSS utilitaire',
+                'image' => 'images/screenshots1920x1080/old_spawn.png',
+            ],
+        ]" />
+
+        <x-home-presentation-section image-src="{{ asset('images/join_us.png') }}" image-alt="Une image cool"
+            overview="Survie - Build - Chill" title="🌍 Arffornia – Ton évasion après la journée"
+            description="<p>✨ Plonge dans un monde survie moddé avec plus de <strong>300 mods</strong> pour redécouvrir ce bon vieux Minecraft.</p><p>🏗️ Construis ta base en solo ou en team, de simples cabanes aux mégaprojets fous.</p><p>⚙️ Automatise et créer des machines dignes d’une usine futuriste, ou maîtrise des pouvoirs magiques.</p><p>🤝 Rencontre une communauté prête à partager fun et créativité.</p><p>😌 Du chill, des rires, et la fierté de partager tes créations.</p>" />
+
+        <div class="discord__container homeSection">
+            <div class="discord__left-container">
+                <p class="default-title">Rejoins Notre Discord :</p>
+                <p class="discord__text"></p>
+
+                <img id=join-us-img src="{{ asset('images/join_us.png') }}" alt="">
+            </div>
+
+
+            <div class="discord__widget-container">
+                <discord-widget class="discord-widget" id="752121854923374614"></discord-widget>
+            </div>
+        </div>
+
         <x-technoSection title="Les mods phares" :blocks="[
             [
                 'title' => 'Create',
@@ -58,29 +101,11 @@
             ],
         ]" />
 
-        <x-presentationSection image-src="{{ asset('images/join_us.png') }}" image-alt="Une image cool"
-            overview="Présentation" title="Mon Titre" description="<p>Ceci est une description avec HTML.</p>"
-            dir="left" />
-
-        <div class="discord__container homeSection">
-            <div class="discord__left-container">
-                <p class="default-title">Rejoins Notre Discord :</p>
-                <p class="discord__text"></p>
-
-                <img id=join-us-img src="{{ asset('images/join_us.png') }}" alt="">
-            </div>
-
-
-            <div class="discord__widget-container">
-                <discord-widget class="discord-widget" id="752121854923374614"></discord-widget>
-            </div>
-        </div>
-
         <x-presentationSection image-src="{{ asset('images/palier_progres.png') }}" image-alt="Progression stage"
-            overview="Overview" title="Paliers de progression"
-            description="<p>Débloquez 2/3 des jalons menant à un palier pour pouvoir débloquer un nouveau palier.</br>
-            Chaque palier vous permet d'avancer un peu plus dans les mods.</br>
-            Le but, équilibré les mods entre eux, ainsi que de vous faire découvrir de nouveaux mods.</p>"
+            overview="Une autre façon de jouer à Minecraft" title="Paliers de progression"
+            description="<p>Débloquez de nombreux jalons, en solo ou en équipe !</br>
+            Chaque palier vous permet de progresser un peu plus dans votre aventure.</br>
+            Le but, faire découvrir de nouveaux mods ainsi qu’équilibrer les mods entre eux.</p>"
             dir="right" />
 
         <div class="newsContent homeSection">
@@ -157,71 +182,6 @@
             </div>
         </div>
 
-        <x-gridSection title="Ma superbe grille" description="Voici un aperçu de nos blocs dynamiques." :blocks="[
-            [
-                'title' => 'Premier bloc',
-                'description' => 'Description 1',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '#',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-            [
-                'title' => 'Deuxième bloc',
-                'description' => 'Description 2',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => '',
-            ],
-
-            // etc.
-        ]" />
-
-        <x-technoSection title="Nos technos du moment" :blocks="[
-            [
-                'title' => 'Laravel',
-                'description' => 'Framework PHP',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => 'https://laravel.com',
-            ],
-            [
-                'title' => 'VueJS',
-                'description' => 'Frontend réactif',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-            ],
-            [
-                'title' => 'AlpineJS',
-                'description' => 'JS léger',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-            ],
-            [
-                'title' => 'TailwindCSS',
-                'description' => 'CSS utilitaire',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-            ],
-        ]" />
-
         <div class="APropos homeSection">
             <div class="sloganContainer">
                 <div class="sloganLeftContainer">
@@ -250,6 +210,7 @@
     @endsection
 
     @section('script')
+        <script src="{{ asset('js/slideshow.js') }}" defer></script>
         <script src="{{ asset('js/discord_widget.js') }}"></script>
         <script src="{{ asset('js/fetch_launcher_release.js') }}"></script>
         @vite(['resources/js/skinviewer.js'])

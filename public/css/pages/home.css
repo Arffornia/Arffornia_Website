@@ -76,14 +76,13 @@
 }
 
 .default-title {
-    font-size: 225%;
-    font-weight: 750;
+    font-size: 2.3rem;
+    font-weight: 600;
     color: black;
     border-left: 4px solid #ff7300;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     padding-left: 10px;
-    font-family: WF Visual Sans, Arial, sans-serif;
     letter-spacing: .01em;
     line-height: 1.04;
 }

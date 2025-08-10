@@ -7,6 +7,8 @@ const itemModal = document.getElementById('item-editor-modal');
 const itemForm = document.getElementById('item-editor-form');
 const stageModal = document.getElementById('stage-editor-modal');
 const stageForm = document.getElementById('stage-editor-form');
+const recipeModal = document.getElementById('recipe-editor-modal');
+const recipeForm = document.getElementById('recipe-editor-form');
 
 // Destructure AppData passed from Blade view
 const { milestones, milestone_closure, isAdmin, csrfToken, baseUrl } = window.AppData;
@@ -124,6 +126,12 @@ function setupEventListeners() {
     stageModal.querySelector('.cancel-btn').addEventListener('click', closeStageModal);
     stageForm.addEventListener('submit', handleStageFormSubmit);
 
+    recipeModal.querySelector('.modal-close-btn').addEventListener('click', closeRecipeModal);
+    recipeModal.querySelector('.cancel-btn').addEventListener('click', closeRecipeModal);
+    document.getElementById('add-ingredient-btn').addEventListener('click', addIngredientField);
+    document.getElementById('add-result-btn').addEventListener('click', addResultField);
+    recipeForm.addEventListener('submit', handleRecipeFormSubmit);
+
     itemForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -186,6 +194,11 @@ function setupEventListeners() {
                 console.error(error);
                 alert('Error deleting item.');
             }
+        }
+
+        if (e.target.closest('.recipe-edit-btn')) {
+            const unlockId = e.target.closest('.recipe-edit-btn').dataset.unlockId;
+            openRecipeModal(unlockId);
         }
     });
 }
@@ -1023,10 +1036,16 @@ function updateItemsList(items, type, container) {
             if (isEditing) {
                 const actionsDiv = document.createElement('div');
                 actionsDiv.className = 'item-actions-inline';
-                actionsDiv.innerHTML = `
+                let buttons = `
                     <button class="item-action-btn edit" data-item-id="${item.id}" data-item-type="${type}">Edit</button>
                     <button class="item-action-btn delete" data-item-id="${item.id}" data-item-type="${type}">Delete</button>
                 `;
+
+                if (type === 'unlocks') {
+                    buttons += `<button class="recipe-edit-btn" data-unlock-id="${item.id}">Recipe</button>`;
+                }
+
+                actionsDiv.innerHTML = buttons;
                 li.appendChild(actionsDiv);
             }
             list.appendChild(li);
@@ -1071,6 +1090,135 @@ function openItemModal(type, itemId = null) {
 
 function closeItemModal() {
     itemModal.classList.add('modal-hidden');
+}
+
+function openRecipeModal(unlockId) {
+    recipeModal.classList.remove('modal-hidden');
+    recipeForm.reset();
+    document.getElementById('recipe-modal-unlock-id').value = unlockId;
+    document.getElementById('recipe-ingredients-container').innerHTML = '';
+    document.getElementById('recipe-results-container').innerHTML = '';
+
+    const unlockData = window.currentMilestoneData.unlocks.find(u => u.id == unlockId);
+    if (unlockData && unlockData.recipe) {
+        const recipe = unlockData.recipe;
+
+        document.getElementById('recipe-energy').value = recipe.energy;
+        document.getElementById('recipe-time').value = recipe.time;
+
+        recipe.ingredients.forEach(ing => addIngredientField(ing));
+
+        if (Array.isArray(recipe.result)) {
+            recipe.result.forEach(res => addResultField(res));
+        } else {
+            addResultField(recipe.result);
+        }
+
+    } else {
+        addIngredientField();
+        addResultField();
+    }
+}
+
+function closeRecipeModal() {
+    recipeModal.classList.add('modal-hidden');
+}
+
+function addIngredientField(ingredient = {}) {
+    const container = document.getElementById('recipe-ingredients-container');
+    const div = document.createElement('div');
+    div.className = 'ingredient-field';
+
+    const type = ingredient.tag ? 'tag' : 'item';
+    const value = ingredient.tag || ingredient.item || '';
+
+    div.innerHTML = `
+        <select class="ingredient-type">
+            <option value="item" ${type === 'item' ? 'selected' : ''}>Item</option>
+            <option value="tag" ${type === 'tag' ? 'selected' : ''}>Tag</option>
+        </select>
+        <input type="text" class="ingredient-value" placeholder="e.g., minecraft:diamond" value="${value}" required>
+        <input type="number" class="ingredient-count" min="1" value="${ingredient.count || 1}">
+        <button type="button" class="remove-ingredient-btn">Remove</button>
+    `;
+
+    container.appendChild(div);
+
+    div.querySelector('.remove-ingredient-btn').addEventListener('click', () => {
+        div.remove();
+    });
+}
+
+async function handleRecipeFormSubmit(e) {
+    e.preventDefault();
+    const unlockId = document.getElementById('recipe-modal-unlock-id').value;
+    const token = await getApiToken();
+    if (!token) return;
+
+    const ingredients = [];
+    document.querySelectorAll('.ingredient-field').forEach(field => {
+        const type = field.querySelector('.ingredient-type').value;
+        const value = field.querySelector('.ingredient-value').value;
+        const count = parseInt(field.querySelector('.ingredient-count').value, 10);
+        if (value) {
+            ingredients.push({ [ type ]: value, count });
+        }
+    });
+
+    const results = [];
+    document.querySelectorAll('.result-field').forEach(field => {
+        const item = field.querySelector('.result-item').value;
+        const count = parseInt(field.querySelector('.result-count').value, 10);
+        if (item) {
+            results.push({ item, count });
+        }
+    });
+
+    const recipeData = {
+        ingredients,
+        result: results,
+        energy: parseInt(document.getElementById('recipe-energy').value, 10) || null,
+        time: parseInt(document.getElementById('recipe-time').value, 10) || null,
+    };
+
+    try {
+        const response = await fetch(`${baseUrl}/api/unlocks/${unlockId}/recipe`, {
+            method: 'POST',
+            headers: createApiHeaders(token),
+            body: JSON.stringify(recipeData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to save recipe');
+        }
+
+        // Re-fetch milestone details to get updated recipe data
+        showMilestonesInfo(milestones.find(m => m.id == window.currentMilestoneData.id));
+        closeRecipeModal();
+        alert('Recipe saved successfully!');
+    } catch (error) {
+        console.error('Save Recipe Error:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+function addResultField(result = {}) {
+    const container = document.getElementById('recipe-results-container');
+    const div = document.createElement('div');
+    div.className = 'result-field';
+
+    div.innerHTML = `
+        <input type="text" class="result-item" placeholder="e.g., minecraft:diamond" value="${result.item || ''}" required>
+        <input type="number" class="result-count" min="1" value="${result.count || 1}">
+        <button type="button" class="remove-btn">Remove</button>
+    `;
+
+    container.appendChild(div);
+
+    div.querySelector('.remove-btn').addEventListener('click', () => {
+        div.remove();
+    });
 }
 
 

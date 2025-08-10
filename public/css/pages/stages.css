@@ -463,3 +463,90 @@ Admin Panel & Controls
 .modal-hidden {
     display: none;
 }
+
+
+.item-actions-inline .recipe-edit-btn {
+    background-color: #27ae60;
+    margin-left: 5px;
+    border-radius: 5px;
+    border-color: #27ae60;
+}
+
+#recipe-editor-modal h4 {
+    margin-top: 20px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+}
+
+#recipe-editor-modal .add-btn {
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#recipe-editor-modal .result-field,
+#recipe-editor-modal .ingredient-field {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#recipe-editor-modal .ingredient-type {
+    flex-basis: 20%;
+}
+
+#recipe-editor-modal .ingredient-value {
+    flex-grow: 1;
+}
+
+#recipe-editor-modal .ingredient-count {
+    flex-basis: 15%;
+}
+
+#recipe-editor-modal .remove-ingredient-btn {
+    background-color: #c0392b;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#add-ingredient-btn {
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#recipe-editor-modal .recipe-result-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+#recipe-editor-modal .result-item {
+    flex-grow: 1;
+}
+
+#recipe-editor-modal .result-count {
+    flex-basis: 20%;
+}
+
+#recipe-editor-modal .remove-btn {
+    background-color: #c0392b;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}

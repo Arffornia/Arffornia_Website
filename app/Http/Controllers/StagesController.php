@@ -148,7 +148,7 @@ class StagesController extends Controller
      */
     public function getMilestoneById(Milestone $milestone): JsonResponse
     {
-        $milestone->load(['unlocks', 'requirements', 'stage']);
+        $milestone->load(['unlocks.recipe', 'requirements', 'stage']);
         $responseData = $milestone->toArray();
 
         if ($milestone->stage) {

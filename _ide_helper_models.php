@@ -143,6 +143,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereShopPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\Recipe|null $recipe
  */
 	class MilestoneUnlock extends \Eloquent {}
 }
@@ -246,6 +247,18 @@ namespace App\Models{
  * @property-read \App\Models\Stage $maxStage
  */
 	class Progression extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property-read \App\Models\MilestoneUnlock|null $milestoneUnlock
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe query()
+ */
+	class Recipe extends \Eloquent {}
 }
 
 namespace App\Models{
