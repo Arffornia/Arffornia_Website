@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{ asset('css/components/homePresentationSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/presentationSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/technoSection.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components/newsSection.css') }}">
     <link rel="stylesheet" href="{{ asset('css/discord_widget.css') }}">
     <link rel="stylesheet" href="{{ asset('css/pages/news/allNews.css') }}">
     <link rel="stylesheet" href="{{ asset('css/components/inputText/dropDown.css') }}">
@@ -36,29 +37,20 @@
             <div class="sloganStatueContainer"></div>
         </div>
 
-        <x-technoSection title="Les dernières News" :blocks="[
-            [
-                'title' => 'Laravel',
-                'description' => 'Framework PHP',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-                'link' => 'https://laravel.com',
-            ],
-            [
-                'title' => 'VueJS',
-                'description' => 'Frontend réactif',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-            ],
-            [
-                'title' => 'AlpineJS',
-                'description' => 'JS léger',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-            ],
-            [
-                'title' => 'TailwindCSS',
-                'description' => 'CSS utilitaire',
-                'image' => 'images/screenshots1920x1080/old_spawn.png',
-            ],
-        ]" />
+        @php
+            $newsBlocks = $newsList
+                ->map(function ($news) {
+                    return [
+                        'title' => $news->title,
+                        'description' => 'Publié le ' . $news->created_at->format('d/m/Y'),
+                        'image' => asset($news->imgUrl),
+                        'link' => url('/news/' . $news->id),
+                    ];
+                })
+                ->all();
+        @endphp
+
+        <x-newsSection :blocks="$newsBlocks" see-more-link="{{ url('/news') }}" />
 
         <x-home-presentation-section image-src="{{ asset('images/join_us.png') }}" image-alt="Une image cool"
             overview="Survie - Build - Chill" title="🌍 Arffornia – Ton évasion après la journée"
@@ -107,23 +99,6 @@
             Chaque palier vous permet de progresser un peu plus dans votre aventure.</br>
             Le but, faire découvrir de nouveaux mods ainsi qu’équilibrer les mods entre eux.</p>"
             dir="right" />
-
-        <div class="newsContent homeSection">
-            <p class="default-title">News :</p>
-            <div class="newsContainer">
-                @foreach ($newsList as $news)
-                    <a class="news" href="news/{{ $news->id }}" title="Show news">
-                        <img class="newsImg" src="{{ $news->imgUrl }}">
-                        <div class="textContainer">
-                            <p class="title">{{ $news->title }}</p>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
-            <div class="seeMoreBtnContainer">
-                <a href="/news"><input class="seeMoreBtn" type="button" value="Voir plus"></a>
-            </div>
-        </div>
 
         <div class="podium homeSection">
             <div class="content">
