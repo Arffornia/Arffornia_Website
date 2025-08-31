@@ -15,8 +15,6 @@
 </head>
 
 <header>
-    <x-flash-message />
-
     <div class="headerContainer">
         <div class="iconContainer">
             <a href="/"><img id=navBarIcon src="{{ asset('images/Crafting_Table100x100.png') }}"

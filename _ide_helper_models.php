@@ -29,6 +29,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage wherePath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string|null $player_name
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|LauncherImage wherePlayerName($value)
  */
 	class LauncherImage extends \Eloquent {}
 }
@@ -253,10 +255,28 @@ namespace App\Models{
 /**
  * 
  *
- * @property-read \App\Models\MilestoneUnlock|null $milestoneUnlock
+ * @property int $id
+ * @property string $type
+ * @property array<array-key, mixed> $ingredients
+ * @property array<array-key, mixed> $result
+ * @property int|null $energy
+ * @property int|null $time
+ * @property int $milestone_unlock_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\MilestoneUnlock $milestoneUnlock
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereEnergy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereIngredients($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereMilestoneUnlockId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereResult($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe whereUpdatedAt($value)
  */
 	class Recipe extends \Eloquent {}
 }

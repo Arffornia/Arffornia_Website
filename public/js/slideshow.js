@@ -15,17 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error('Failed to fetch launcher images');
             }
-            const imageUrls = await response.json();
+            const imageDataArray = await response.json();
 
-            if (!imageUrls || imageUrls.length === 0) {
+            if (!imageDataArray || imageDataArray.length === 0) {
                 slideshowContainer.innerHTML = '<p>No images to display.</p>';
                 return;
             }
 
             slideshowContainer.innerHTML = '';
-            imageUrls.forEach(url => {
+            imageDataArray.forEach(imageData => {
                 const img = document.createElement('img');
-                img.src = url;
+                img.src = imageData.path;
                 img.className = 'slide';
                 slideshowContainer.appendChild(img);
             });

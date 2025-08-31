@@ -26,9 +26,11 @@ class LauncherService
     public function getLauncherImages()
     {
         return $this->repository->getLauncherImages()
-            ->pluck('path')
-            ->map(function ($path) {
-                return url($path);
+            ->map(function ($image) {
+                return [
+                    'path' => url($image->path),
+                    'player_name' => $image->player_name,
+                ];
             })
             ->toArray();
     }

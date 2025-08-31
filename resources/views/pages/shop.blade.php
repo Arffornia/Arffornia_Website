@@ -113,5 +113,5 @@ disabled
             initialItemId: {{ $initialItemId ?? 'null' }}
         };
     </script>
-    <script src="{{ asset('js/shop.js') }}"></script>
+    @vite(['resources/js/shop.js'])
 @endsection

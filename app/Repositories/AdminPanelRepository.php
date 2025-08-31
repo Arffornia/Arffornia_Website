@@ -14,13 +14,14 @@ class AdminPanelRepository
      *
      * @param boolean $in_prod
      * @param string $filePath
-     * @return LauncherImage
+     * @return ?LauncherImage
      */
-    public function createNewLauncherImage(bool $in_prod, string $filePath)
+    public function createNewLauncherImage(bool $in_prod, string $filePath, ?string $playerName)
     {
         LauncherImage::create([
             'path' => $filePath,
             'in_prod' => $in_prod,
+            'player_name' => $playerName,
         ]);
     }
 

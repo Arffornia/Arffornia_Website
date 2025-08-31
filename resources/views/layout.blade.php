@@ -9,14 +9,14 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('images/Crafting_Table100x100.png') }}">
 
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     @yield('extraHead')
 
     <title>Arffornia</title>
 </head>
 
 <header>
-    <x-flash-message />
-
     <div class="headerContainer">
         <div class="iconContainer">
             <a href="/"><img id=navBarIcon src="{{ asset('images/Crafting_Table100x100.png') }}"
@@ -49,6 +49,12 @@
 </header>
 
 <body>
+    @if (session('message') || session('error'))
+        <div id="flash-message-data" data-message="{{ session('message') ?? session('error') }}"
+            data-type="{{ session('message') ? 'success' : 'error' }}" style="display: none;">
+        </div>
+    @endif
+
     @yield('content')
 </body>
 

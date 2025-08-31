@@ -35,6 +35,10 @@
                                     <p>{{ $message }}</p>
                                 @enderror
 
+                                <x-inputText01 id="player_name" name="player_name"
+                                    placeholder="Associated Player Name (Optional)"
+                                    value="{{ old('player_name') }}"></x-inputText01>
+
                                 <x-inputFile01 id="launcher_file" name="launcher_file" placeholder="Launcher file"
                                     value="{{ old('launcher_file') }}"></x-inputFile01>
                             </div>

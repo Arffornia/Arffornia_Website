@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text("path");
             $table->boolean("in_prod");
+            $table->string('player_name')->nullable();
             $table->timestamps();
         });
     }

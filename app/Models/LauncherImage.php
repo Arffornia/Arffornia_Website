@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $path
@@ -30,5 +30,6 @@ class LauncherImage extends Model
     protected $fillable = [
         'path',
         'in_prod',
+        'player_name',
     ];
 }

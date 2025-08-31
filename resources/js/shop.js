@@ -1,3 +1,5 @@
+import { showFlashMessage } from "./flash-message";
+
 /**
  * Stores the Sanctum API token to avoid repeated requests.
  * @type {string|null}
@@ -140,27 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadRandomBestSeller();
     }
 });
-
-/**
- * Displays a dynamic flash message at the top of the screen.
- * @param {string} message The message to display.
- * @param {boolean} isSuccess Whether the message is a success or error message.
- */
-function showFlashMessage(message, isSuccess) {
-    const existingFlash = document.querySelector('.dynamic-flash-message');
-    if (existingFlash) existingFlash.remove();
-
-    const flashDiv = document.createElement('div');
-    flashDiv.className = `flashMessage dynamic-flash-message ${isSuccess ? 'success' : 'error'}`;
-    flashDiv.innerHTML = `<p class="text">${message}</p>`;
-    document.body.prepend(flashDiv);
-
-    setTimeout(() => { flashDiv.style.top = '20px'; }, 100);
-    setTimeout(() => {
-        flashDiv.style.top = '-100px';
-        setTimeout(() => flashDiv.remove(), 500);
-    }, 5000);
-}
 
 /**
  * Gets the Sanctum API token for authenticated requests. Caches the token.

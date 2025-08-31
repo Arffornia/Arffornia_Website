@@ -4,6 +4,7 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     server: {
         host: '0.0.0.0',
+        // host: 'localhost',
         port: 5173,
         strictPort: true,
         watch: {
@@ -12,7 +13,7 @@ export default defineConfig({
     },
     plugins: [
         laravel({
-            input: [ 'resources/css/app.css', 'resources/js/app.js', 'resources/js/skinviewer.js' ],
+            input: [ 'resources/css/app.css', 'resources/js/app.js', 'resources/js/skinviewer.js', 'resources/js/shop.js' ],
             refresh: true,
         }),
     ],

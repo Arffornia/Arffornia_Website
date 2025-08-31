@@ -50,12 +50,14 @@ class AdminPanelManager extends Controller
     {
         $request->validate([
             'launcher_file' => 'required|max:2048',
+            'player_name' => 'nullable|string|max:255',
         ]);
 
         $in_prod = $request->has("in_prod");
         $file = $request->file('launcher_file');
+        $playerName = $request->input('player_name');
 
-        $this->adminPanelService->uploadNewLauncherImage($in_prod, $file);
+        $this->adminPanelService->uploadNewLauncherImage($in_prod, $file, $playerName);
 
         return back()->with('message', 'Success to upload: ' . $file->getClientOriginalName() . ' !');
     }

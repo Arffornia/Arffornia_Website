@@ -24,7 +24,7 @@ class AdminPanelService
      * @param mixed $file
      * @return LauncherImage
      */
-    public function uploadNewLauncherImage(bool $in_prod, $file)
+    public function uploadNewLauncherImage(bool $in_prod, $file, ?string $playerName)
     {
         // Store the file in storage\app\public folder
         $fileName = $file->getClientOriginalName();
@@ -32,7 +32,7 @@ class AdminPanelService
         $filePath = $file->storeAs('uploads/launcherImages', $fileName, 'public');
 
         // Save version file in db
-        $this->createNewLauncherImage($in_prod, "storage/" . $filePath);
+        $this->createNewLauncherImage($in_prod, "storage/" . $filePath, $playerName);
     }
 
     /**
@@ -42,9 +42,9 @@ class AdminPanelService
      * @param string $filePath
      * @return LauncherImage
      */
-    public function createNewLauncherImage(bool $in_prod, string $filePath)
+    public function createNewLauncherImage(bool $in_prod, string $filePath, ?string $playerName)
     {
-        return $this->repository->createNewLauncherImage($in_prod, $filePath);
+        return $this->repository->createNewLauncherImage($in_prod, $filePath, $playerName);
     }
 
     /**

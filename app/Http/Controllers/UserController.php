@@ -132,7 +132,7 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('message', 'You have been logged out !');
+        return redirect('/')->with('error', 'You have been logged out !');
     }
 
     /**
@@ -208,18 +208,11 @@ class UserController extends Controller
                 return redirect('/')->with('message', 'Welcome ' . $user->name . ' !');
             }
 
-
-            // TODO add message with error
-            return view('pages.users.login');
+            return redirect('/login')->with('error', 'Could not authenticate you. Please try again.');
         } catch (MinecraftOauthException $e) {
-            dump($e->getMessage());
+            Log::error('Minecraft OAuth Exception: ' . $e->getMessage());
 
-            /*
-                TODO:
-
-                Add a flash message, with e getmessage
-            */
-            abort(401, 'Authentication failed. Please try again.');
+            return redirect('/login')->with('error', 'Authentication failed. Please try again.');
         }
     }
 
