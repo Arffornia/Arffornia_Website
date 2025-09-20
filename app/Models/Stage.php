@@ -39,4 +39,12 @@ class Stage extends Model
     {
         return $this->hasMany(Milestone::class);
     }
+
+    /**
+     * Get the progressions that have this stage as their maximum unlocked stage.
+     */
+    public function progressions(): HasMany
+    {
+        return $this->hasMany(Progression::class, 'max_stage_id');
+    }
 }

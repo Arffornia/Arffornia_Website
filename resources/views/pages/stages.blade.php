@@ -74,7 +74,6 @@
         {{-- Admin Control Panel --}}
         @if ($isAdmin ?? false)
             <div class="admin-panel">
-                <button id="exportStagesBtn" class="export-btn">Export Data</button>
                 <div class="stage-controls">
                     <p>Stages:</p>
                     <button id="addStageBtn" class="admin-mode-btn">Add Stage</button>
@@ -89,6 +88,12 @@
                     <button class="admin-mode-btn" data-mode="unlink">Unlink</button>
                     <button class="admin-mode-btn" data-mode="move">Move</button>
                 </div>
+            </div>
+
+            <div class="data-io-panel">
+                <button id="exportStagesBtn" class="data-io-btn">Export Data</button>
+                <button id="importStagesBtn" class="data-io-btn">Import Data</button>
+                <input type="file" id="importFileInput" style="display: none;" accept=".json">
             </div>
         @endif
 

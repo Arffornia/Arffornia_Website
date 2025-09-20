@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * 
+ *
  *
  * @property int $milestone_id
  * @property int $descendant_id
@@ -25,4 +25,11 @@ class MilestoneClosure extends Model
 
     protected $table = 'milestone_closure';
     public $timestamps = false;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['id', 'milestone_id', 'descendant_id'];
 }

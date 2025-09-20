@@ -216,8 +216,16 @@ function setupEventListeners() {
  */
 function setupAdminEventListeners() {
     const exportBtn = document.getElementById('exportStagesBtn');
+    const importBtn = document.getElementById('importStagesBtn');
+    const importFileInput = document.getElementById('importFileInput');
+
     if (exportBtn) {
         exportBtn.addEventListener('click', handleExport);
+    }
+
+    if (importBtn && importFileInput) {
+        importBtn.addEventListener('click', () => importFileInput.click());
+        importFileInput.addEventListener('change', handleFileImport);
     }
 
     document.getElementById('addStageBtn').addEventListener('click', handleAddStage);
@@ -229,7 +237,7 @@ function setupAdminEventListeners() {
     document.getElementById('saveBtn').addEventListener('click', handleSave);
 
     // Mode-switching buttons
-    const adminModeButtons = document.querySelectorAll('.admin-mode-btn');
+    const adminModeButtons = document.querySelectorAll('.admin-controls .admin-mode-btn');
     adminModeButtons.forEach(button => {
         button.addEventListener('click', () => {
             adminModeButtons.forEach(btn => btn.classList.remove('active'));
@@ -855,7 +863,7 @@ async function handleExport() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'stages-export.json';
+        a.download = `arffornia-stages-backup-${new Date().toISOString().slice(0, 10)}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -864,6 +872,55 @@ async function handleExport() {
         console.error("Export failed", err);
         alert("Failed to export data.");
     }
+}
+
+async function handleFileImport(event) {
+    const file = event.target.files[ 0 ];
+    if (!file) {
+        return;
+    }
+
+    if (!confirm("ATTENTION: This will replace ALL existing stages, milestones, and progression data. This action cannot be undone. Are you sure you want to continue?")) {
+        event.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        const fileContent = e.target.result;
+
+        try {
+            JSON.parse(fileContent);
+
+            const token = await getApiToken();
+            if (!token) {
+                alert("Authentication error. Could not get API token.");
+                return;
+            }
+
+            const response = await fetch(`${baseUrl}/api/stages/import`, {
+                method: 'POST',
+                headers: createApiHeaders(token),
+                body: fileContent,
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Import failed.');
+            }
+
+            alert(result.message);
+            window.location.reload();
+        } catch (error) {
+            console.error('Import Error:', error);
+            alert(`Import failed: ${error.message}`);
+        } finally {
+            event.target.value = '';
+        }
+    };
+
+    reader.readAsText(file);
 }
 
 /**

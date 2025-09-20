@@ -189,24 +189,6 @@ footer {
     padding-top: 3%;
 }
 
-.export-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 10px 15px;
-    background: #333;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    z-index: 999;
-    transition: transform 0.3s ease;
-}
-
-.export-btn:hover {
-    transform: scale(1.05);
-}
-
 .info .admin-actions {
     margin-top: 20px;
     display: flex;
@@ -568,4 +550,31 @@ Admin Panel & Controls
     padding: 8px;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.data-io-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 999;
+    display: flex;
+    gap: 10px;
+}
+
+
+.data-io-btn {
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 999;
+    transition: transform 0.3s ease;
+}
+
+.data-io-btn:hover {
+    transform: scale(1.05);
 }

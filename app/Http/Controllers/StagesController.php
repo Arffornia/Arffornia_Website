@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\Stage;
 use App\Models\Milestone;
 use Illuminate\Http\Request;
@@ -16,6 +17,10 @@ use Illuminate\Contracts\View\View;
 use App\Models\MilestoneRequirement;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
+
+use App\Models\Recipe;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class StagesController extends Controller
 {
@@ -62,17 +67,161 @@ class StagesController extends Controller
 
 
     /**
-     * Get all stages information (export)
+     * Exports all progression-related data into a single JSON response.
+     * This includes stages, milestones with their requirements and unlocks (including recipes),
+     * and the links between milestones.
      *
-     * @return array
+     * @return JsonResponse
      */
-    public function exportStages()
+    public function exportStages(): JsonResponse
     {
         return response()->json([
-            'stages' => Stage::all(),
-            'milestones' => Milestone::all(),
+            'stages' => Stage::orderBy('number')->get(),
+            'milestones' => Milestone::with(['requirements', 'unlocks.recipe'])->get(),
             'milestone_closure' => MilestoneClosure::all(),
         ]);
+    }
+
+    /**
+     * Imports progression data from a JSON file, replacing all existing data.
+     * This operation is transactional; it will either fully succeed or fail without
+     * leaving the database in a partially updated state.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function importStages(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'stages' => 'required|array',
+            'milestones' => 'required|array',
+            'milestone_closure' => 'present|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Invalid file format.', 'errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $data = $validator->validated();
+        Log::info('Starting FINAL import process.', [
+            'stage_count' => count($data['stages']),
+            'milestone_count' => count($data['milestones'])
+        ]);
+
+        DB::beginTransaction();
+        try {
+            Schema::disableForeignKeyConstraints();
+            Log::info('Foreign key constraints disabled.');
+
+            Recipe::truncate();
+            MilestoneUnlock::truncate();
+            MilestoneRequirement::truncate();
+            MilestoneClosure::truncate();
+            Log::info('Relation tables truncated.');
+
+            foreach ($data['stages'] as $stageData) {
+                Stage::updateOrCreate(['id' => $stageData['id']], collect($stageData)->except(['created_at', 'updated_at'])->toArray());
+            }
+            Log::info('Stages processed.');
+
+            $allRequirements = [];
+            $allUnlocks = [];
+            $allRecipes = [];
+
+            // 1. First, update all milestones.
+            foreach ($data['milestones'] as $milestoneData) {
+                Milestone::updateOrCreate(
+                    ['id' => $milestoneData['id']],
+                    collect($milestoneData)->except(['requirements', 'unlocks', 'created_at', 'updated_at'])->toArray()
+                );
+            }
+            Log::info('Milestones table updated.');
+
+            // 2. Next, prepare the relationship data.
+            foreach ($data['milestones'] as $milestoneData) {
+                foreach ($milestoneData['requirements'] ?? [] as $req) {
+                    $allRequirements[] = [
+                        'id' => $req['id'],
+                        'milestone_id' => $req['milestone_id'],
+                        'item_id' => $req['item_id'],
+                        'display_name' => $req['display_name'] ?? null,
+                        'image_path' => $req['image_path'] ?? null,
+                        'amount' => $req['amount'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+
+                foreach ($milestoneData['unlocks'] ?? [] as $unlock) {
+                    $allUnlocks[] = [
+                        'id' => $unlock['id'],
+                        'milestone_id' => $unlock['milestone_id'],
+                        'item_id' => $unlock['item_id'],
+                        'display_name' => $unlock['display_name'] ?? null,
+                        'recipes_to_ban' => json_encode($unlock['recipes_to_ban'] ?? []),
+                        'shop_price' => $unlock['shop_price'] ?? null,
+                        'image_path' => $unlock['image_path'] ?? null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+
+                    if (!empty($unlock['recipe'])) {
+                        $recipe = $unlock['recipe'];
+                        $allRecipes[] = [
+                            'id' => $recipe['id'],
+                            'milestone_unlock_id' => $recipe['milestone_unlock_id'],
+                            'type' => $recipe['type'],
+                            'ingredients' => json_encode($recipe['ingredients'] ?? []),
+                            'result' => json_encode($recipe['result'] ?? []),
+                            'energy' => $recipe['energy'] ?? null,
+                            'time' => $recipe['time'] ?? null,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                }
+            }
+            Log::info('Relation data collected.', [
+                'requirements_found' => count($allRequirements),
+                'unlocks_found' => count($allUnlocks),
+                'recipes_found' => count($allRecipes)
+            ]);
+
+            // 3. Insert relationships in bulk
+            if (!empty($allRequirements)) MilestoneRequirement::insert($allRequirements);
+            if (!empty($allUnlocks)) MilestoneUnlock::insert($allUnlocks);
+            if (!empty($allRecipes)) Recipe::insert($allRecipes);
+            Log::info('Relation data inserted into DB.');
+
+            // 4. Rebuild relationships
+            if (!empty($data['milestone_closure'])) {
+                MilestoneClosure::insert($data['milestone_closure']);
+                Log::info('MilestoneClosure data inserted.');
+            }
+
+            // 5. Clean up old unused records
+            $importedMilestoneIds = collect($data['milestones'])->pluck('id');
+            Milestone::whereNotIn('id', $importedMilestoneIds)->whereDoesntHave('progressions')->delete();
+            $importedStageIds = collect($data['stages'])->pluck('id');
+            Stage::whereNotIn('id', $importedStageIds)->whereDoesntHave('progressions')->delete();
+            Log::info('Old, unused data cleaned up.');
+
+            Schema::enableForeignKeyConstraints();
+            DB::commit();
+            Log::info('Import transaction committed successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Schema::enableForeignKeyConstraints();
+            Log::error('An error occurred during import. Operation rolled back.', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            report($e);
+            return response()->json(['message' => 'An error occurred during import.', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json(['message' => 'Progression data imported successfully. Please refresh the page.']);
     }
 
     /**

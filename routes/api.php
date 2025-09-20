@@ -45,6 +45,7 @@ Route::get('recipes/type/{type}', [RecipeController::class, 'showByType']);
 
 Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('stages/export', [StagesController::class, 'exportStages']);
+    Route::post('stages/import', [StagesController::class, 'importStages']);
 
     // Stage Management
     Route::post('stages', [StagesController::class, 'storeStage']);

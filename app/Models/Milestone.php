@@ -73,4 +73,12 @@ class Milestone extends Model
     {
         return $this->belongsTo(Stage::class, 'stage_id');
     }
+
+    /**
+     * Get the progressions that have this milestone as their current target.
+     */
+    public function progressions(): HasMany
+    {
+        return $this->hasMany(Progression::class, 'current_milestone_id');
+    }
 }
