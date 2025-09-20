@@ -550,3 +550,22 @@ Admin Panel & Controls
     border-radius: 5px;
     cursor: pointer;
 }
+
+.add-btn {
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.remove-btn {
+    background-color: #c0392b;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+}

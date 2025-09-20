@@ -37,7 +37,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class MilestoneUnlock extends Model
 {
     use HasFactory;
-    protected $fillable = ['milestone_id', 'item_id', 'display_name', 'recipe_id_to_ban', 'shop_price', 'image_path'];
+    protected $fillable = ['milestone_id', 'item_id', 'display_name', 'recipes_to_ban', 'shop_price', 'image_path'];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'recipes_to_ban' => 'array',
+    ];
 
     /**
      * The accessors to append to the model's array form.

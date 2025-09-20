@@ -113,12 +113,18 @@
                 <label for="modal-image-path">Image Path (in public/images/item_textures/)</label>
                 <input type="text" id="modal-image-path">
 
+
                 <div id="unlock-fields">
-                    <label for="modal-recipe-id">Recipe to Ban</label>
-                    <input type="text" id="modal-recipe-id">
+                    <label>Recipes to Ban</label>
+                    <div id="banned-recipes-container"></div>
+                    <button type="button" id="add-banned-recipe-btn" class="add-btn" style="margin-top: 10px;">Add
+                        Recipe</button>
+
                     <label for="modal-shop-price">Shop Price</label>
                     <input type="number" id="modal-shop-price">
                 </div>
+
+
 
                 <div id="requirement-fields">
                     <label for="modal-amount">Amount</label>

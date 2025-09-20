@@ -308,7 +308,11 @@ class StagesController extends Controller
      */
     public function getProgressionConfigForMod(): JsonResponse
     {
-        $bannedRecipes = MilestoneUnlock::pluck('recipe_id_to_ban')->all();
+        $bannedRecipes = MilestoneUnlock::pluck('recipes_to_ban')
+            ->flatten()
+            ->unique()
+            ->values()
+            ->all();
 
         return response()->json([
             'banned_recipes' => $bannedRecipes
@@ -343,7 +347,8 @@ class StagesController extends Controller
         $data = $request->validate([
             'item_id' => 'required|string',
             'display_name' => 'nullable|string',
-            'recipe_id_to_ban' => 'required|string',
+            'recipes_to_ban' => 'required|array',
+            'recipes_to_ban.*' => 'string|distinct',
             'shop_price' => 'nullable|integer',
             'image_path' => 'nullable|string',
         ]);
@@ -357,7 +362,8 @@ class StagesController extends Controller
         $data = $request->validate([
             'item_id' => 'required|string',
             'display_name' => 'nullable|string',
-            'recipe_id_to_ban' => 'required|string',
+            'recipes_to_ban' => 'required|array',
+            'recipes_to_ban.*' => 'string|distinct',
             'shop_price' => 'nullable|integer',
             'image_path' => 'nullable|string',
         ]);

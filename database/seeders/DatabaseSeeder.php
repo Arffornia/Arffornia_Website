@@ -142,7 +142,7 @@ class DatabaseSeeder extends Seeder
             'milestone_id' => 1,
             'item_id' => 'minecraft:oak_planks',
             'display_name' => 'Oak Planks',
-            'recipe_id_to_ban' => 'minecraft:oak_planks',
+            'recipes_to_ban' => ['minecraft:crafting_table'],
             'shop_price' => 10,
             'image_path' => 'minecraft_oak_planks.png'
         ]);
@@ -167,7 +167,7 @@ class DatabaseSeeder extends Seeder
             'milestone_id' => 1,
             'item_id' => 'minecraft:oak_slab',
             'display_name' => 'Oak Slab',
-            'recipe_id_to_ban' => 'minecraft:oak_slab',
+            'recipes_to_ban' => ['minecraft:oak_slab'],
             'shop_price' => 5,
             'image_path' => 'minecraft_oak_slab.png'
         ]);
@@ -176,7 +176,7 @@ class DatabaseSeeder extends Seeder
             'milestone_id' => 2,
             'item_id' => 'minecraft:iron_ingot',
             'display_name' => 'Iron Ingot',
-            'recipe_id_to_ban' => 'minecraft:iron_ingot',
+            'recipes_to_ban' => ['minecraft:iron_ingot'],
             'shop_price' => 42,
             'image_path' => 'minecraft_iron_ingot.png'
         ]);

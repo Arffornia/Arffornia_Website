@@ -9,6 +9,8 @@ const stageModal = document.getElementById('stage-editor-modal');
 const stageForm = document.getElementById('stage-editor-form');
 const recipeModal = document.getElementById('recipe-editor-modal');
 const recipeForm = document.getElementById('recipe-editor-form');
+const bannedRecipesContainer = document.getElementById('banned-recipes-container');
+const addBannedRecipeBtn = document.getElementById('add-banned-recipe-btn');
 
 // Destructure AppData passed from Blade view
 const { milestones, milestone_closure, isAdmin, csrfToken, baseUrl } = window.AppData;
@@ -132,6 +134,8 @@ function setupEventListeners() {
     document.getElementById('add-result-btn').addEventListener('click', addResultField);
     recipeForm.addEventListener('submit', handleRecipeFormSubmit);
 
+    addBannedRecipeBtn.addEventListener('click', () => createBannedRecipeInput());
+
     itemForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -147,7 +151,11 @@ function setupEventListeners() {
         };
 
         if (type === 'unlocks') {
-            body.recipe_id_to_ban = document.getElementById('modal-recipe-id').value;
+            const recipesToBan = Array.from(document.querySelectorAll('.banned-recipe-value'))
+                .map(input => input.value.trim())
+                .filter(value => value !== '');
+            body.recipes_to_ban = recipesToBan;
+
             body.shop_price = parseInt(document.getElementById('modal-shop-price').value) || null;
             url = itemId ? `${baseUrl}/api/unlocks/${itemId}` : `${baseUrl}/api/milestones/${milestoneId}/unlocks`;
         } else {
@@ -729,6 +737,29 @@ function createNode(milestone) {
 }
 
 /**
+ * Creates and appends a new input field for a banned recipe.
+ * @param {string} value The initial value for the input field.
+ */
+function createBannedRecipeInput(value = '') {
+    const div = document.createElement('div');
+    div.className = 'banned-recipe-field';
+    div.style.display = 'flex';
+    div.style.gap = '10px';
+    div.style.marginBottom = '5px';
+
+    div.innerHTML = `
+        <input type="text" class="banned-recipe-value" placeholder="e.g., minecraft:stick" value="${value}" required style="flex-grow: 1;">
+        <button type="button" class="remove-btn">Remove</button>
+    `;
+
+    bannedRecipesContainer.appendChild(div);
+
+    div.querySelector('.remove-btn').addEventListener('click', () => {
+        div.remove();
+    });
+}
+
+/**
  * Initial function to build the entire tree on page load.
  */
 function buildTrees() {
@@ -1059,6 +1090,7 @@ function updateItemsList(items, type, container) {
 function openItemModal(type, itemId = null) {
     itemModal.classList.remove('modal-hidden');
     itemForm.reset();
+    bannedRecipesContainer.innerHTML = '';
 
     document.getElementById('modal-item-type').value = type;
     document.getElementById('unlock-fields').style.display = type === 'unlocks' ? 'block' : 'none';
@@ -1076,7 +1108,14 @@ function openItemModal(type, itemId = null) {
         document.getElementById('modal-image-path').value = itemData.image_path;
 
         if (type === 'unlocks') {
-            document.getElementById('modal-recipe-id').value = itemData.recipe_id_to_ban;
+            if (Array.isArray(itemData.recipes_to_ban)) {
+                itemData.recipes_to_ban.forEach(recipeId => createBannedRecipeInput(recipeId));
+            }
+
+            if (bannedRecipesContainer.childElementCount === 0) {
+                createBannedRecipeInput(itemData.item_id);
+            }
+
             document.getElementById('modal-shop-price').value = itemData.shop_price;
         } else {
             document.getElementById('modal-amount').value = itemData.amount;
@@ -1085,6 +1124,10 @@ function openItemModal(type, itemId = null) {
     } else {
         document.getElementById('modal-title').textContent = `Add New ${type.slice(0, -1)}`;
         document.getElementById('modal-item-id').value = '';
+
+        if (type === 'unlocks') {
+            createBannedRecipeInput();
+        }
     }
 }
 
