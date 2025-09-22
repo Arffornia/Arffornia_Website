@@ -40,7 +40,7 @@ Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItemWeb'])->midd
 Route::get('/login/MS-Auth', [UserController::class, 'msAuth']);
 Route::get('/login/connect', [UserController::class, 'msAuthCallback']);
 
-Route::get('/login', [UserController::class, 'loginView'])->name('login');
+Route::get('/login', [UserController::class, 'msAuth'])->name('login');
 
 Route::middleware(['auth', "anyRole:user"])->group(callback: function () {
     Route::post('/profile/logout', [UserController::class, 'logoutUser']);
