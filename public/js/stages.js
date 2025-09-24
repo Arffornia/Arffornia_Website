@@ -701,19 +701,21 @@ function linkNodes(nodeId1, nodeId2) {
 
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
 
-    // START: Add class and data attributes for interactivity
-    path.classList.add("link-path"); // General class for all links
+    path.classList.add("link-path");
     path.setAttribute("data-source-id", nodeId1);
     path.setAttribute("data-target-id", nodeId2);
-    path.style.pointerEvents = 'stroke'; // Makes the line clickable but not the empty space around it
-    // END: Add class and data attributes
+    path.style.pointerEvents = 'stroke';
+    let d;
+    if (center1.x === center2.x || center1.y === center2.y) {
+        d = `M ${center1.x},${center1.y} L ${center2.x},${center2.y}`;
+    } else {
+        const midX = center1.x + (center2.x - center1.x) / 2;
+        d = `M ${center1.x},${center1.y} L ${midX},${center1.y} L ${midX},${center2.y} L ${center2.x},${center2.y}`;
+    }
 
-    const deltaY = center2.y - center1.y;
-    const curveStrength = Math.min(Math.abs(deltaY) * 0.6, 150);
-    const d = `M ${center1.x},${center1.y} C ${center1.x},${center1.y + curveStrength} ${center2.x},${center2.y - curveStrength} ${center2.x},${center2.y}`;
     path.setAttribute("d", d);
     path.setAttribute("fill", "none");
-    path.classList.add("line"); // Keep original line class for styling
+    path.classList.add("line");
 
     svg.appendChild(path);
     canvas.appendChild(svg);
