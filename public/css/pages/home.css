@@ -223,13 +223,12 @@
     margin-top: 1.5%;
 
     text-align: center;
-    color: #fff;
-    border-radius: 10px;
+    color: #373737;
     font-size: 250%;
     font-weight: 700;
-    background-color: #160020d1;
-
-    border: solid 3px #ff7300;
+    background-color: #ededed;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
 }
 
 .p2,
@@ -241,10 +240,9 @@
 }
 
 .podium .shape {
-    background-color: #160020d1;
-    border-radius: 10px;
-    border: solid 3px #ff7300;
-
+    background-color: #ededed;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
 }
 
 .podium .shape {
@@ -285,6 +283,10 @@
     text-align: center;
 }
 
+.rank {
+    color: #373737;
+}
+
 .podium .p2 .rank {
     font-weight: 650;
     font-size: 300%;
@@ -302,6 +304,7 @@
 
 .podium .score {
     font-weight: 500;
+    color: #ff7300;
 }
 
 .newsContent .seeMoreBtnContainer {
