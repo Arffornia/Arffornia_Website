@@ -863,7 +863,12 @@ async function handleExport() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `arffornia-stages-backup-${new Date().toISOString().slice(0, 10)}.json`;
+
+        const now = new Date();
+        const date = now.toISOString().slice(0, 10);
+        const time = now.toTimeString().slice(0, 5).replace(":", "-");
+
+        a.download = `arffornia-stages-backup-${date}_${time}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
