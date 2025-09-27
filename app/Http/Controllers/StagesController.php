@@ -103,7 +103,7 @@ class StagesController extends Controller
         }
 
         $data = $validator->validated();
-        Log::info('Starting FINAL import process.', [
+        Log::info('Starting import process (v7 - Final).', [
             'stage_count' => count($data['stages']),
             'milestone_count' => count($data['milestones'])
         ]);
@@ -113,10 +113,10 @@ class StagesController extends Controller
             Schema::disableForeignKeyConstraints();
             Log::info('Foreign key constraints disabled.');
 
-            Recipe::truncate();
-            MilestoneUnlock::truncate();
-            MilestoneRequirement::truncate();
-            MilestoneClosure::truncate();
+            $tablesToTruncate = ['recipes', 'milestone_unlocks', 'milestone_requirements', 'milestone_closure'];
+            foreach ($tablesToTruncate as $table) {
+                DB::table($table)->truncate();
+            }
             Log::info('Relation tables truncated.');
 
             foreach ($data['stages'] as $stageData) {
@@ -124,87 +124,100 @@ class StagesController extends Controller
             }
             Log::info('Stages processed.');
 
-            $allRequirements = [];
-            $allUnlocks = [];
-            $allRecipes = [];
+            $allMilestoneIdsInFile = collect($data['milestones'])->pluck('id')->all();
+            $existingMilestoneIds = Milestone::whereIn('id', $allMilestoneIdsInFile)->pluck('id')->all();
 
-            // 1. First, update all milestones.
-            foreach ($data['milestones'] as $milestoneData) {
-                Milestone::updateOrCreate(
-                    ['id' => $milestoneData['id']],
-                    collect($milestoneData)->except(['requirements', 'unlocks', 'created_at', 'updated_at'])->toArray()
-                );
-            }
-            Log::info('Milestones table updated.');
+            $milestonesToUpdate = [];
+            $milestonesToCreate = [];
 
-            // 2. Next, prepare the relationship data.
             foreach ($data['milestones'] as $milestoneData) {
-                foreach ($milestoneData['requirements'] ?? [] as $req) {
-                    $allRequirements[] = [
-                        'id' => $req['id'],
-                        'milestone_id' => $req['milestone_id'],
-                        'item_id' => $req['item_id'],
-                        'display_name' => $req['display_name'] ?? null,
-                        'image_path' => $req['image_path'] ?? null,
-                        'amount' => $req['amount'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
+                $cleanData = collect($milestoneData)->except(['requirements', 'unlocks', 'created_at', 'updated_at'])->toArray();
+                if (in_array($milestoneData['id'], $existingMilestoneIds)) {
+                    $milestonesToUpdate[] = $cleanData;
+                } else {
+                    $milestonesToCreate[] = $cleanData;
                 }
+            }
 
-                foreach ($milestoneData['unlocks'] ?? [] as $unlock) {
-                    $allUnlocks[] = [
-                        'id' => $unlock['id'],
-                        'milestone_id' => $unlock['milestone_id'],
-                        'item_id' => $unlock['item_id'],
-                        'display_name' => $unlock['display_name'] ?? null,
-                        'recipes_to_ban' => json_encode($unlock['recipes_to_ban'] ?? []),
-                        'shop_price' => $unlock['shop_price'] ?? null,
-                        'image_path' => $unlock['image_path'] ?? null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
+            if (!empty($milestonesToUpdate)) {
+                foreach ($milestonesToUpdate as $ms) {
+                    Milestone::where('id', $ms['id'])->update($ms);
+                }
+            }
 
-                    if (!empty($unlock['recipe'])) {
-                        $recipe = $unlock['recipe'];
-                        $allRecipes[] = [
-                            'id' => $recipe['id'],
-                            'milestone_unlock_id' => $recipe['milestone_unlock_id'],
-                            'type' => $recipe['type'],
-                            'ingredients' => json_encode($recipe['ingredients'] ?? []),
-                            'result' => json_encode($recipe['result'] ?? []),
-                            'energy' => $recipe['energy'] ?? null,
-                            'time' => $recipe['time'] ?? null,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ];
+            if (!empty($milestonesToCreate)) {
+                Milestone::insert($milestonesToCreate);
+            }
+
+            Log::info('Milestones table updated/created.', ['updated' => count($milestonesToUpdate), 'created' => count($milestonesToCreate)]);
+
+
+            $allRequirementsForInsert = [];
+            foreach ($data['milestones'] as $milestoneData) {
+                if (!empty($milestoneData['requirements'])) {
+                    foreach ($milestoneData['requirements'] as $req) {
+                        $requirementData = collect($req)->except(['id', 'image_url', 'created_at', 'updated_at'])->all();
+                        $requirementData['milestone_id'] = $milestoneData['id'];
+                        $allRequirementsForInsert[] = $requirementData;
                     }
                 }
             }
-            Log::info('Relation data collected.', [
-                'requirements_found' => count($allRequirements),
-                'unlocks_found' => count($allUnlocks),
-                'recipes_found' => count($allRecipes)
-            ]);
-
-            // 3. Insert relationships in bulk
-            if (!empty($allRequirements)) MilestoneRequirement::insert($allRequirements);
-            if (!empty($allUnlocks)) MilestoneUnlock::insert($allUnlocks);
-            if (!empty($allRecipes)) Recipe::insert($allRecipes);
-            Log::info('Relation data inserted into DB.');
-
-            // 4. Rebuild relationships
-            if (!empty($data['milestone_closure'])) {
-                MilestoneClosure::insert($data['milestone_closure']);
-                Log::info('MilestoneClosure data inserted.');
+            if (!empty($allRequirementsForInsert)) {
+                MilestoneRequirement::insert($allRequirementsForInsert);
             }
 
-            // 5. Clean up old unused records
-            $importedMilestoneIds = collect($data['milestones'])->pluck('id');
-            Milestone::whereNotIn('id', $importedMilestoneIds)->whereDoesntHave('progressions')->delete();
-            $importedStageIds = collect($data['stages'])->pluck('id');
-            Stage::whereNotIn('id', $importedStageIds)->whereDoesntHave('progressions')->delete();
+            Log::info('All Requirements re-created.', ['count' => count($allRequirementsForInsert)]);
+
+            $unlockCount = 0;
+            $recipeCount = 0;
+
+            foreach ($data['milestones'] as $milestoneData) {
+                if (!empty($milestoneData['unlocks'])) {
+                    foreach ($milestoneData['unlocks'] as $unlock) {
+                        $recipeInfo = $unlock['recipe'] ?? null;
+
+                        $unlockToCreate = collect($unlock)->except(['id', 'recipe', 'image_url', 'created_at', 'updated_at'])->all();
+                        $unlockToCreate['milestone_id'] = $milestoneData['id'];
+
+                        $createdUnlock = MilestoneUnlock::create($unlockToCreate);
+                        $unlockCount++;
+
+                        if ($recipeInfo) {
+                            $recipeToCreate = collect($recipeInfo)->except(['id', 'created_at', 'updated_at'])->all();
+                            $recipeToCreate['milestone_unlock_id'] = $createdUnlock->id;
+                            Recipe::create($recipeToCreate);
+                            $recipeCount++;
+                        }
+                    }
+                }
+            }
+
+            Log::info('All Unlocks and Recipes re-created.', ['unlocks' => $unlockCount, 'recipes' => $recipeCount]);
+
+            if (!empty($data['milestone_closure'])) {
+                $closuresToInsert = collect($data['milestone_closure'])->map(function ($closure) {
+                    return collect($closure)->except('id')->all();
+                })->all();
+                MilestoneClosure::insert($closuresToInsert);
+            }
+            Log::info('MilestoneClosure data inserted.', ['count' => count($data['milestone_closure'])]);
+
+
+            Milestone::whereNotIn('id', $allMilestoneIdsInFile)->whereDoesntHave('progressions')->delete();
+            Stage::whereNotIn('id', collect($data['stages'])->pluck('id'))->whereDoesntHave('progressions')->delete();
             Log::info('Old, unused data cleaned up.');
+
+            $tablesWithSequences = ['stages', 'milestones', 'milestone_requirements', 'milestone_unlocks', 'recipes', 'milestone_closure'];
+            foreach ($tablesWithSequences as $table) {
+                $maxId = DB::table($table)->max('id');
+                if ($maxId) {
+                    DB::statement("SELECT setval(pg_get_serial_sequence('{$table}', 'id'), ?, true)", [$maxId]);
+                } else {
+                    DB::statement("SELECT setval(pg_get_serial_sequence('{$table}', 'id'), 1, false)");
+                }
+            }
+
+            Log::info('PostgreSQL sequences have been reset.');
 
             Schema::enableForeignKeyConstraints();
             DB::commit();
@@ -215,9 +228,12 @@ class StagesController extends Controller
             Log::error('An error occurred during import. Operation rolled back.', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
-                'line' => $e->getLine()
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
             ]);
+
             report($e);
+
             return response()->json(['message' => 'An error occurred during import.', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
