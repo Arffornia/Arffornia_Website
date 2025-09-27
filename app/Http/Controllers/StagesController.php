@@ -103,7 +103,7 @@ class StagesController extends Controller
         }
 
         $data = $validator->validated();
-        Log::info('Starting FINAL import process.', [
+        Log::info('Starting import process (v4 - with sequence reset).', [
             'stage_count' => count($data['stages']),
             'milestone_count' => count($data['milestones'])
         ]);
@@ -113,10 +113,10 @@ class StagesController extends Controller
             Schema::disableForeignKeyConstraints();
             Log::info('Foreign key constraints disabled.');
 
-            Recipe::truncate();
-            MilestoneUnlock::truncate();
-            MilestoneRequirement::truncate();
-            MilestoneClosure::truncate();
+            $tablesToTruncate = ['recipes', 'milestone_unlocks', 'milestone_requirements', 'milestone_closure'];
+            foreach ($tablesToTruncate as $table) {
+                DB::table($table)->truncate();
+            }
             Log::info('Relation tables truncated.');
 
             foreach ($data['stages'] as $stageData) {
@@ -124,11 +124,6 @@ class StagesController extends Controller
             }
             Log::info('Stages processed.');
 
-            $allRequirements = [];
-            $allUnlocks = [];
-            $allRecipes = [];
-
-            // 1. First, update all milestones.
             foreach ($data['milestones'] as $milestoneData) {
                 Milestone::updateOrCreate(
                     ['id' => $milestoneData['id']],
@@ -137,74 +132,42 @@ class StagesController extends Controller
             }
             Log::info('Milestones table updated.');
 
-            // 2. Next, prepare the relationship data.
             foreach ($data['milestones'] as $milestoneData) {
                 foreach ($milestoneData['requirements'] ?? [] as $req) {
-                    $allRequirements[] = [
-                        'id' => $req['id'],
-                        'milestone_id' => $req['milestone_id'],
-                        'item_id' => $req['item_id'],
-                        'display_name' => $req['display_name'] ?? null,
-                        'image_path' => $req['image_path'] ?? null,
-                        'amount' => $req['amount'],
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
+                    MilestoneRequirement::updateOrCreate(['id' => $req['id']], collect($req)->except(['image_url'])->toArray());
                 }
 
                 foreach ($milestoneData['unlocks'] ?? [] as $unlock) {
-                    $allUnlocks[] = [
-                        'id' => $unlock['id'],
-                        'milestone_id' => $unlock['milestone_id'],
-                        'item_id' => $unlock['item_id'],
-                        'display_name' => $unlock['display_name'] ?? null,
-                        'recipes_to_ban' => json_encode($unlock['recipes_to_ban'] ?? []),
-                        'shop_price' => $unlock['shop_price'] ?? null,
-                        'image_path' => $unlock['image_path'] ?? null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ];
-
+                    $unlockRecord = MilestoneUnlock::updateOrCreate(
+                        ['id' => $unlock['id']],
+                        collect($unlock)->except(['recipe', 'image_url'])->toArray()
+                    );
                     if (!empty($unlock['recipe'])) {
-                        $recipe = $unlock['recipe'];
-                        $allRecipes[] = [
-                            'id' => $recipe['id'],
-                            'milestone_unlock_id' => $recipe['milestone_unlock_id'],
-                            'type' => $recipe['type'],
-                            'ingredients' => json_encode($recipe['ingredients'] ?? []),
-                            'result' => json_encode($recipe['result'] ?? []),
-                            'energy' => $recipe['energy'] ?? null,
-                            'time' => $recipe['time'] ?? null,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ];
+                        Recipe::updateOrCreate(['id' => $unlock['recipe']['id']], collect($unlock['recipe'])->toArray());
                     }
                 }
             }
-            Log::info('Relation data collected.', [
-                'requirements_found' => count($allRequirements),
-                'unlocks_found' => count($allUnlocks),
-                'recipes_found' => count($allRecipes)
-            ]);
+            Log::info('Relation data processed via updateOrCreate.');
 
-            // 3. Insert relationships in bulk
-            if (!empty($allRequirements)) MilestoneRequirement::insert($allRequirements);
-            if (!empty($allUnlocks)) MilestoneUnlock::insert($allUnlocks);
-            if (!empty($allRecipes)) Recipe::insert($allRecipes);
-            Log::info('Relation data inserted into DB.');
-
-            // 4. Rebuild relationships
             if (!empty($data['milestone_closure'])) {
                 MilestoneClosure::insert($data['milestone_closure']);
-                Log::info('MilestoneClosure data inserted.');
             }
+            Log::info('MilestoneClosure data inserted.');
 
-            // 5. Clean up old unused records
             $importedMilestoneIds = collect($data['milestones'])->pluck('id');
             Milestone::whereNotIn('id', $importedMilestoneIds)->whereDoesntHave('progressions')->delete();
             $importedStageIds = collect($data['stages'])->pluck('id');
             Stage::whereNotIn('id', $importedStageIds)->whereDoesntHave('progressions')->delete();
             Log::info('Old, unused data cleaned up.');
+
+            $tablesWithSequences = ['stages', 'milestones', 'milestone_requirements', 'milestone_unlocks', 'recipes', 'milestone_closure'];
+            foreach ($tablesWithSequences as $table) {
+                $maxId = DB::table($table)->max('id');
+                if ($maxId) {
+                    DB::statement("SELECT setval(pg_get_serial_sequence('{$table}', 'id'), ?, true)", [$maxId]);
+                }
+            }
+            Log::info('PostgreSQL sequences have been reset.');
 
             Schema::enableForeignKeyConstraints();
             DB::commit();

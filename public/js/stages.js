@@ -1113,13 +1113,14 @@ function updateItemsList(items, type, container) {
             const li = document.createElement('li');
             li.dataset.itemId = item.id;
             let itemText = `
-                <img src="${item.image_url}" alt="${item.display_name}" width="32" height="32" style="vertical-align: middle;">
+                <img src="${item.image_url}" width="32" height="32" style="vertical-align: middle;">
                 <span>${item.display_name}</span>`;
             if (type === 'requirements') {
                 itemText += `<span> — x${item.amount}</span>`;
-            } else if (type === 'unlocks') {
-                itemText += `<span> (Prix: ${item.shop_price || 'N/A'})</span>`;
             }
+            // else if (type === 'unlocks') {
+            //     itemText += `<span> (Prix: ${item.shop_price || 'N/A'})</span>`;
+            // }
 
             li.innerHTML = itemText;
 
