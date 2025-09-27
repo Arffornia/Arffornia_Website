@@ -104,21 +104,6 @@ class UserController extends Controller
         }
     }
 
-
-    /**
-     * Load the loading view
-     *
-     * @return View
-     */
-    public function loginView()
-    {
-        if (request()->has(['code', 'state'])) {
-            return $this->msAuthCallback();
-        }
-
-        return view('pages.users.login');
-    }
-
     /**
      * Log out the user and redirect the user to the home page
      *
@@ -208,11 +193,11 @@ class UserController extends Controller
                 return redirect('/')->with('message', 'Welcome ' . $user->name . ' !');
             }
 
-            return redirect('/login')->with('error', 'Could not authenticate you. Please try again.');
+            return redirect('/')->with('error', 'Could not authenticate you. Please try again.');
         } catch (MinecraftOauthException $e) {
             Log::error('Minecraft OAuth Exception: ' . $e->getMessage());
 
-            return redirect('/login')->with('error', 'Authentication failed. Please try again.');
+            return redirect('/')->with('error', 'Authentication failed. Please try again.');
         }
     }
 
