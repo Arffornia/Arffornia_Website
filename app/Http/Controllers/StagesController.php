@@ -619,4 +619,41 @@ class StagesController extends Controller
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
     }
+
+    /**
+     * Store a new unlock for a milestone, sent from the in-game admin command.
+     *
+     * @param Request $request
+     * @param Milestone $milestone
+     * @return JsonResponse
+     */
+    public function storeUnlockFromGame(Request $request, Milestone $milestone): JsonResponse
+    {
+        $data = $request->validate([
+            'item_id' => 'required|string|max:255',
+            'display_name' => 'required|string|max:255',
+            'image_path' => 'required|string|max:255',
+            'recipes_to_ban' => 'present|array',
+            'recipes_to_ban.*' => 'string|distinct',
+        ]);
+
+        $existingUnlock = $milestone->unlocks()->where('item_id', $data['item_id'])->first();
+
+        if ($existingUnlock) {
+            return response()->json([
+                'message' => 'An unlock for this item already exists for this milestone.',
+                'unlock' => $existingUnlock
+            ], Response::HTTP_CONFLICT);
+        }
+
+        $unlock = $milestone->unlocks()->create([
+            'item_id' => $data['item_id'],
+            'display_name' => $data['display_name'],
+            'image_path' => $data['image_path'],
+            'recipes_to_ban' => $data['recipes_to_ban'],
+            'shop_price' => null,
+        ]);
+
+        return response()->json($unlock, Response::HTTP_CREATED);
+    }
 }

@@ -90,6 +90,8 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(f
     Route::post('/progression/list', [ProgressionController::class, 'listMilestones']);
 
     Route::post('/progression/set-target', [ProgressionController::class, 'setTargetMilestone']);
+
+    Route::post('milestones/{milestone}/add-unlock-from-game', [StagesController::class, 'storeUnlockFromGame']);
 });
 
 
