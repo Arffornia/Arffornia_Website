@@ -12,7 +12,7 @@ use App\Http\Controllers\ProgressionController;
 use App\Http\Controllers\AdminPanelManager;
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
-Route::get('best_player_point/{size}', [UserController::class, 'bestPlayerByPointJson']);
+Route::get('best_player_vote/all-time/{size}', [VoteController::class, 'bestPlayerByVoteAllTimeJson']);
 
 Route::get('profile/{playerName}', [UserController::class, 'playerProfile']);
 Route::get('profile/uuid/{playerUuid}/', [UserController::class, 'playerProfileByUuid']);

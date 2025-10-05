@@ -2,54 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Services\UserService;
 use App\Services\VoteService;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\View\View;
 
 class VoteController extends Controller
 {
     private VoteService $voteService;
-    private UserService $userService;
 
-
-    public function __construct(VoteService $voteService,
-                                UserService $userService)
+    public function __construct(VoteService $voteService)
     {
         $this->voteService = $voteService;
-        $this->userService = $userService;
     }
 
-    /**
-     * Get size best players by vote
-     *
-     * @param int $size
-     * @return Collection<User>
-     */
-    public function bestPlayerByVote($size): array
+    public function showVotePage(): View
     {
-        $topVoters = $this->userService->getTopVoters($size)
-            ->map(function ($user) {
-                return [
-                    'name' => $user->name,
-                    'uuid' => $user->uuid,
-                    'value' => $user->votes_count,
-                ];
-            });
+        return view('pages.vote', [
+            'votingSites' => config('voting.sites'),
+            'monthlyTop' => $this->voteService->getCurrentMonthTopVoters(10),
+            'allTimeTop' => $this->voteService->getAllTimeTopVoters(10),
+        ]);
+    }
 
-        return $topVoters->toArray();
+    public function verifyVote(Request $request): JsonResponse
+    {
+        $siteKey = $request->validate(['site' => 'required|string'])['site'];
+
+        $result = $this->voteService->verifyAndReward($request->user(), $siteKey, $request);
+
+        return response()->json($result, $result['success'] ? 200 : 422);
     }
 
     /**
-     * Get size best players by vote as JSON
-     *
-     * @param [type] $size
-     * @return JsonResponse
+     * Get top N players for the current month.
      */
     public function bestPlayerByVoteJson($size): JsonResponse
     {
-        $data = $this->bestPlayerByVote($size);
+        $data = $this->voteService->getCurrentMonthTopVoters($size)
+            ->map(fn($user) => ['name' => $user->name, 'uuid' => $user->uuid, 'value' => $user->votes_count]);
+
+        return response()->json($data);
+    }
+
+    /**
+     * Get top N players of all time.
+     */
+    public function bestPlayerByVoteAllTimeJson($size): JsonResponse
+    {
+        $data = $this->voteService->getAllTimeTopVoters($size)
+            ->map(fn($user) => ['name' => $user->name, 'uuid' => $user->uuid, 'value' => $user->votes_count]);
+
         return response()->json($data);
     }
 }
