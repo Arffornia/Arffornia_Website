@@ -65,6 +65,24 @@ class VoteService
     }
 
     /**
+     * Records a vote from a trusted source (like NuVotifier) and grants a reward.
+     *
+     * @param User $user The user who voted.
+     * @param string $serviceName The name of the voting service (e.g., "Top-Serveurs").
+     * @param string|null $ipAddress The IP address of the voter, if available.
+     * @return array ['success' => bool, 'message' => string]
+     */
+    public function recordTrustedVoteAndReward(User $user, string $serviceName, ?string $ipAddress): array
+    {
+        $this->voteRepository->recordVote($user, $serviceName, $ipAddress);
+        $this->grantReward($user);
+
+        Log::info("Recorded trusted vote for user {$user->name} from service {$serviceName}");
+
+        return ['success' => true, 'message' => 'Vote recorded successfully.'];
+    }
+
+    /**
      * Get the top voters for the current month.
      *
      * @param int $size

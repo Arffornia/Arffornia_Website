@@ -77,6 +77,12 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::put('launcherImages/{image}/toggle-prod', [AdminPanelManager::class, 'toggleProdStatus']);
 });
 
+Route::middleware(['auth:sanctum', 'anyRole:nuvotifier_service'])->group(function () {
+    Route::post('/vote/nuvotifier', [VoteController::class, 'handleNuvotifierVote']);
+});
+
+
+
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
     Route::post('/teams/create', [TeamController::class, 'create']);
     Route::post('/teams/player/join', [TeamController::class, 'playerJoin']);
