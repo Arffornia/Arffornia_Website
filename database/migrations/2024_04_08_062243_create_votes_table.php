@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('votes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger("user_id");
+            $table->string('site');
+            $table->ipAddress('ip_address')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

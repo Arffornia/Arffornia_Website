@@ -12,7 +12,7 @@ use App\Http\Controllers\ProgressionController;
 use App\Http\Controllers\AdminPanelManager;
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
-Route::get('best_player_point/{size}', [UserController::class, 'bestPlayerByPointJson']);
+Route::get('best_player_vote/all-time/{size}', [VoteController::class, 'bestPlayerByVoteAllTimeJson']);
 
 Route::get('profile/{playerName}', [UserController::class, 'playerProfile']);
 Route::get('profile/uuid/{playerUuid}/', [UserController::class, 'playerProfileByUuid']);
@@ -76,6 +76,12 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     // Launcher images Management
     Route::put('launcherImages/{image}/toggle-prod', [AdminPanelManager::class, 'toggleProdStatus']);
 });
+
+Route::middleware(['auth:sanctum', 'anyRole:nuvotifier_service'])->group(function () {
+    Route::post('/vote/nuvotifier', [VoteController::class, 'handleNuvotifierVote']);
+});
+
+
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
     Route::post('/teams/create', [TeamController::class, 'create']);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('pending_rewards', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('shop_item_id')->constrained('shop_items')->onDelete('cascade');
+            $table->foreignId('shop_item_id')->nullable()->constrained('shop_items')->onDelete('cascade');
             $table->json('commands');
             $table->enum('status', ['pending', 'claimed', 'failed'])->default('pending');
             $table->timestamps();

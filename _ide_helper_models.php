@@ -66,6 +66,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereX($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereY($value)
  * @mixin \Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Progression> $progressions
+ * @property-read int|null $progressions_count
  * @property-read \App\Models\Stage|null $stage
  */
 	class Milestone extends \Eloquent {}
@@ -145,7 +147,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereShopPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property array<array-key, mixed> $recipes_to_ban
  * @property-read \App\Models\Recipe|null $recipe
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MilestoneUnlock whereRecipesToBan($value)
  */
 	class MilestoneUnlock extends \Eloquent {}
 }
@@ -173,6 +177,18 @@ namespace App\Models{
  * @mixin \Eloquent
  */
 	class MilestoneUser extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally query()
+ */
+	class MonthlyVoteTally extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -365,6 +381,8 @@ namespace App\Models{
  * @mixin \Eloquent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Milestone> $milestones
  * @property-read int|null $milestones_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Progression> $progressions
+ * @property-read int|null $progressions_count
  */
 	class Stage extends \Eloquent {}
 }
@@ -496,6 +514,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUserId($value)
  * @mixin \Eloquent
+ * @property-read \App\Models\User $user
  */
 	class Vote extends \Eloquent {}
 }

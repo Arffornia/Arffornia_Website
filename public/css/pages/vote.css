@@ -1,0 +1,197 @@
+* {
+    font-family: Montserrat, sans-serif;
+}
+
+body {
+    background-image: url('../../images/screenshots1920x1080/old_spawn.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    flex-shrink: 0;
+}
+
+footer {
+    flex-shrink: 0;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+header .contentContainer a {
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.vote-wrapper {
+    padding: 40px 5%;
+}
+
+.vote-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 5%;
+    margin-top: 50px;
+}
+
+.vote-sites-column {
+    flex: 1 1 55%;
+}
+
+.leaderboards-column {
+    flex: 1 1 40%;
+}
+
+/* Voting Sites Section */
+.sites-section .info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+}
+
+.sites-section .title-midle {
+    padding-left: 10px;
+    font-size: 2.5rem;
+    font-weight: 650;
+    margin: 0;
+    color: white;
+    border-left: 4px solid #ff7300;
+    border-radius: 3px;
+}
+
+.sites-section .content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.site-card {
+    display: flex;
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    align-items: center;
+}
+
+.site-card .img-container {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+}
+
+.site-card .block-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.site-card .block-text {
+    flex-grow: 1;
+    color: white;
+}
+
+.site-card .title-mini {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin: 0;
+}
+
+.site-card .cooldown-text {
+    font-size: 0.9em;
+    color: #ccc;
+    margin-top: 5px;
+}
+
+.site-card .actions {
+    display: flex;
+    gap: 15px;
+    margin-left: 20px;
+}
+
+.site-card .action-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: #ff7300;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.site-card .action-btn:hover {
+    background-color: #e66900;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(255, 115, 0, 0.3);
+}
+
+.site-card .action-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: white;
+}
+
+.site-card .action-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Leaderboards */
+.leaderboard {
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(5px);
+    border-radius: 10px;
+    padding: 25px;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.leaderboard h3 {
+    border-bottom: 2px solid #ff7300;
+    padding-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.leaderboard ol {
+    list-style: none;
+    padding: 0;
+}
+
+.leaderboard li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.leaderboard li:nth-child(odd) {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.leaderboard .player-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.leaderboard .vote-count {
+    color: #fff;
+    font-weight: 700;
+}

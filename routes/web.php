@@ -3,10 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\AdminPanelManager;
-use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ShopItemsController;
 
 // Home
@@ -35,6 +36,9 @@ Route::get('shop', [ShopController::class, 'shopView']);
 Route::get('shop/{item}', [ShopController::class, 'shopItemView'])->name('shop.item');
 Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItemWeb'])->middleware('auth')->name('shop.buy');
 
+// Vote
+Route::get('/vote', [VoteController::class, 'showVotePage'])->name('vote.page');
+Route::post('/vote/verify', [VoteController::class, 'verifyVote'])->middleware('auth')->name('vote.verify');
 
 // Authentification
 Route::get('/login/MS-Auth', [UserController::class, 'msAuth']);
