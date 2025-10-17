@@ -15,16 +15,13 @@ images:
     port: 9000
     host: "127.0.0.1"
 
-initContainers:
+# If enabled, the application will synchronize service accounts on startup using SVC_ACCOUNT_ prefixed environment variables.
+syncServiceAccounts:
   enabled: false
 
-  command:
-    - "php"
-  args:
-    - "artisan"
-    - "migrate:fresh"
-    - "--seed"
-    - "--force"
+# If enabled, the application will run database migrations and seed the database on startup.
+migrateAndSeedDB:
+  enabled: false
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []

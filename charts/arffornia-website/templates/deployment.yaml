@@ -31,48 +31,6 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 
-
-
-      {{- if .Values.initContainers.enabled }}
-      initContainers:
-        - name: {{ .Chart.Name }}-database-migrations
-          {{- with .Values.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
-
-          {{- with .Values.env }}
-          env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-
-          {{- with .Values.envFrom }}
-          envFrom:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-
-          {{- with .Values.initContainers.command }}
-          command:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-
-          {{- with .Values.initContainers.args }}
-          args:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-
-          {{- with .Values.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- end }}
-
       containers:
         - name: {{ .Chart.Name }}-backend
           {{- with .Values.securityContext }}
@@ -91,6 +49,29 @@ spec:
           envFrom:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              set -e
+
+              echo "Preparing application..."
+
+              {{- if .Values.migrateAndSeedDB.enabled }}
+              echo "Running database migrations and seeding..."
+              php artisan migrate:fresh --seed --force
+              {{- end }}
+
+              {{- if .Values.syncServiceAccounts.enabled }}
+              echo "Synchronizing service accounts (enabled)..."
+              php artisan app:sync-service-accounts
+              {{- else }}
+              echo "Skipping service account synchronization (disabled)."
+              {{- end }}
+
+              echo "Starting application..."
+              exec php-fpm
 
           ports:
             - name: http
