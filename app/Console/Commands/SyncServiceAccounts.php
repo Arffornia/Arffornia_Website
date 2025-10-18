@@ -8,9 +8,25 @@ use Illuminate\Support\Facades\Hash;
 
 class SyncServiceAccounts extends Command
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
     protected $signature = 'app:sync-service-accounts';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
     protected $description = 'Creates, updates, or deletes service accounts from environment variables.';
 
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
     public function handle()
     {
         $this->info('Starting service account synchronization...');
@@ -67,36 +83,22 @@ class SyncServiceAccounts extends Command
     private function parseAccountsFromEnv(): array
     {
         $accounts = [];
+        $accountKeys = [];
         $prefix = 'SVC_ACCOUNT_';
 
-        foreach ($_ENV as $key => $value) {
-            if (str_starts_with($key, $prefix)) {
-                $parts = explode('_', substr($key, strlen($prefix)), 2);
-                if (count($parts) === 2) {
-                    // $accountKey = $parts[0]; // e.g.,: MINECRAFT
-                    $propertyKey = strtolower($parts[1]); // e.g.,: client_id
+        $environmentVariables = getenv();
 
-                    if ($propertyKey === 'client_id') {
-                        $accounts[$value] = $accounts[$value] ?? [];
-                    }
-                }
+        foreach (array_keys($environmentVariables) as $key) {
+            if (preg_match('/^' . $prefix . '([A-Z0-9]+)_.+/', $key, $matches)) {
+                $accountKeys[$matches[1]] = true;
             }
         }
 
-        $accounts = [];
-        $keys = [];
-
-        foreach (array_keys($_ENV) as $key) {
-            if (preg_match('/^SVC_ACCOUNT_([A-Z0-9]+)_.+/', $key, $matches)) {
-                $keys[$matches[1]] = true;
-            }
-        }
-
-        foreach (array_keys($keys) as $key) {
-            $clientId = env("SVC_ACCOUNT_{$key}_CLIENT_ID");
-            $clientSecret = env("SVC_ACCOUNT_{$key}_CLIENT_SECRET");
-            $name = env("SVC_ACCOUNT_{$key}_NAME");
-            $roles = env("SVC_ACCOUNT_{$key}_ROLES");
+        foreach (array_keys($accountKeys) as $key) {
+            $clientId = getenv("{$prefix}{$key}_CLIENT_ID");
+            $clientSecret = getenv("{$prefix}{$key}_CLIENT_SECRET");
+            $name = getenv("{$prefix}{$key}_NAME");
+            $roles = getenv("{$prefix}{$key}_ROLES");
 
             if ($clientId && $clientSecret) {
                 $accounts[$clientId] = [
