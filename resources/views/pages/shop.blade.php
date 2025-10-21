@@ -7,11 +7,26 @@
 @endsection
 
 @section('content')
+    <nav class="shop-sidenav">
+        <ul>
+            @auth
+                @if (isset($userMoney))
+                    <li class="money-display">
+                        Argent : {{ number_format($userMoney, 0, ',', ' ') }}
+                    </li>
+                @endif
+            @endauth
+            <li><a href="#arrivals-section">• Arrivals</a></li>
+            <li><a href="#deals-section">• This Week's Deals</a></li>
+            <li><a href="#bestsellers-section">• Best Sellers</a></li>
+        </ul>
+    </nav>
+
     <div class="shop-wrapper">
         <div class="shop-content-container">
 
             <div class="shop">
-                <div class="shop-section">
+                <div class="shop-section" id="arrivals-section">
                     <p class="section-title">Arrivals:</p>
                     <div class="items-container">
                         @foreach ($newestItems as $item)
@@ -26,7 +41,7 @@
                     </div>
                 </div>
 
-                <div class="shop-section">
+                <div class="shop-section" id="deals-section">
                     <p class="section-title">This Week's Deals:</p>
                     <div class="items-container">
                         @foreach ($saleItems as $item)
@@ -44,7 +59,7 @@
                     </div>
                 </div>
 
-                <div class="shop-section">
+                <div class="shop-section" id="bestsellers-section">
                     <p class="section-title">Best Sellers:</p>
                     <div class="items-container">
                         @foreach ($bestSellerItems as $item)

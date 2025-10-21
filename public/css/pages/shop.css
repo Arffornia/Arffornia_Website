@@ -253,3 +253,39 @@ header .contentContainer a {
     color: #e74c3c;
     text-align: center;
 }
+
+.shop-sidenav {
+    position: fixed;
+    left: 2%;
+    top: 40%;
+    transform: translateY(-50%);
+    z-index: 100;
+    font-family: Montserrat, sans-serif;
+}
+
+.shop-sidenav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.shop-sidenav li {
+    padding: 20px 0;
+}
+
+.shop-sidenav li:last-child {
+    border-bottom: none;
+}
+
+.shop-sidenav a,
+.shop-sidenav .money-display {
+    text-decoration: none;
+    color: white;
+    font-weight: 550;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.shop-sidenav a:hover {
+    color: #ff7300;
+}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ShopItem;
 use App\Services\ShopItemsService;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 
 class ShopController extends Controller
 {
@@ -44,6 +45,8 @@ class ShopController extends Controller
      */
     private function loadShop(int $initialItemId = null): View
     {
+        $user = Auth::user();
+
         return view(
             'pages.shop',
             [
@@ -51,6 +54,7 @@ class ShopController extends Controller
                 'saleItems' => $this->shopItemsService->getDiscounts(6),
                 'bestSellerItems' => $this->shopItemsService->getBestSellers(6),
                 'initialItemId' => $initialItemId,
+                'userMoney' => $user ? $user->money : null,
             ]
         );
     }
