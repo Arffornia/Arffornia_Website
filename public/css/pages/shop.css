@@ -253,3 +253,32 @@ header .contentContainer a {
     color: #e74c3c;
     text-align: center;
 }
+
+.coin-package-container {
+    gap: 10px;
+}
+
+.buy-coin-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.buy-coin-btn:hover {
+    background-color: #0056b3;
+}
+
+#buy-button .paypal-icon,
+#buy-button .coin-icon {
+    height: 1.2em;
+    vertical-align: middle;
+    margin-left: 8px;
+}

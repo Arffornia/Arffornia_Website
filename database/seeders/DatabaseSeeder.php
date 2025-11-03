@@ -216,9 +216,7 @@ class DatabaseSeeder extends Seeder
             'name' => "AE2 Kit",
             'description' => "Make your brain great again !",
             'img_url' => "images/shop_items/ae2_icon.png",
-            'category_id' => 0,
-            'real_price' => 1250,
-            'promo_price' => 0,
+            'price' => 1250,
             'commands' => [
                 'give {player} minecraft:iron_ingot 64',
                 'give {player} minecraft:gold_ingot 32',
@@ -231,9 +229,7 @@ class DatabaseSeeder extends Seeder
             'name' => "Meka Kit",
             'description' => "Let's unlock the nuclear power !",
             'img_url' => "images/shop_items/meka_icon.png",
-            'category_id' => 0,
-            'real_price' => 1250,
-            'promo_price' => 0,
+            'price' => 1250,
             'commands' => [
                 'give {player} minecraft:iron_block 16',
                 'give {player} minecraft:redstone_block 32',
@@ -246,9 +242,8 @@ class DatabaseSeeder extends Seeder
             'name' => "Kitten Pet",
             'description' => "Let this kawaii kitten seduce you.",
             'img_url' => "images/shop_items/kitten_pet.png",
-            'category_id' => 0,
-            'real_price' => 500,
-            'promo_price' => 0,
+            'price' => 500,
+            'promo_price' => 300,
             'commands' => [
                 'lp user {player} permission set cosmetic.pet.kitten true',
                 'say {player} a adopté un adorable chaton !'
@@ -259,9 +254,8 @@ class DatabaseSeeder extends Seeder
             'name' => "Dragon Pet",
             'description' => "Who says a pet dragon isn't impressive ?",
             'img_url' => "images/shop_items/dragon_pet.png",
-            'category_id' => 0,
-            'real_price' => 750,
-            'promo_price' => 0,
+            'price' => 750,
+            'promo_price' => 500,
             'commands' => [
                 'lp user {player} permission set cosmetic.pet.dragon true',
                 'say {player} est maintenant accompagné d\'un puissant dragon !'
@@ -272,9 +266,8 @@ class DatabaseSeeder extends Seeder
             'name' => "Dinosaur Pet",
             'description' => "The last of his species !",
             'img_url' => "images/shop_items/dinosaur_pet.png",
-            'category_id' => 0,
-            'real_price' => 750,
-            'promo_price' => 0,
+            'price' => 750,
+            'promo_price' => 500,
             'commands' => [
                 'lp user {player} permission set cosmetic.pet.dinosaur true',
                 'say Attention ! {player} a ramené un dinosaure à la vie !'
