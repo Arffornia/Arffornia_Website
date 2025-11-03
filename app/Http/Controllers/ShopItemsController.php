@@ -88,15 +88,37 @@ class ShopItemsController extends Controller
     }
 
     /**
-     * Return a single shop item as JSON
+     * Return a single shop item as JSON with appropriate price formatting.
      *
      * @param ShopItem $item
-     * @return JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function itemDetailsJson(ShopItem $item): JsonResponse
+    public function itemDetailsJson(ShopItem $item): \Illuminate\Http\JsonResponse
     {
-        $item->img_url = url($item->img_url);
-        return response()->json($item);
+        $isRealMoney = $item->payment_type === 'real_money';
+
+        // Format the main price based on payment type
+        $formattedPrice = $isRealMoney
+            ? $item->price . ' ' . $item->currency
+            : $item->price;
+
+        // Format the promo price only if it exists
+        $formattedPromoPrice = null;
+        if ($item->promo_price && $item->promo_price < $item->price) {
+            $formattedPromoPrice = $isRealMoney
+                ? $item->promo_price . ' ' . $item->currency
+                : $item->promo_price;
+        }
+
+        return response()->json([
+            'id' => $item->id,
+            'name' => $item->name,
+            'description' => $item->description,
+            'img_url' => url($item->img_url),
+            'payment_type' => $item->payment_type,
+            'price' => $formattedPrice,
+            'promo_price' => $formattedPromoPrice,
+        ]);
     }
 
     /**

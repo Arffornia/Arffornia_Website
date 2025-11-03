@@ -10,6 +10,7 @@ use App\Http\Controllers\LauncherController;
 use App\Http\Controllers\ShopItemsController;
 use App\Http\Controllers\ProgressionController;
 use App\Http\Controllers\AdminPanelManager;
+use App\Http\Controllers\PaypalController;
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('best_player_vote/all-time/{size}', [VoteController::class, 'bestPlayerByVoteAllTimeJson']);
@@ -32,6 +33,7 @@ Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJ
 Route::get('shop/newest/{size}', [ShopItemsController::class, 'newestJson']);
 Route::get('shop/sales/{size}', [ShopItemsController::class, 'salesJson']);
 Route::get('shop/item/{item}', [ShopItemsController::class, 'itemDetailsJson']);
+Route::get('shop/coins/{packageId}', [PaypalController::class, 'getPackageDetails']);
 Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItem'])->middleware('auth:sanctum');
 
 // Get auth token routes:

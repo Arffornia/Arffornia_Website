@@ -9,33 +9,62 @@
 @section('content')
     <div class="shop-wrapper">
         <div class="shop-content-container">
-
             <div class="shop">
+                {{-- Coin Packs Section --}}
+                @if ($coinPacks->isNotEmpty())
+                    <div class="shop-section">
+                        <p class="section-title">Purchase Coins</p>
+                        <div class="items-container">
+                            @foreach ($coinPacks as $pack)
+                                <div class="shop-item" data-item-id="{{ $pack->id }}" title="{{ $pack->name }}">
+                                    <div class="item-container">
+                                        <img class="item-icon" src="{{ asset($pack->img_url) }}"
+                                            alt="{{ $pack->name }}" />
+                                        <p class="item-title">{{ $pack->coins_awarded }} Coins
+                                        </p>
+                                        <p class="item-price">{{ $pack->price }}€</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- Arrivals Section --}}
                 <div class="shop-section">
-                    <p class="section-title">Arrivals:</p>
+                    <p class="section-title">Arrivals</p>
                     <div class="items-container">
                         @foreach ($newestItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
                                 <div class="item-container">
-                                    <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
+                                    <img class="item-icon" src="{{ url($item->img_url) }}" alt="{{ $item->name }}" />
                                     <p class="item-title">{{ $item->name }}</p>
-                                    <p class="item-price">{{ $item->real_price }}</p>
+
+                                    @if ($item->promo_price && $item->promo_price < $item->price)
+                                        <p class="item-price">
+                                            <span class="item-price-sale">{{ $item->price }}</span>
+                                            {{ $item->promo_price }}
+                                        </p>
+                                    @else
+                                        <p class="item-price">{{ $item->price }}</p>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
 
+                {{-- Deals Section --}}
                 <div class="shop-section">
-                    <p class="section-title">This Week's Deals:</p>
+                    <p class="section-title">This Week's Deals</p>
                     <div class="items-container">
                         @foreach ($saleItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
                                 <div class="item-container">
-                                    <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
+                                    <img class="item-icon" src="{{ url($item->img_url) }}" alt="{{ $item->name }}" />
                                     <p class="item-title">{{ $item->name }}</p>
                                     <p class="item-price">
-                                        <span class="item-price-sale">{{ $item->real_price }}</span>
+                                        <span class="item-price-sale">{{ $item->price }}</span>
                                         {{ $item->promo_price }}
                                     </p>
                                 </div>
@@ -44,15 +73,24 @@
                     </div>
                 </div>
 
+                {{-- Best Sellers Section --}}
                 <div class="shop-section">
-                    <p class="section-title">Best Sellers:</p>
+                    <p class="section-title">Best Sellers</p>
                     <div class="items-container">
                         @foreach ($bestSellerItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
                                 <div class="item-container">
-                                    <img class="item-icon" src="{{ $item->img_url }}" alt="{{ $item->name }}" />
+                                    <img class="item-icon" src="{{ url($item->img_url) }}" alt="{{ $item->name }}" />
                                     <p class="item-title">{{ $item->name }}</p>
-                                    <p class="item-price">{{ $item->real_price }}</p>
+
+                                    @if ($item->promo_price && $item->promo_price < $item->price)
+                                        <p class="item-price">
+                                            <span class="item-price-sale">{{ $item->price }}</span>
+                                            {{ $item->promo_price }}
+                                        </p>
+                                    @else
+                                        <p class="item-price">{{ $item->price }}</p>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -62,7 +100,6 @@
 
             <div class="details-panel-container">
                 <div id="item-details-panel">
-
                     <div id="item-details-loader" class="skeleton" style="display: none;">
                         <div class="skeleton-img"
                             style="height: 180px; width: 180px; margin: 0 auto 20px auto; border-radius: 15px;"></div>
@@ -78,24 +115,14 @@
                         <div class="skeleton-button"
                             style="width: 100%; height: 45px; margin-top: 30px; border-radius: 8px;"></div>
                     </div>
-
-
                     <div id="item-details-content" style="display: none;">
                         <img id="details-image" src="" alt="Item Image" />
-
                         <div class="details-header">
                             <h2 id="details-name"></h2>
                             <p id="details-price"></p>
                         </div>
-
                         <p id="details-description"></p>
-
-                        <button type="button" id="buy-button" data-item-id=""
-                            @guest
-disabled
-            title="You must be logged in to purchase this item." @endguest>
-                            Purchase
-                        </button>
+                        <button type="button" id="buy-button" data-item-id="">Purchase</button>
                     </div>
                 </div>
             </div>

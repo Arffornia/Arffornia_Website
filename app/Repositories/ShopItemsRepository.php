@@ -7,54 +7,40 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ShopItemsRepository
 {
-    /**
-     * Get best seller
-     *
-     * @param integer $size
-     * @return Collection<ShopItem>
-     */
-    public function getBestSellers(int $size)
+    public function getRealMoneyItems(): Collection
     {
-        return ShopItem::withCount('userSales')
+        return ShopItem::where('payment_type', 'real_money')->orderBy('price')->get();
+    }
+
+    public function getBestSellers(int $size): Collection
+    {
+        return ShopItem::where('payment_type', 'coins')
+            ->withCount('userSales')
             ->orderByDesc('user_sales_count')
             ->limit($size)
             ->get();
     }
 
-    /**
-     * Get size newest items
-     *
-     * @param integer $size
-     * @return Collection<ShopItem>
-     */
-    public function getNewest(int $size)
+    public function getNewest(int $size): Collection
     {
-        return ShopItem::latest()
+        return ShopItem::where('payment_type', 'coins')
+            ->where('show_in_newest', true)
+            ->latest()
             ->limit($size)
             ->get();
     }
 
-    /**
-     * Get size discounts items
-     *
-     * @param integer $size
-     * @return Collection<ShopItem>
-     */
-    public function getDiscounts(int $size)
+    public function getDiscounts(int $size): Collection
     {
-        return ShopItem::where('promo_price', '>', 0)
-            ->whereColumn('promo_price', '<', 'real_price')
-            ->orderByRaw('(real_price - promo_price) / real_price DESC')
+        return ShopItem::where('payment_type', 'coins')
+            ->where('allow_discounts', true)
+            ->whereNotNull('promo_price')
+            ->whereColumn('promo_price', '<', 'price')
+            ->orderByRaw('(price - promo_price) / price DESC')
             ->limit($size)
             ->get();
     }
 
-    /**
-     * Find a single shop item by its ID.
-     *
-     * @param int $id
-     * @return ShopItem|null
-     */
     public function findItemById(int $id): ?ShopItem
     {
         return ShopItem::find($id);

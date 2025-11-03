@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\PendingReward;
 use App\Models\ShopItem;
 use App\Models\User;
 use App\Models\UserSale;
+use App\Models\PendingReward;
 use App\Repositories\ShopItemsRepository;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +13,6 @@ use Exception;
 
 class ShopItemsService
 {
-
     private ShopItemsRepository $repository;
 
     public function __construct(ShopItemsRepository $repository)
@@ -22,12 +21,28 @@ class ShopItemsService
     }
 
     /**
-     * Get size best seller
+     * Fetches items intended for real money purchase.
      *
-     * @param [type] $size
-     * @return Collection<User>
+     * @return Collection<ShopItem>
      */
-    public function getBestSellers($size)
+    public function getRealMoneyItems(): Collection
+    {
+        $items = $this->repository->getRealMoneyItems();
+
+        foreach ($items as &$item) {
+            $item->img_url = url($item->img_url);
+        }
+
+        return $items;
+    }
+
+    /**
+     * Get the top best-selling items.
+     *
+     * @param int $size
+     * @return Collection<ShopItem>
+     */
+    public function getBestSellers(int $size): Collection
     {
         $size = min(25, max(0, $size));
         $bestSellers = $this->repository->getBestSellers($size);
@@ -40,12 +55,12 @@ class ShopItemsService
     }
 
     /**
-     * get size newest shop items
+     * Get the newest shop items.
      *
-     * @param [type] $size
+     * @param int $size
      * @return Collection<ShopItem>
      */
-    public function getNewest($size)
+    public function getNewest(int $size): Collection
     {
         $size = min(25, max(0, $size));
         $newest = $this->repository->getNewest($size);
@@ -58,12 +73,12 @@ class ShopItemsService
     }
 
     /**
-     * Get size discounts
+     * Get items currently on sale.
      *
-     * @param [type] $size
+     * @param int $size
      * @return Collection<ShopItem>
      */
-    public function getDiscounts($size)
+    public function getDiscounts(int $size): Collection
     {
         $size = min(25, max(0, $size));
         $sales = $this->repository->getDiscounts($size);
@@ -76,9 +91,9 @@ class ShopItemsService
     }
 
     /**
-     * Get a single shop item by ID
+     * Get a single shop item by its ID.
      *
-     * @param integer $id
+     * @param int $id
      * @return ShopItem|null
      */
     public function getItemById(int $id): ?ShopItem
@@ -93,7 +108,7 @@ class ShopItemsService
     }
 
     /**
-     * Handles the purchase of an item by a user.
+     * Handles the purchase of an item using in-game currency.
      *
      * @param User $user
      * @param ShopItem $item
@@ -111,30 +126,26 @@ class ShopItemsService
             }
         }
 
-        $price = $item->promo_price > 0 ? $item->promo_price : $item->real_price;
+        $price = $item->promo_price && $item->promo_price < $item->price ? $item->promo_price : $item->price;
 
         if ($user->money < $price) {
             return ['success' => false, 'message' => 'You do not have enough money.'];
         }
 
-        // Ensure the item has commands to execute
         if (empty($item->commands)) {
             return ['success' => false, 'message' => 'This item is not configured for delivery.'];
         }
 
         try {
             DB::transaction(function () use ($user, $item, $price) {
-                // 1. Deduct money from the user
                 $user->money -= $price;
                 $user->save();
 
-                // 2. Log the sale
                 UserSale::create([
                     'user_id' => $user->id,
                     'shop_item_id' => $item->id,
                 ]);
 
-                // 3. Create the pending reward for the in-game mod to pick up
                 PendingReward::create([
                     'user_id' => $user->id,
                     'shop_item_id' => $item->id,
@@ -147,6 +158,6 @@ class ShopItemsService
             return ['success' => false, 'message' => 'An error occurred during the transaction. Please try again.'];
         }
 
-        return ['success' => true, 'message' => 'You have successfully purchased ' . $item->name . '! Your items will be delivered in-game shortly.'];
+        return ['success' => true, 'message' => 'You have successfully purchased ' . $item->name . '!'];
     }
 }

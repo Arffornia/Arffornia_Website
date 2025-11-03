@@ -9,6 +9,7 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\ShopItemsController;
+use App\Http\Controllers\PaypalController;
 
 // Home
 Route::get('/', [HomeController::class, 'homeView']);
@@ -32,9 +33,16 @@ Route::get('news', [NewsController::class, 'allNewsView']);
 Route::get('news/{newsId}', [NewsController::class, 'newsView']);
 
 // Shop
-Route::get('shop', [ShopController::class, 'shopView']);
+Route::get('shop', [ShopController::class, 'shopView'])->name('shop.view');
 Route::get('shop/{item}', [ShopController::class, 'shopItemView'])->name('shop.item');
 Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItemWeb'])->middleware('auth')->name('shop.buy');
+
+Route::middleware(['auth', "anyRole:user"])->group(function () {
+    Route::post('/paypal/create', [PaypalController::class, 'create'])->name('paypal.create');
+    Route::get('/paypal/success', [PaypalController::class, 'success'])->name('paypal.success');
+    Route::get('/paypal/cancel', [PaypalController::class, 'cancel'])->name('paypal.cancel');
+});
+
 
 // Vote
 Route::get('/vote', [VoteController::class, 'showVotePage'])->name('vote.page');

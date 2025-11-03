@@ -183,18 +183,6 @@ namespace App\Models{
 /**
  * 
  *
- * @property-read \App\Models\User|null $user
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally query()
- */
-	class MonthlyVoteTally extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * 
- *
  * @property int $id
  * @property string $title
  * @property string $content
@@ -213,6 +201,38 @@ namespace App\Models{
  * @mixin \Eloquent
  */
 	class News extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $paypal_order_id
+ * @property string $status
+ * @property string $amount
+ * @property string $currency
+ * @property int $coins_purchased
+ * @property array<array-key, mixed>|null $paypal_response
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction whereCoinsPurchased($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction whereCurrency($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction wherePaypalOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction wherePaypalResponse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PaypalTransaction whereUserId($value)
+ */
+	class PaypalTransaction extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -332,10 +352,15 @@ namespace App\Models{
  * @property string $name
  * @property string $description
  * @property string $img_url
- * @property int $category_id
- * @property int $real_price
- * @property int $promo_price
+ * @property string $payment_type
+ * @property int $price
+ * @property int|null $promo_price
+ * @property string|null $currency e.g., EUR, USD for real_money type
+ * @property int|null $coins_awarded Amount of virtual currency awarded for real_money purchases
  * @property bool $is_unique
+ * @property bool $show_in_newest
+ * @property bool $allow_discounts
+ * @property array<array-key, mixed>|null $commands
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\UserSale> $userSales
@@ -343,19 +368,21 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem query()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereAllowDiscounts($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCoinsAwarded($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCommands($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCurrency($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereImgUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePromoPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
- * @property array<array-key, mixed>|null $commands
- * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCommands($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereIsUnique($value)
- * @mixin \Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePaymentType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem wherePromoPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereShowInNewest($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
  */
 	class ShopItem extends \Eloquent {}
 }
@@ -514,7 +541,11 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUserId($value)
  * @mixin \Eloquent
+ * @property string $site
+ * @property string|null $ip_address
  * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Vote whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Vote whereSite($value)
  */
 	class Vote extends \Eloquent {}
 }

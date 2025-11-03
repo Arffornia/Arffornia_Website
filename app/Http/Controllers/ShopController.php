@@ -47,6 +47,7 @@ class ShopController extends Controller
         return view(
             'pages.shop',
             [
+                'coinPacks' => $this->shopItemsService->getRealMoneyItems(),
                 'newestItems' => $this->shopItemsService->getNewest(6),
                 'saleItems' => $this->shopItemsService->getDiscounts(6),
                 'bestSellerItems' => $this->shopItemsService->getBestSellers(6),
