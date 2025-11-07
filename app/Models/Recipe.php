@@ -23,6 +23,13 @@ class Recipe extends Model
         'result' => 'array',
     ];
 
+    protected $appends = ['milestone_id'];
+
+    public function getMilestoneIdAttribute(): ?int
+    {
+        return optional($this->milestoneUnlock)->milestone_id;
+    }
+
     public function milestoneUnlock()
     {
         return $this->belongsTo(MilestoneUnlock::class);
