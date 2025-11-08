@@ -1214,7 +1214,11 @@ function openRecipeModal(unlockId) {
         document.getElementById('recipe-energy').value = recipe.energy;
         document.getElementById('recipe-time').value = recipe.time;
 
-        recipe.ingredients.forEach(ing => addIngredientField(ing));
+        recipe.ingredients.forEach(ing => {
+            if (ing) {
+                addIngredientField(ing);
+            }
+        });
 
         if (Array.isArray(recipe.result)) {
             recipe.result.forEach(res => addResultField(res));
@@ -1237,8 +1241,9 @@ function addIngredientField(ingredient = {}) {
     const div = document.createElement('div');
     div.className = 'ingredient-field';
 
-    const type = ingredient.tag ? 'tag' : 'item';
-    const value = ingredient.tag || ingredient.item || '';
+    const safeIngredient = ingredient || {};
+    const type = safeIngredient.tag ? 'tag' : 'item';
+    const value = safeIngredient.tag || safeIngredient.item || '';
 
     div.innerHTML = `
         <select class="ingredient-type">
@@ -1246,7 +1251,7 @@ function addIngredientField(ingredient = {}) {
             <option value="tag" ${type === 'tag' ? 'selected' : ''}>Tag</option>
         </select>
         <input type="text" class="ingredient-value" placeholder="e.g., minecraft:diamond" value="${value}" required>
-        <input type="number" class="ingredient-count" min="1" value="${ingredient.count || 1}">
+        <input type="number" class="ingredient-count" min="1" value="${safeIngredient.count || 1}">
         <button type="button" class="remove-ingredient-btn">Remove</button>
     `;
 
