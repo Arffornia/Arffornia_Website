@@ -656,4 +656,51 @@ class StagesController extends Controller
 
         return response()->json($unlock, Response::HTTP_CREATED);
     }
+
+    /**
+     * Overwrites all requirements for a milestone based on data from an in-game command.
+     *
+     * @param Request $request
+     * @param Milestone $milestone
+     * @return JsonResponse
+     */
+    public function setRequirementsFromGame(Request $request, Milestone $milestone): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'requirements' => 'present|array',
+            'requirements.*.item_id' => 'required|string',
+            'requirements.*.display_name' => 'required|string',
+            'requirements.*.amount' => 'required|integer|min:1',
+            'requirements.*.image_path' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $data = $validator->validated();
+
+        try {
+            DB::transaction(function () use ($milestone, $data) {
+                // Delete all existing requirements for this milestone
+                $milestone->requirements()->delete();
+
+                // Create the new requirements from the provided data
+                if (!empty($data['requirements'])) {
+                    $milestone->requirements()->createMany($data['requirements']);
+                }
+            });
+        } catch (\Exception $e) {
+            Log::error('Failed to set milestone requirements from game.', [
+                'milestone_id' => $milestone->id,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json(['message' => 'An internal error occurred.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json([
+            'message' => 'Milestone requirements have been successfully updated.',
+            'total_items' => count($data['requirements'])
+        ]);
+    }
 }
