@@ -6,10 +6,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\StagesController;
+use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\LauncherController;
+use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\ShopItemsController;
 use App\Http\Controllers\ProgressionController;
-use App\Http\Controllers\AdminPanelManager;
 
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('best_player_vote/all-time/{size}', [VoteController::class, 'bestPlayerByVoteAllTimeJson']);
@@ -98,6 +99,11 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(f
     Route::post('/progression/set-target', [ProgressionController::class, 'setTargetMilestone']);
 
     Route::post('milestones/{milestone}/add-unlock-from-game', [StagesController::class, 'storeUnlockFromGame']);
+
+    Route::get('/migration/items-to-migrate', [MigrationController::class, 'getItemsToMigrate']);
+    Route::post('/migration/submit-batch-recipes', [MigrationController::class, 'submitBatchRecipes']);
+
+    Route::post('milestones/{milestone}/set-requirements', [StagesController::class, 'setRequirementsFromGame']);
 });
 
 

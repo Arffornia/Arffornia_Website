@@ -18,7 +18,9 @@ class RecipeController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(Recipe::all());
+        $recipes = Recipe::with('milestoneUnlock')->get();
+
+        return response()->json($recipes);
     }
 
     /**
