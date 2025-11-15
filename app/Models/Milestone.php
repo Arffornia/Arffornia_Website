@@ -58,7 +58,7 @@ class Milestone extends Model
      */
     public function unlocks(): HasMany
     {
-        return $this->hasMany(MilestoneUnlock::class);
+        return $this->hasMany(MilestoneUnlock::class)->orderBy('display_name', 'asc');
     }
 
     /**
@@ -66,7 +66,7 @@ class Milestone extends Model
      */
     public function requirements(): HasMany
     {
-        return $this->hasMany(MilestoneRequirement::class);
+        return $this->hasMany(MilestoneRequirement::class)->orderBy('display_name', 'asc');
     }
 
     public function stage()

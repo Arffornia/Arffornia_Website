@@ -62,17 +62,14 @@
 
 @if (session('message') || session('error'))
     <script type="module">
-        // Import the function from our new notification module
         import {
             showNotification
         } from '{{ Vite::asset('resources/js/notification.js') }}';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Read message and type from the session
             const message = `{!! addslashes(session('message') ?? session('error')) !!}`;
             const type = "{{ session('message') ? 'success' : 'error' }}";
 
-            // Show the notification
             showNotification(message, type);
         });
     </script>
