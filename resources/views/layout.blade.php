@@ -9,7 +9,7 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('images/Crafting_Table100x100.png') }}">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'public/css/components/notification.css'])
 
     @yield('extraHead')
 
@@ -49,12 +49,6 @@
 </header>
 
 <body>
-    @if (session('message') || session('error'))
-        <div id="flash-message-data" data-message="{{ session('message') ?? session('error') }}"
-            data-type="{{ session('message') ? 'success' : 'error' }}" style="display: none;">
-        </div>
-    @endif
-
     @yield('content')
 </body>
 
@@ -65,5 +59,23 @@
 </footer>
 
 </html>
+
+@if (session('message') || session('error'))
+    <script type="module">
+        // Import the function from our new notification module
+        import {
+            showNotification
+        } from '{{ Vite::asset('resources/js/notification.js') }}';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Read message and type from the session
+            const message = `{!! addslashes(session('message') ?? session('error')) !!}`;
+            const type = "{{ session('message') ? 'success' : 'error' }}";
+
+            // Show the notification
+            showNotification(message, type);
+        });
+    </script>
+@endif
 
 @yield('script')

@@ -1,0 +1,104 @@
+/*
+ * Notification Container Style
+ */
+#notification-container {
+    position: fixed;
+    top: 15%;
+    right: 0%;
+    z-index: 1050;
+    padding-right: 2%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-family: Montserrat, sans-serif;
+}
+
+/*
+ * Individual Notification Style
+ */
+.notification-content {
+    width: 300px;
+    height: 90px;
+    background-color: #261d31;
+    border: 2px solid #ff7300;
+    border-radius: 2em 20px 2.5em 0.2in;
+    display: flex;
+    position: relative;
+    animation: slideIn 1s ease;
+    color: #fff;
+}
+
+.notification-content .image {
+    margin-top: auto;
+    margin-bottom: auto;
+    height: 40px;
+    max-width: 80px;
+    margin-left: 15px;
+}
+
+.notification-content .title {
+    margin-top: auto;
+    margin-bottom: auto;
+    color: #fff;
+    padding-left: 15px;
+    font-size: 100%;
+    line-height: 130%;
+    white-space: pre-line;
+}
+
+.notification-content .close-btn {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #fff;
+    font-weight: 700;
+    border: 2px solid #ff7300;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 17px;
+    cursor: pointer;
+    background-color: #261d31;
+}
+
+/* A minimal addition for better user experience on a website */
+.notification-content .close-btn:hover {
+    background-color: #ff7300;
+}
+
+.notification-content .time {
+    margin: 0;
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
+    padding-bottom: 7px;
+    padding-right: 15px;
+    color: #c2c2c2d3;
+}
+
+/*
+ * Animations
+ */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateX(110%);
+        opacity: 0;
+    }
+}

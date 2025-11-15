@@ -1,4 +1,4 @@
-import { showFlashMessage } from "./flash-message";
+import { showNotification } from "./notification.js";
 
 /**
  * Stores the Sanctum API token to avoid repeated requests.
@@ -104,10 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: createApiHeaders(token),
             });
             const result = await response.json();
-            showFlashMessage(result.message, result.success);
+            showNotification(result.message, result.success ? 'success' : 'error');
         } catch (error) {
             console.error('Purchase error:', error);
-            showFlashMessage('An unexpected error occurred.', false);
+            showNotification('An unexpected error occurred.', 'error');
         } finally {
             buyButton.textContent = originalText;
             buyButton.disabled = false;

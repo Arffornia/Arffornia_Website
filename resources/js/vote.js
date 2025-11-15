@@ -1,4 +1,4 @@
-import { showFlashMessage } from './flash-message.js';
+import { showNotification } from './notification.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', async (event) => {
@@ -33,14 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (response.ok) {
-                showFlashMessage(result.message, true);
+                showNotification(result.message, 'success');
             } else {
                 const errorMessage = result.message || result.error || 'An unknown error occurred.';
-                showFlashMessage(errorMessage, false);
+                showNotification(errorMessage, 'error');
             }
         } catch (error) {
             console.error('Error verifying vote:', error);
-            showFlashMessage('A network error occurred. Please try again.', false);
+            showNotification('A network error occurred. Please try again.', 'error');
         } finally {
             verifyButton.innerHTML = originalIcon;
             verifyButton.disabled = false;
