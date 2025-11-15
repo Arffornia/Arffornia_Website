@@ -12,6 +12,7 @@ use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\ShopItemsController;
 use App\Http\Controllers\ProgressionController;
 
+Route::get('best_player_point/{size}', [UserController::class, 'bestPlayerByPointJson']);
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
 Route::get('best_player_vote/all-time/{size}', [VoteController::class, 'bestPlayerByVoteAllTimeJson']);
 
