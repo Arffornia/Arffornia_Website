@@ -105,6 +105,8 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(f
     Route::post('/migration/submit-batch-recipes', [MigrationController::class, 'submitBatchRecipes']);
 
     Route::post('milestones/{milestone}/set-requirements', [StagesController::class, 'setRequirementsFromGame']);
+
+    Route::post('/milestone-items/move', [StagesController::class, 'moveMilestoneItem']);
 });
 
 

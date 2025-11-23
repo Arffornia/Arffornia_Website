@@ -731,4 +731,76 @@ class StagesController extends Controller
             'total_items' => count($data['requirements'])
         ]);
     }
+
+    /**
+     * Moves a milestone item (unlock or requirement) from one milestone to another.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function moveMilestoneItem(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'from_milestone_id' => 'required|integer|exists:milestones,id',
+            'to_milestone_id' => 'required|integer|exists:milestones,id|different:from_milestone_id',
+            'item_id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $data = $validator->validated();
+        $fromMilestoneId = $data['from_milestone_id'];
+        $toMilestoneId = $data['to_milestone_id'];
+        $itemId = $data['item_id'];
+
+        try {
+            DB::beginTransaction();
+
+            $unlock = MilestoneUnlock::where('milestone_id', $fromMilestoneId)->where('item_id', $itemId)->with('recipe')->first();
+            $requirement = null;
+
+            if (!$unlock) {
+                $requirement = MilestoneRequirement::where('milestone_id', $fromMilestoneId)->where('item_id', $itemId)->first();
+            }
+
+            if (!$unlock && !$requirement) {
+                throw new \Exception('Item not found on the source milestone.');
+            }
+
+            if ($unlock) {
+                $oldRecipe = $unlock->recipe;
+
+                $newUnlock = $unlock->replicate();
+                $newUnlock->milestone_id = $toMilestoneId;
+                $newUnlock->save();
+
+                if ($oldRecipe) {
+                    $oldRecipe->milestone_unlock_id = $newUnlock->id;
+                    $oldRecipe->save();
+                }
+
+                $unlock->delete();
+                $movedItemType = 'Unlock';
+            } else {
+                $newRequirement = $requirement->replicate();
+                $newRequirement->milestone_id = $toMilestoneId;
+                $newRequirement->save();
+
+                $requirement->delete();
+                $movedItemType = 'Requirement';
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => "{$movedItemType} '{$itemId}' moved successfully from milestone {$fromMilestoneId} to {$toMilestoneId}."
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to move milestone item: " . $e->getMessage());
+            return response()->json(['message' => 'Failed to move item. ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
