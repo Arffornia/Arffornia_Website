@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use App\Services\UserService;
 use App\Models\MilestoneUnlock;
 use App\Services\StagesService;
-use function PHPSTORM_META\map;
 use App\Models\MilestoneClosure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
@@ -622,6 +621,7 @@ class StagesController extends Controller
 
     /**
      * Store a new unlock for a milestone, sent from the in-game admin command.
+     * This will also create the associated custom recipe.
      *
      * @param Request $request
      * @param Milestone $milestone
@@ -635,6 +635,11 @@ class StagesController extends Controller
             'image_path' => 'required|string|max:255',
             'recipes_to_ban' => 'present|array',
             'recipes_to_ban.*' => 'string|distinct',
+
+            'ingredients' => 'required|array',
+            'result' => 'required|array',
+            'energy' => 'nullable|integer|min:0',
+            'time' => 'nullable|integer|min:0',
         ]);
 
         $existingUnlock = $milestone->unlocks()->where('item_id', $data['item_id'])->first();
@@ -646,15 +651,38 @@ class StagesController extends Controller
             ], Response::HTTP_CONFLICT);
         }
 
-        $unlock = $milestone->unlocks()->create([
-            'item_id' => $data['item_id'],
-            'display_name' => $data['display_name'],
-            'image_path' => $data['image_path'],
-            'recipes_to_ban' => $data['recipes_to_ban'],
-            'shop_price' => null,
-        ]);
+        try {
+            DB::beginTransaction();
 
-        return response()->json($unlock, Response::HTTP_CREATED);
+            $unlock = $milestone->unlocks()->create([
+                'item_id' => $data['item_id'],
+                'display_name' => $data['display_name'],
+                'image_path' => $data['image_path'],
+                'recipes_to_ban' => $data['recipes_to_ban'],
+                'shop_price' => null,
+            ]);
+
+            $recipeType = 'arffornia:' . str_replace(':', '_', $unlock->item_id) . '_recipe';
+
+            Recipe::create([
+                'milestone_unlock_id' => $unlock->id,
+                'type' => $recipeType,
+                'ingredients' => $data['ingredients'],
+                'result' => $data['result'],
+                'energy' => $data['energy'] ?? 0,
+                'time' => $data['time'] ?? 0,
+            ]);
+
+            DB::commit();
+
+            $unlock->load('recipe');
+
+            return response()->json($unlock, Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to store unlock and recipe from game command.', ['exception' => $e->getMessage()]);
+            return response()->json(['message' => 'An error occurred while creating the unlock and its recipe.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
