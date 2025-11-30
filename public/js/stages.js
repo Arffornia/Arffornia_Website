@@ -661,13 +661,14 @@ function showMilestonesInfo(milestone) {
 
     fetch(`${baseUrl}/api/milestone/get/${milestone.id}`)
         .then(response => response.ok ? response.json() : Promise.reject('API Error'))
-        .then(data => {
-            return new Promise(resolve => {
-                setTimeout(() => resolve(data), 1000 * 0.3);
-            });
-        })
+        // .then(data => {
+        //     return new Promise(resolve => {
+        //         setTimeout(() => resolve(data), 1000 * 0.3);
+        //     });
+        // })
         .then(data => {
             window.currentMilestoneData = data;
+            milestoneInfo.querySelector('#milestoneIdDisplay').textContent = data.id;
             milestoneInfo.querySelector('#milestone-title').textContent = data.name;
             milestoneInfo.querySelector("#description").textContent = data.description;
             milestoneInfo.querySelector("#stageNumber").textContent = data.stage_id;

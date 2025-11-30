@@ -46,13 +46,19 @@
                     </div>
                     <div id="milestone-title" class="title"></div>
                 </div>
+
                 <div class="textContainer">
-                    <p><span class="textTitle">Description: </span><span id="description" class="textDescription"></span>
+                    <p class="description-row">
+                        <span class="textTitle"></span>
+                        <span id="description" class="textDescription"></span>
                     </p>
+
+                    <p><span class="textTitle">Id: </span><span id="milestoneIdDisplay" class="textDescription"></span></p>
                     <p><span class="textTitle">Stage: </span><span id="stageNumber" class="textDescription"></span></p>
                     <p><span class="textTitle">Points: </span><span id="reward_progress_points"
                             class="textDescription"></span></p>
                 </div>
+
                 <div id="newItemsContainer">
                     <p class="textTitle">New items:</p>
                     <ul></ul>

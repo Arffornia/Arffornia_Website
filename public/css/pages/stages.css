@@ -186,8 +186,42 @@ footer {
     font-size: 100%;
 }
 
+#milestoneIdDisplay,
+#stageNumber {
+    color: #FFF345;
+    font-weight: 600;
+}
+
+#reward_progress_points {
+    color: #55FFFF;
+    font-weight: 600;
+}
+
+#newItemsContainer .textTitle,
+#requiredItemsContainer .textTitle {
+    color: #FFAA00;
+    font-weight: 700;
+    margin-bottom: 5px;
+    display: block;
+}
+
+#requiredItemsContainer {
+    padding-top: 15px;
+}
+
+#newItemsContainer ul li,
+#requiredItemsContainer ul li {
+    color: #D0D0D0;
+}
+
 .info .textDescription {
     font-weight: 300;
+}
+
+.info .description-row {
+    margin-bottom: 15px;
+    color: #D0D0D0;
+    line-height: 1.4;
 }
 
 .info .itemsContainer {
