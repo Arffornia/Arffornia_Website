@@ -97,6 +97,10 @@
             </div>
         @endif
 
+        <button id="resetViewBtn" class="reset-view-btn" title="Recentrer la vue">
+            <img src="{{ asset('images/home_icon.png') }}" alt="Home" />
+        </button>
+
         <div class="canvas"></div>
     </div>
 

@@ -12,6 +12,9 @@ const recipeForm = document.getElementById('recipe-editor-form');
 const bannedRecipesContainer = document.getElementById('banned-recipes-container');
 const addBannedRecipeBtn = document.getElementById('add-banned-recipe-btn');
 
+const INITIAL_OFFSET_X = -1000;
+const INITIAL_OFFSET_Y = -500;
+
 // Destructure AppData passed from Blade view
 const { milestones, milestone_closure, isAdmin, csrfToken, baseUrl } = window.AppData;
 
@@ -73,33 +76,48 @@ let dragOffsetY = 0;
  * Sets up all event listeners for the page.
  */
 function setupEventListeners() {
-    // Canvas panning logic
     let dragging = false;
-    let offsetX, offsetY;
-    canvas.addEventListener("mousedown", (e) => {
-        // Only pan if clicking the background, not a node or a link
-        if (e.target.closest('.node') || e.target.closest('.link-path')) return;
+    let startX, startY;
+    let initialLeft, initialTop;
+
+    const bgElement = document.querySelector(".bg");
+
+    bgElement.addEventListener("mousedown", (e) => {
+        if (e.target.closest('.node') || e.target.closest('.link-path') || e.target.closest('.reset-view-btn')) return;
+
         dragging = true;
-        offsetX = e.clientX - parseInt(window.getComputedStyle(canvas).left);
-        offsetY = e.clientY - parseInt(window.getComputedStyle(canvas).top);
+
+        startX = e.clientX;
+        startY = e.clientY;
+
+        initialLeft = parseInt(canvas.style.left || 0);
+        initialTop = parseInt(canvas.style.top || 0);
+
+        canvas.style.cursor = "grabbing";
+        bgElement.style.cursor = "grabbing";
     });
+
     document.addEventListener("mousemove", (e) => {
         if (dragging) {
-            let newLeft = e.clientX - offsetX;
-            let newTop = e.clientY - offsetY;
-            const bgRect = document.querySelector(".bg").getBoundingClientRect();
-            const visibleWidth = bgRect.width;
-            const visibleHeight = bgRect.height;
-            const totalWidth = canvas.offsetWidth;
-            const totalHeight = canvas.offsetHeight;
-            newLeft = Math.min(0, Math.max(visibleWidth - totalWidth, newLeft));
-            newTop = Math.min(0, Math.max(visibleHeight - totalHeight, newTop));
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+
+            const newLeft = initialLeft + deltaX;
+            const newTop = initialTop + deltaY;
+
             canvas.style.left = `${newLeft}px`;
             canvas.style.top = `${newTop}px`;
+
+            bgElement.style.backgroundPosition = `${newLeft}px ${newTop}px`;
         }
     });
+
     document.addEventListener("mouseup", () => {
-        dragging = false;
+        if (dragging) {
+            dragging = false;
+            canvas.style.cursor = "";
+            bgElement.style.cursor = "";
+        }
     });
 
     // Move mode event listerners
@@ -209,6 +227,11 @@ function setupEventListeners() {
             openRecipeModal(unlockId);
         }
     });
+
+    const resetBtn = document.getElementById('resetViewBtn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetView);
+    }
 }
 
 /**
@@ -1334,9 +1357,28 @@ function addResultField(result = {}) {
     });
 }
 
+function resetView() {
+    const bgElement = document.querySelector(".bg");
+
+    const screenCenterX = window.innerWidth / 2;
+    const screenCenterY = window.innerHeight / 2;
+
+    const finalX = screenCenterX + INITIAL_OFFSET_X;
+    const finalY = screenCenterY + INITIAL_OFFSET_Y;
+
+    canvas.style.left = `${finalX}px`;
+    canvas.style.top = `${finalY}px`;
+
+    bgElement.style.backgroundPosition = `${finalX}px ${finalY}px`;
+
+    console.log(`Vue réinitialisée : ${finalX}, ${finalY}`);
+}
+
+
 
 // --- Initialisation ---
 document.addEventListener("DOMContentLoaded", function () {
     setupEventListeners();
     buildTrees();
+    resetView();
 });
