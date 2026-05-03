@@ -85,6 +85,7 @@ class StagesController extends Controller
     public function exportStages(): JsonResponse
     {
         return response()->json([
+            'graphs' => \App\Models\ProgressionGraph::all(),
             'stages' => Stage::orderBy('number')->get(),
             'milestones' => Milestone::with(['requirements', 'unlocks.recipe'])->get(),
             'milestone_closure' => MilestoneClosure::all(),
@@ -102,6 +103,7 @@ class StagesController extends Controller
     public function importStages(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
+            'graphs' => 'required|array',
             'stages' => 'required|array',
             'milestones' => 'required|array',
             'milestone_closure' => 'present|array',
@@ -112,7 +114,8 @@ class StagesController extends Controller
         }
 
         $data = $validator->validated();
-        Log::info('Starting import process (v7 - Final).', [
+        Log::info('Starting import process (v7 - Final with Graphs).', [
+            'graph_count' => count($data['graphs']),
             'stage_count' => count($data['stages']),
             'milestone_count' => count($data['milestones'])
         ]);
@@ -128,6 +131,15 @@ class StagesController extends Controller
             }
             Log::info('Relation tables truncated.');
 
+            // Sync Graphs First
+            $allGraphIdsInFile = collect($data['graphs'])->pluck('id')->all();
+            foreach ($data['graphs'] as $graphData) {
+                $cleanGraph = collect($graphData)->except(['created_at', 'updated_at'])->toArray();
+                \App\Models\ProgressionGraph::updateOrCreate(['id' => $graphData['id']], $cleanGraph);
+            }
+            Log::info('Graphs processed.');
+
+            // Sync Stages
             foreach ($data['stages'] as $stageData) {
                 Stage::updateOrCreate(['id' => $stageData['id']], collect($stageData)->except(['created_at', 'updated_at'])->toArray());
             }
@@ -214,9 +226,10 @@ class StagesController extends Controller
 
             Milestone::whereNotIn('id', $allMilestoneIdsInFile)->whereDoesntHave('progressions')->delete();
             Stage::whereNotIn('id', collect($data['stages'])->pluck('id'))->whereDoesntHave('progressions')->delete();
+            \App\Models\ProgressionGraph::whereNotIn('id', $allGraphIdsInFile)->delete();
             Log::info('Old, unused data cleaned up.');
 
-            $tablesWithSequences = ['stages', 'milestones', 'milestone_requirements', 'milestone_unlocks', 'recipes', 'milestone_closure'];
+            $tablesWithSequences = ['stages', 'milestones', 'milestone_requirements', 'milestone_unlocks', 'recipes', 'milestone_closure', 'progression_graphs'];
             foreach ($tablesWithSequences as $table) {
                 $maxId = DB::table($table)->max('id');
                 if ($maxId) {
@@ -320,7 +333,38 @@ class StagesController extends Controller
         return response()->json($this->playerStagesInfo($playerUuid));
     }
 
+    public function storeGraph(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'icon_item_id' => 'required|string|max:255',
+            'categories' => 'nullable|array'
+        ]);
 
+        $graph = \App\Models\ProgressionGraph::create($data);
+        return response()->json($graph, Response::HTTP_CREATED);
+    }
+
+    public function updateGraph(Request $request, \App\Models\ProgressionGraph $graph): JsonResponse
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'icon_item_id' => 'required|string|max:255',
+            'categories' => 'nullable|array'
+        ]);
+
+        $graph->update($data);
+        return response()->json($graph);
+    }
+
+    public function destroyGraph(\App\Models\ProgressionGraph $graph): JsonResponse
+    {
+        if ($graph->milestones()->exists()) {
+            return response()->json(['message' => 'Cannot delete graph: It still contains milestones.'], Response::HTTP_CONFLICT);
+        }
+        $graph->delete();
+        return response()->json(null, Response::HTTP_NO_CONTENT);
+    }
 
     /**
      * Get detailed information for a single milestone, including its unlocks and requirements.
@@ -353,7 +397,8 @@ class StagesController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'reward_progress_points' => 'required|integer|min:0',
-            'stage_id' => 'sometimes|required|integer|exists:stages,id'
+            'stage_id' => 'sometimes|required|integer|exists:stages,id',
+            'graph_id' => 'sometimes|required|integer|exists:progression_graphs,id'
         ]);
 
         if ($validator->fails()) {
@@ -398,6 +443,7 @@ class StagesController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'stage_id' => 'required|integer|exists:stages,id',
+            'graph_id' => 'required|integer|exists:progression_graphs,id',
             'icon_type' => 'required|string|in:tech,pipe,magic,default',
             'x' => 'required|integer',
             'y' => 'required|integer',

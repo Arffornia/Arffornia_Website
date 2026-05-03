@@ -80,6 +80,13 @@
         {{-- Admin Control Panel --}}
         @if ($isAdmin ?? false)
             <div class="admin-panel">
+                <div class="graph-controls">
+                    <p>Graphs:</p>
+                    <button id="addGraphBtn" class="admin-mode-btn">Add Graph</button>
+                    <button id="editGraphBtn" class="admin-mode-btn">Edit Current Graph</button>
+                    <button id="deleteGraphBtn" class="admin-mode-btn">Delete Current Graph</button>
+                </div>
+
                 <div class="stage-controls">
                     <p>Stages:</p>
                     <button id="addStageBtn" class="admin-mode-btn">Add Stage</button>
@@ -118,6 +125,31 @@
         </div>
 
         <div class="canvas"></div>
+    </div>
+
+    {{-- Graph Editor Modal --}}
+    <div id="graph-editor-modal" class="editor-modal modal-hidden">
+        <div class="modal-content">
+            <span class="modal-close-btn">×</span>
+            <h3 id="graph-modal-title">Edit Graph</h3>
+            <form id="graph-editor-form">
+                <input type="hidden" id="graph-modal-id">
+
+                <label for="graph-modal-name">Graph Name</label>
+                <input type="text" id="graph-modal-name" required>
+
+                <label for="graph-modal-icon">Icon Item ID (e.g. minecraft:diamond)</label>
+                <input type="text" id="graph-modal-icon" required>
+
+                <label for="graph-modal-categories">Categories (comma separated)</label>
+                <input type="text" id="graph-modal-categories" placeholder="Magic, Techno">
+
+                <div class="modal-actions">
+                    <button type="submit">Save Graph</button>
+                    <button type="button" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     {{-- Milestone Items Modal --}}

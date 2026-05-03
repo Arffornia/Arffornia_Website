@@ -687,7 +687,7 @@ Admin Panel & Controls
     top: 0;
     width: 280px;
     height: 100vh;
-    z-index: 10;
+    z-index: 200;
     color: white;
     display: flex;
     flex-direction: row;
@@ -821,7 +821,6 @@ Admin Panel & Controls
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .category-items {

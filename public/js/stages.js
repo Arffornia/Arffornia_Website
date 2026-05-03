@@ -9,6 +9,8 @@ const stageModal = document.getElementById("stage-editor-modal");
 const stageForm = document.getElementById("stage-editor-form");
 const recipeModal = document.getElementById("recipe-editor-modal");
 const recipeForm = document.getElementById("recipe-editor-form");
+const graphModal = document.getElementById("graph-editor-modal");
+const graphForm = document.getElementById("graph-editor-form");
 const bannedRecipesContainer = document.getElementById(
     "banned-recipes-container",
 );
@@ -90,7 +92,8 @@ function setupEventListeners() {
         if (
             e.target.closest(".node") ||
             e.target.closest(".link-path") ||
-            e.target.closest(".reset-view-btn")
+            e.target.closest(".reset-view-btn") ||
+            e.target.closest(".sidebar-tabs")
         )
             return;
 
@@ -175,6 +178,13 @@ function setupEventListeners() {
         .getElementById("add-result-btn")
         .addEventListener("click", addResultField);
     recipeForm.addEventListener("submit", handleRecipeFormSubmit);
+
+    // Graph modal
+    if (graphModal) {
+        graphModal.querySelector(".modal-close-btn").addEventListener("click", closeGraphModal);
+        graphModal.querySelector(".cancel-btn").addEventListener("click", closeGraphModal);
+        graphForm.addEventListener("submit", handleGraphFormSubmit);
+    }
 
     addBannedRecipeBtn.addEventListener("click", () =>
         createBannedRecipeInput(),
@@ -299,6 +309,58 @@ function setupAdminEventListeners() {
         importFileInput.addEventListener("change", handleFileImport);
     }
 
+    // Graph Controls
+    document.getElementById("addGraphBtn").addEventListener("click", () => {
+        graphForm.reset();
+        document.getElementById("graph-modal-id").value = "";
+        document.getElementById("graph-modal-title").textContent = "Add Graph";
+        graphModal.classList.remove("modal-hidden");
+    });
+
+    document.getElementById("editGraphBtn").addEventListener("click", () => {
+        if (!currentGraphId) return alert("Please select a graph from the sidebar first.");
+        const graph = window.AppData.graphs.find(g => g.id === currentGraphId);
+        if (!graph) return;
+
+        document.getElementById("graph-modal-id").value = graph.id;
+        document.getElementById("graph-modal-name").value = graph.name;
+        document.getElementById("graph-modal-icon").value = graph.icon_item_id;
+        document.getElementById("graph-modal-categories").value = graph.categories ? graph.categories.join(', ') : '';
+        document.getElementById("graph-modal-title").textContent = "Edit Graph";
+        graphModal.classList.remove("modal-hidden");
+    });
+
+    document.getElementById("deleteGraphBtn").addEventListener("click", async () => {
+        if (!currentGraphId) return alert("Please select a graph from the sidebar first.");
+        if (!confirm("Are you sure you want to delete this graph? It MUST not contain any milestones.")) return;
+
+        const token = await getApiToken();
+        if (!token) return;
+
+        try {
+            const response = await fetch(`${baseUrl}/api/graphs/${currentGraphId}`, {
+                method: "DELETE",
+                headers: createApiHeaders(token)
+            });
+
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.message || "Failed to delete graph.");
+            }
+
+            const index = window.AppData.graphs.findIndex(g => g.id === currentGraphId);
+            if (index > -1) window.AppData.graphs.splice(index, 1);
+
+            alert("Graph deleted successfully.");
+            currentGraphId = null;
+            localStorage.removeItem('lastGraphId');
+            initSidebar();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    // Stage Controls
     document
         .getElementById("addStageBtn")
         .addEventListener("click", handleAddStage);
@@ -439,6 +501,11 @@ async function handleDeleteLinkByClick(pathElement) {
  * @param {MouseEvent} event
  */
 async function handleAddNode(event) {
+    if (!currentGraphId) {
+        alert("Please select a graph from the sidebar first before adding a milestone.");
+        return;
+    }
+
     const name = prompt("Enter new node name:", "New Milestone");
     if (!name) return;
     const stageId = prompt("Enter Stage ID:", "1");
@@ -458,6 +525,7 @@ async function handleAddNode(event) {
         name,
         description: "A new adventure begins...",
         stage_id: parseInt(stageId),
+        graph_id: currentGraphId,
         icon_type: "default",
         x: gridX,
         y: gridY,
@@ -477,10 +545,8 @@ async function handleAddNode(event) {
         if (!response.ok) {
             if (response.status === 422) {
                 const errorData = await response.json();
-
-                if (errorData.errors && errorData.errors.stage_id) {
-                    throw new Error(errorData.errors.stage_id[ 0 ]);
-                }
+                const firstErrorKey = Object.keys(errorData.errors)[ 0 ];
+                throw new Error(errorData.errors[ firstErrorKey ][ 0 ]);
             }
             throw new Error(`Server responded with ${response.status}`);
         }
@@ -677,6 +743,58 @@ function openStageModal() {
  */
 function closeStageModal() {
     stageModal.classList.add("modal-hidden");
+}
+
+function closeGraphModal() {
+    graphModal.classList.add("modal-hidden");
+}
+
+async function handleGraphFormSubmit(e) {
+    e.preventDefault();
+    const token = await getApiToken();
+    if (!token) return;
+
+    const id = document.getElementById("graph-modal-id").value;
+    const rawCategories = document.getElementById("graph-modal-categories").value;
+    const categories = rawCategories.split(',').map(c => c.trim()).filter(c => c !== "");
+
+    const payload = {
+        name: document.getElementById("graph-modal-name").value,
+        icon_item_id: document.getElementById("graph-modal-icon").value,
+        categories: categories.length > 0 ? categories : null
+    };
+
+    const method = id ? "PUT" : "POST";
+    const url = id ? `${baseUrl}/api/graphs/${id}` : `${baseUrl}/api/graphs`;
+
+    try {
+        const response = await fetch(url, {
+            method,
+            headers: createApiHeaders(token),
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to save graph.");
+        }
+
+        const savedGraph = await response.json();
+
+        if (id) {
+            const index = window.AppData.graphs.findIndex(g => g.id == id);
+            if (index > -1) window.AppData.graphs[ index ] = savedGraph;
+        } else {
+            window.AppData.graphs.push(savedGraph);
+        }
+
+        alert("Graph saved successfully!");
+        closeGraphModal();
+        initSidebar();
+
+    } catch (err) {
+        alert(err.message);
+    }
 }
 
 /**
@@ -1569,35 +1687,52 @@ function addResultField(result = {}) {
 function resetView() {
     const bgElement = document.querySelector(".bg");
 
-    const screenCenterX = window.innerWidth / 2;
-    const screenCenterY = window.innerHeight / 2;
+    const rootNode = window.AppData.milestones.find(m => m.graph_id === currentGraphId && m.stage_number === 1);
 
-    const finalX = screenCenterX + INITIAL_OFFSET_X;
-    const finalY = screenCenterY + INITIAL_OFFSET_Y;
+    if (!rootNode) {
+        canvas.style.left = "0px";
+        canvas.style.top = "0px";
+        bgElement.style.backgroundPosition = "0px 0px";
+        return;
+    }
+
+    const rootPxX = rootNode.x * GRID_CELL_SPACING;
+    const rootPxY = rootNode.y * GRID_CELL_SPACING;
+
+    const screenCenterY = window.innerHeight / 2;
+    const screenLeftX = window.innerWidth * 0.2;
+
+    const finalX = screenLeftX - rootPxX;
+    const finalY = screenCenterY - rootPxY;
 
     canvas.style.left = `${finalX}px`;
     canvas.style.top = `${finalY}px`;
-
     bgElement.style.backgroundPosition = `${finalX}px ${finalY}px`;
-
-    console.log(`Vue réinitialisée : ${finalX}, ${finalY}`);
 }
 
 function initSidebar() {
     const container = document.getElementById("category-container");
+    container.innerHTML = '';
     const searchInput = document.getElementById("graph-search");
+
+    // Default Category that holds everything
     const categoriesMap = {};
 
     graphs.forEach((graph) => {
         const cats =
-            graph.categories && graph.categories.length
+            graph.categories && graph.categories.length > 0
                 ? graph.categories
-                : [ "Uncategorized" ];
+                : [];
         cats.forEach((cat) => {
-            if (!categoriesMap[ cat ]) categoriesMap[ cat ] = [];
-            categoriesMap[ cat ].push(graph);
+            const cleanCat = cat.trim();
+            if (cleanCat !== "") {
+                if (!categoriesMap[ cleanCat ]) categoriesMap[ cleanCat ] = [];
+                categoriesMap[ cleanCat ].push(graph);
+            }
         });
     });
+
+    categoriesMap[ "All" ] = [ ...graphs ];
 
     for (const [ category, graphList ] of Object.entries(categoriesMap)) {
         const groupWrapper = document.createElement("div");
@@ -1618,7 +1753,7 @@ function initSidebar() {
             tab.dataset.graphName = graph.name.toLowerCase();
 
             const iconPath = graph.icon_item_id.replace(":", "_") + ".png";
-            tab.innerHTML = `<img src="${window.AppData.baseUrl}/images/item_textures/${iconPath}" onerror="this.src='${window.AppData.baseUrl}/images/Crafting_Table.png'"> <span>${graph.name}</span>`;
+            tab.innerHTML = `<img src="${window.AppData.baseUrl}/images/item_textures/${iconPath}" onerror="this.src='${window.AppData.baseUrl}/images/Crafting_Table.png'"> <span class="graph-tab-text" title="${graph.name}">${graph.name}</span>`;
 
             tab.addEventListener("click", () => switchGraph(graph.id));
             listDiv.appendChild(tab);
@@ -1633,6 +1768,15 @@ function initSidebar() {
         listDiv.style.opacity = "1";
         listDiv.style.overflow = "hidden";
         listDiv.style.transition = "max-height 0.35s ease, opacity 0.3s ease";
+
+        if (category === "All") {
+            listDiv.style.maxHeight = "0px";
+            listDiv.style.opacity = "0";
+            header.classList.add("collapsed");
+        } else {
+            listDiv.style.maxHeight = listDiv.scrollHeight + "px";
+            listDiv.style.opacity = "1";
+        }
 
         header.addEventListener("click", () => {
             const isCollapsed = listDiv.style.maxHeight === "0px";
@@ -1650,7 +1794,10 @@ function initSidebar() {
 
     // Search functionality
     if (searchInput) {
-        searchInput.addEventListener("input", (e) => {
+        const newSearchInput = searchInput.cloneNode(true);
+        searchInput.parentNode.replaceChild(newSearchInput, searchInput);
+
+        newSearchInput.addEventListener("input", (e) => {
             const term = e.target.value.toLowerCase();
 
             document

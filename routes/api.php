@@ -49,6 +49,11 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('stages/export', [StagesController::class, 'exportStages']);
     Route::post('stages/import', [StagesController::class, 'importStages']);
 
+    // Graph Management
+    Route::post('graphs', [StagesController::class, 'storeGraph']);
+    Route::put('graphs/{graph}', [StagesController::class, 'updateGraph']);
+    Route::delete('graphs/{graph}', [StagesController::class, 'destroyGraph']);
+
     // Stage Management
     Route::post('stages', [StagesController::class, 'storeStage']);
     Route::delete('stages/{stage}', [StagesController::class, 'destroyStage']);
@@ -82,8 +87,6 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
 Route::middleware(['auth:sanctum', 'anyRole:nuvotifier_service'])->group(function () {
     Route::post('/vote/nuvotifier', [VoteController::class, 'handleNuvotifierVote']);
 });
-
-
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
     Route::post('/teams/create', [TeamController::class, 'create']);
