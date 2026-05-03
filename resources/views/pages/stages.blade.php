@@ -107,6 +107,16 @@
             <img src="{{ asset('images/home_icon.png') }}" alt="Home" />
         </button>
 
+        <div class="sidebar-tabs">
+            <div class="sidebar-main">
+                <div id="category-container" class="sidebar-content"></div>
+                <div class="sidebar-search-container">
+                    <input type="text" id="graph-search" placeholder="Search graphs or categories..."
+                        autocomplete="off">
+                </div>
+            </div>
+        </div>
+
         <div class="canvas"></div>
     </div>
 
@@ -219,6 +229,7 @@
 @section('script')
     <script>
         window.AppData = {
+            graphs: @json($graphs),
             stages: @json($stages),
             milestones: @json($milestones),
             milestone_closure: @json($milestone_closure),

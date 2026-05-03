@@ -49,18 +49,28 @@ class StagesController extends Controller
                     'number' => $stage->number,
                 ];
             }),
-            'milestones' => Milestone::all()->map(function ($milestone) {
+            'milestones' => Milestone::with('stage')->get()->map(function ($milestone) {
                 return [
                     'id' => $milestone->id,
                     'name' => $milestone->name,
                     'stage_id' => $milestone->stage_id,
+                    'graph_id' => $milestone->graph_id,
                     'icon_type' => $milestone->icon_type,
                     'x' => $milestone->x,
                     'y' => $milestone->y,
+                    'stage_number' => $milestone->stage ? $milestone->stage->number : 1,
                 ];
             }),
             'milestone_closure' => MilestoneClosure::all(),
             'isAdmin' => $isAdmin,
+            'graphs' => \App\Models\ProgressionGraph::all()->map(function ($graph) {
+                return [
+                    'id' => $graph->id,
+                    'name' => $graph->name,
+                    'icon_item_id' => $graph->icon_item_id,
+                    'categories' => $graph->categories ?? [],
+                ];
+            }),
         ];
     }
 
@@ -256,11 +266,20 @@ class StagesController extends Controller
         $progression = $user->activeProgression;
 
         return [
+            'graphs' => \App\Models\ProgressionGraph::all()->map(function ($graph) {
+                return [
+                    'id' => $graph->id,
+                    'name' => $graph->name,
+                    'icon_item_id' => $graph->icon_item_id,
+                    'categories' => $graph->categories ?? [],
+                ];
+            }),
             'milestones' => Milestone::with('stage')->get()->map(function ($milestone) {
                 $stageNumber = $milestone->stage ? $milestone->stage->number : 1;
 
                 return [
                     'id' => $milestone->id,
+                    'graph_id' => $milestone->graph_id,
                     'icon_type' => $milestone->icon_type,
                     'x' => $milestone->x,
                     'y' => $milestone->y,
@@ -273,7 +292,6 @@ class StagesController extends Controller
                     'descendant_id' => $closure->descendant_id,
                 ];
             }),
-
             'playerProgress' => [
                 'completed_milestones' => $progression->completed_milestones ?? [],
                 'current_target_id' => $progression->current_milestone_id ?? null,

@@ -183,18 +183,6 @@ namespace App\Models{
 /**
  * 
  *
- * @property-read \App\Models\User|null $user
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|MonthlyVoteTally query()
- */
-	class MonthlyVoteTally extends \Eloquent {}
-}
-
-namespace App\Models{
-/**
- * 
- *
  * @property int $id
  * @property string $title
  * @property string $content
@@ -271,6 +259,19 @@ namespace App\Models{
 /**
  * 
  *
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Milestone> $milestones
+ * @property-read int|null $milestones_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph query()
+ */
+	class ProgressionGraph extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
  * @property int $id
  * @property string $type
  * @property array<array-key, mixed> $ingredients
@@ -280,6 +281,7 @@ namespace App\Models{
  * @property int $milestone_unlock_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read int|null $milestone_id
  * @property-read \App\Models\MilestoneUnlock $milestoneUnlock
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Recipe newQuery()
@@ -514,7 +516,11 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUserId($value)
  * @mixin \Eloquent
+ * @property string $site
+ * @property string|null $ip_address
  * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Vote whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Vote whereSite($value)
  */
 	class Vote extends \Eloquent {}
 }

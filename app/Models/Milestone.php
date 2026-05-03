@@ -81,4 +81,9 @@ class Milestone extends Model
     {
         return $this->hasMany(Progression::class, 'current_milestone_id');
     }
+
+    public function graph()
+    {
+        return $this->belongsTo(ProgressionGraph::class, 'graph_id');
+    }
 }

@@ -14,7 +14,14 @@
     --line-thick-width: 1px;
     --grid-padding: 3px;
     --grid-cell-size: 78px;
+
+    /* Sidebar colors */
+    --sidebar-bg-dark: #09070a;
+    --sidebar-bg-medium: #261d31;
+    --sidebar-accent: #b74512;
 }
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
 
 html {
     max-width: none;
@@ -46,17 +53,34 @@ footer {
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
+    font-family: Montserrat, sans-serif;
 
     background-color: var(--color-background);
     background-image:
-        linear-gradient(-90deg, var(--color-line-thin) var(--line-thin-width), transparent var(--line-thin-width)),
-        linear-gradient(var(--color-line-thin) var(--line-thin-width), transparent var(--line-thin-width)),
-        linear-gradient(-90deg, var(--color-line-thin-alt) var(--line-thin-width), transparent var(--line-thin-width)),
-        linear-gradient(var(--color-line-thin-alt) var(--line-thin-width), transparent var(--line-thin-width)),
-        linear-gradient(transparent var(--grid-padding), var(--color-background) var(--grid-padding), var(--color-background) var(--grid-cell-size), transparent var(--grid-cell-size)),
-        linear-gradient(-90deg, var(--color-line-thick) var(--line-thick-width), transparent var(--line-thick-width)),
-        linear-gradient(-90deg, transparent var(--grid-padding), var(--color-background) var(--grid-padding), var(--color-background) var(--grid-cell-size), transparent var(--grid-cell-size)),
-        linear-gradient(var(--color-line-thick) var(--line-thick-width), transparent var(--line-thick-width));
+        linear-gradient(-90deg,
+            var(--color-line-thin) var(--line-thin-width),
+            transparent var(--line-thin-width)),
+        linear-gradient(var(--color-line-thin) var(--line-thin-width),
+            transparent var(--line-thin-width)),
+        linear-gradient(-90deg,
+            var(--color-line-thin-alt) var(--line-thin-width),
+            transparent var(--line-thin-width)),
+        linear-gradient(var(--color-line-thin-alt) var(--line-thin-width),
+            transparent var(--line-thin-width)),
+        linear-gradient(transparent var(--grid-padding),
+            var(--color-background) var(--grid-padding),
+            var(--color-background) var(--grid-cell-size),
+            transparent var(--grid-cell-size)),
+        linear-gradient(-90deg,
+            var(--color-line-thick) var(--line-thick-width),
+            transparent var(--line-thick-width)),
+        linear-gradient(-90deg,
+            transparent var(--grid-padding),
+            var(--color-background) var(--grid-padding),
+            var(--color-background) var(--grid-cell-size),
+            transparent var(--grid-cell-size)),
+        linear-gradient(var(--color-line-thick) var(--line-thick-width),
+            transparent var(--line-thick-width));
 
     background-size:
         var(--grid-small-size) var(--grid-small-size),
@@ -104,7 +128,9 @@ footer {
 }
 
 .link-path {
-    transition: stroke 0.2s ease-in-out, stroke-width 0.2s ease-in-out;
+    transition:
+        stroke 0.2s ease-in-out,
+        stroke-width 0.2s ease-in-out;
 }
 
 .canvas.unlink-mode .link-path:hover {
@@ -112,7 +138,6 @@ footer {
     stroke-width: 8px;
     cursor: not-allowed;
 }
-
 
 /*
     Info Display
@@ -131,7 +156,9 @@ footer {
     padding: 30px;
     opacity: 0;
     transform: translateY(-20px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    transition:
+        opacity 0.4s ease,
+        transform 0.4s ease;
     pointer-events: none;
     position: absolute;
 }
@@ -188,18 +215,18 @@ footer {
 
 #milestoneIdDisplay,
 #stageNumber {
-    color: #FFF345;
+    color: #fff345;
     font-weight: 600;
 }
 
 #reward_progress_points {
-    color: #55FFFF;
+    color: #55ffff;
     font-weight: 600;
 }
 
 #newItemsContainer .textTitle,
 #requiredItemsContainer .textTitle {
-    color: #FFAA00;
+    color: #ffaa00;
     font-weight: 700;
     margin-bottom: 5px;
     display: block;
@@ -211,7 +238,7 @@ footer {
 
 #newItemsContainer ul li,
 #requiredItemsContainer ul li {
-    color: #D0D0D0;
+    color: #d0d0d0;
 }
 
 .info .textDescription {
@@ -220,7 +247,7 @@ footer {
 
 .info .description-row {
     margin-bottom: 15px;
-    color: #D0D0D0;
+    color: #d0d0d0;
     line-height: 1.4;
 }
 
@@ -289,7 +316,7 @@ Admin Panel & Controls
     font-weight: 500;
     position: fixed;
     bottom: 20px;
-    left: 20px;
+    left: 270px;
     background: #2a2a2e;
     color: white;
     padding: 10px;
@@ -330,7 +357,9 @@ Admin Panel & Controls
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.9em;
-    transition: background-color 0.2s, transform 0.2s;
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
 }
 
 .admin-mode-btn:hover {
@@ -365,7 +394,9 @@ Admin Panel & Controls
 
 .node.selected {
     border-color: #3498db;
-    box-shadow: 0 0 15px #3498db, 0 0 25px rgba(52, 152, 219, 0.5) inset;
+    box-shadow:
+        0 0 15px #3498db,
+        0 0 25px rgba(52, 152, 219, 0.5) inset;
     transform: scale(1.1);
 }
 
@@ -485,7 +516,6 @@ Admin Panel & Controls
     display: none;
 }
 
-
 .item-actions-inline .recipe-edit-btn {
     background-color: #27ae60;
     margin-left: 5px;
@@ -600,7 +630,6 @@ Admin Panel & Controls
     gap: 10px;
 }
 
-
 .data-io-btn {
     bottom: 20px;
     right: 20px;
@@ -621,7 +650,7 @@ Admin Panel & Controls
 .reset-view-btn {
     position: fixed;
     top: 20px;
-    left: 20px;
+    left: 270px;
     width: 50px;
     height: 50px;
     background: transparent;
@@ -648,6 +677,162 @@ Admin Panel & Controls
 }
 
 .admin-panel~.reset-view-btn {
-    left: 20px;
+    left: 270px;
     bottom: 140px;
+}
+
+.sidebar-tabs {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 10;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.sidebar-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    padding-right: 5px;
+}
+
+.sidebar-content::-webkit-scrollbar {
+    display: none;
+}
+
+.sidebar-search-container {
+    padding: 10px 0 0 0;
+    background: transparent;
+    flex-shrink: 0;
+}
+
+.sidebar-search-container input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: none;
+    background: #09070a;
+    color: white;
+    font-family: Montserrat, sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition:
+        background-color 0.3s,
+        box-shadow 0.3s;
+}
+
+.sidebar-search-container input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.sidebar-search-container input:focus {
+    outline: none;
+    background: #2d2438;
+    box-shadow: 0 0 0 2px #b74512;
+}
+
+.category-header {
+    padding: 12px 15px;
+    font-weight: 700;
+    font-size: 13px;
+    background: #09070a;
+    cursor: pointer;
+    border-radius: 10px;
+    user-select: none;
+    transition: background-color 0.3s;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.category-header:hover {
+    background: #0f0c12;
+}
+
+.category-header::after {
+    content: "▼";
+    font-size: 10px;
+    transition: transform 0.3s;
+}
+
+.category-header.collapsed::after {
+    transform: rotate(-90deg);
+}
+
+.category-group {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.category-group.collapsed {
+    display: none;
+}
+
+.graph-tab {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition:
+        background-color 0.3s,
+        transform 0.2s;
+    background-color: rgba(31, 13, 54, 0.9);
+    box-shadow: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.graph-tab:hover {
+    background: #b74512;
+    transform: translateX(3px);
+}
+
+.graph-tab.active {
+    background: #b74512;
+}
+
+.graph-tab img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.graph-tab-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.category-items {
+    padding-left: 5px;
+    transition:
+        max-height 0.3s ease-out,
+        opacity 0.3s ease-out;
+    overflow: hidden;
+}
+
+.category-items.collapsed {
+    max-height: 0 !important;
+    opacity: 0;
 }
