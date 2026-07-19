@@ -43,7 +43,7 @@ class Milestone extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['id',
+    protected $fillable = [
         'name',
         'description',
         'stage_id',
@@ -51,6 +51,7 @@ class Milestone extends Model
         'icon_type',
         'x',
         'y',
+        'graph_id',
     ];
 
     /**
