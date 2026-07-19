@@ -43,7 +43,7 @@ class Milestone extends Model
 
     public $timestamps = false;
 
-    protected $fillable = [
+    protected $fillable = ['id',
         'name',
         'description',
         'stage_id',
