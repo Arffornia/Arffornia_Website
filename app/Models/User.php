@@ -19,7 +19,8 @@ use Laravel\Sanctum\HasApiTokens;
  * @property float $money
  * @property int $progress_point
  * @property int $stage_id
- * @property string|null $last_connexion
+ * @property \Illuminate\Support\Carbon|null $last_connection
+ * @property \Illuminate\Support\Carbon|null $last_streak_claim
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -101,7 +102,10 @@ class User extends Authenticatable
      */
     protected function casts(): array
     {
-        return [];
+        return [
+            'last_connection' => 'datetime',
+            'last_streak_claim' => 'datetime',
+        ];
     }
 
     public function getVoteCount()
