@@ -4,6 +4,8 @@ services:
       context: ./
       dockerfile: prod.Dockerfile
     container_name: test-arffornia-website
+    volumes:
+      - ./public/images/item_textures:/var/www/html/public/images/item_textures
 
   web:
     build:
@@ -19,6 +21,8 @@ services:
     depends_on:
       - php
       - db
+    volumes:
+      - ./public/images/item_textures:/var/www/html/public/images/item_textures
 
   # db:
   #   image: mysql:8.0
@@ -37,7 +41,7 @@ services:
     image: postgres:17
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_DB: arffornia
       POSTGRES_USER: laravel
@@ -45,16 +49,17 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  phpmyadmin:
-    depends_on:
-      - db
-    image: phpmyadmin
-    restart: always
-    ports:
-      - "8090:80"
-    environment:
-      PMA_HOST: db
-      MYSQL_ROOT_PASSWORD: root
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: test-pgadmin
+  #   restart: unless-stopped
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: admin
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     - db
 
 volumes:
   postgres_data:

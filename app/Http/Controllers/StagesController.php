@@ -49,7 +49,8 @@ class StagesController extends Controller
                     'number' => $stage->number,
                 ];
             }),
-            'milestones' => Milestone::with('stage')->get()->map(function ($milestone) {
+            'milestones' => Milestone::with(['stage', 'unlocks'])->get()->map(function ($milestone) {
+                $firstUnlock = $milestone->unlocks->first();
                 return [
                     'id' => $milestone->id,
                     'name' => $milestone->name,
@@ -59,6 +60,7 @@ class StagesController extends Controller
                     'x' => $milestone->x,
                     'y' => $milestone->y,
                     'stage_number' => $milestone->stage ? $milestone->stage->number : 1,
+                    'first_unlock_image_url' => $firstUnlock ? $firstUnlock->image_url : null,
                 ];
             }),
             'milestone_closure' => MilestoneClosure::all(),
@@ -287,8 +289,9 @@ class StagesController extends Controller
                     'categories' => $graph->categories ?? [],
                 ];
             }),
-            'milestones' => Milestone::with('stage')->get()->map(function ($milestone) {
+            'milestones' => Milestone::with(['stage', 'unlocks'])->get()->map(function ($milestone) {
                 $stageNumber = $milestone->stage ? $milestone->stage->number : 1;
+                $firstUnlock = $milestone->unlocks->first();
 
                 return [
                     'id' => $milestone->id,
@@ -297,6 +300,7 @@ class StagesController extends Controller
                     'x' => $milestone->x,
                     'y' => $milestone->y,
                     'stage_number' => $stageNumber,
+                    'first_unlock_image_url' => $firstUnlock ? $firstUnlock->image_url : null,
                 ];
             }),
             'milestone_closure' => MilestoneClosure::all()->map(function ($closure) {
@@ -721,7 +725,6 @@ class StagesController extends Controller
             $unlock = $milestone->unlocks()->create([
                 'item_id' => $data['item_id'],
                 'display_name' => $data['display_name'],
-                'image_path' => $data['image_path'],
                 'recipes_to_ban' => $data['recipes_to_ban'],
                 'shop_price' => null,
             ]);
@@ -779,7 +782,11 @@ class StagesController extends Controller
 
                 // Create the new requirements from the provided data
                 if (!empty($data['requirements'])) {
-                    $milestone->requirements()->createMany($data['requirements']);
+                    $requirements = array_map(function ($req) {
+                        unset($req['image_path']);
+                        return $req;
+                    }, $data['requirements']);
+                    $milestone->requirements()->createMany($requirements);
                 }
             });
         } catch (\Exception $e) {

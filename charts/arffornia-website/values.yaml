@@ -68,8 +68,6 @@ envFrom: []
 # - configMapRef:
 #     name: my-config-map
 
-
-
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
@@ -121,7 +119,24 @@ readiness:
       path: /
       port: http
 
+# ---------------------------------------------------------------------------
+# Item Textures — Persistent storage for the ~30k Minecraft item icon PNGs
+# exported by the Item Icon Exporter mod.
+# ---------------------------------------------------------------------------
+itemTextures:
+  persistence:
+    # Set to true to create a PersistentVolumeClaim and mount it in the pods.
+    enabled: true
+    # Storage class to use. Leave empty to use the cluster default.
+    storageClass: ""
+    # How much storage to request. 30k PNGs ≈ 1–2 Gi depending on resolution.
+    size: 1Gi
+    # Mount path inside both containers (backend php-fpm + frontend nginx).
+    mountPath: /var/www/html/public/images/item_textures
+
 # Additional volumes on the output Deployment definition.
+# The item_textures PVC is injected automatically above when enabled.
+# Use this for any extra volumes you need.
 volumes: []
 # - name: foo
 #   secret:
@@ -129,7 +144,10 @@ volumes: []
 #     optional: false
 
 # Additional volumeMounts on the output Deployment definition.
+# Applied to BOTH the backend and frontend containers.
 volumeMounts: []
+# - name: item-textures
+#   mountPath: /var/www/html/public/images/item_textures
 # - name: foo
 #   mountPath: "/etc/foo"
 #   readOnly: true

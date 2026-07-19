@@ -918,8 +918,23 @@ function showMilestonesInfo(milestone) {
 
             const iconContentElement =
                 milestoneInfo.querySelector("#iconContent");
-            iconContentElement.innerHTML = getIconSvgByType(data.icon_type);
             iconContentElement.title = `Milestone ID: ${data.id}`;
+            const firstUnlockImgUrl = data.unlocks && data.unlocks.length > 0
+                ? data.unlocks[0].image_url
+                : null;
+            if (firstUnlockImgUrl) {
+                iconContentElement.innerHTML = "";
+                const popupImg = document.createElement("img");
+                popupImg.src = firstUnlockImgUrl;
+                popupImg.alt = data.name;
+                popupImg.style.cssText = "width:100%;height:100%;object-fit:contain;";
+                popupImg.addEventListener("error", () => {
+                    iconContentElement.innerHTML = getIconSvgByType(data.icon_type);
+                });
+                iconContentElement.appendChild(popupImg);
+            } else {
+                iconContentElement.innerHTML = getIconSvgByType(data.icon_type);
+            }
 
             const newItemsContainer =
                 milestoneInfo.querySelector("#newItemsContainer");
@@ -1017,7 +1032,21 @@ function createNode(milestone) {
 
     const icon = document.createElement("div");
     icon.className = "icon";
-    icon.innerHTML = getIconSvgByType(milestone.icon_type);
+
+    if (milestone.first_unlock_image_url) {
+        const img = document.createElement("img");
+        img.src = milestone.first_unlock_image_url;
+        img.alt = milestone.name;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "contain";
+        img.addEventListener("error", () => {
+            icon.innerHTML = getIconSvgByType(milestone.icon_type);
+        });
+        icon.appendChild(img);
+    } else {
+        icon.innerHTML = getIconSvgByType(milestone.icon_type);
+    }
 
     node.appendChild(icon);
     return node;
@@ -1445,7 +1474,7 @@ function updateItemsList(items, type, container) {
             const li = document.createElement("li");
             li.dataset.itemId = item.id;
             let itemText = `
-                <img src="${item.image_url}" width="32" height="32" style="vertical-align: middle;">
+                <img src="${item.image_url}" onerror="this.src='${window.AppData.baseUrl}/images/Crafting_Table.png'" width="32" height="32" style="vertical-align: middle;">
                 <span>${item.display_name}</span>`;
             if (type === "requirements") {
                 itemText += `<span> — x${item.amount}</span>`;
@@ -1741,7 +1770,31 @@ function initSidebar() {
 
         const header = document.createElement("div");
         header.className = "category-header";
-        header.innerText = category;
+
+        // Find image: first unlock of first node of first graph in this category
+        const firstGraph = graphList[0];
+        const firstMilestone = firstGraph
+            ? window.AppData.milestones.find(m => m.graph_id === firstGraph.id)
+            : null;
+        const categoryImgUrl = firstMilestone && firstMilestone.first_unlock_image_url
+            ? firstMilestone.first_unlock_image_url
+            : null;
+
+        if (categoryImgUrl) {
+            const catImg = document.createElement("img");
+            catImg.src = categoryImgUrl;
+            catImg.alt = category;
+            catImg.style.width = "20px";
+            catImg.style.height = "20px";
+            catImg.style.objectFit = "contain";
+            catImg.style.marginRight = "6px";
+            catImg.style.verticalAlign = "middle";
+            catImg.addEventListener("error", () => { catImg.style.display = "none"; });
+            header.appendChild(catImg);
+        }
+
+        const headerText = document.createTextNode(category);
+        header.appendChild(headerText);
 
         const listDiv = document.createElement("div");
         listDiv.className = "category-group";
@@ -1752,12 +1805,51 @@ function initSidebar() {
             tab.dataset.graphId = graph.id;
             tab.dataset.graphName = graph.name.toLowerCase();
 
-            const iconPath = graph.icon_item_id.replace(":", "_") + ".png";
-            tab.innerHTML = `<img src="${window.AppData.baseUrl}/images/item_textures/${iconPath}" onerror="this.src='${window.AppData.baseUrl}/images/Crafting_Table.png'"> <span class="graph-tab-text" title="${graph.name}">${graph.name}</span>`;
+            // Try to use the first unlock image of the first milestone of this graph
+            const firstMilestone = window.AppData.milestones.find(m => m.graph_id === graph.id);
+            const firstUnlockImg = firstMilestone && firstMilestone.first_unlock_image_url
+                ? firstMilestone.first_unlock_image_url
+                : null;
+
+            // Build icon_item_id candidate paths as fallback
+            const modId = graph.icon_item_id.split(":")[0];
+            const itemName = graph.icon_item_id.split(":")[1] || "";
+            const displayName = itemName.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+            const encodeSegment = (path) => {
+                const slash = path.indexOf("/");
+                if (slash !== -1) {
+                    return path.slice(0, slash + 1) + encodeURIComponent(path.slice(slash + 1));
+                }
+                return encodeURIComponent(path);
+            };
+            const candidates = [
+                encodeSegment(`${modId}/${displayName}_128x128.png`),
+                encodeSegment(`${modId}/${displayName}_168x168.png`),
+                encodeSegment(`${modId}/${displayName}_36x36.png`),
+                encodeSegment(`${modId}/${displayName}.png`),
+                encodeSegment(`${modId}/${itemName}_128x128.png`),
+                encodeSegment(`${modId}/${itemName}_168x168.png`),
+                encodeSegment(`${modId}/${itemName}_36x36.png`),
+                encodeSegment(`${modId}_${itemName}_128x128.png`),
+                encodeSegment(`${modId}_${itemName}_168x168.png`),
+                encodeSegment(`${modId}_${itemName}_36x36.png`),
+                encodeSegment(`${modId}/${itemName}.png`),
+                encodeSegment(`${modId}_${itemName}.png`),
+            ];
+            const fallbackChain = `const list=JSON.parse(this.dataset.candidates || '[]'); if(list.length > 0){this.src='${window.AppData.baseUrl}/images/item_textures/'+list[0]; this.dataset.candidates=JSON.stringify(list.slice(1));}else{this.src='${window.AppData.baseUrl}/images/Crafting_Table.png'; this.onerror=null;}`;
+
+            if (firstUnlockImg) {
+                // First unlock image, with full icon_item_id chain as fallback
+                tab.innerHTML = `<img src="${firstUnlockImg}" data-candidates='${JSON.stringify(candidates)}' onerror="${fallbackChain}"> <span class="graph-tab-text" title="${graph.name}">${graph.name}</span>`;
+            } else {
+                // No unlock found — fall back to icon_item_id candidates directly
+                tab.innerHTML = `<img src="${window.AppData.baseUrl}/images/item_textures/${candidates[0]}" data-candidates='${JSON.stringify(candidates.slice(1))}' onerror="${fallbackChain}"> <span class="graph-tab-text" title="${graph.name}">${graph.name}</span>`;
+            }
 
             tab.addEventListener("click", () => switchGraph(graph.id));
             listDiv.appendChild(tab);
         });
+
 
         groupWrapper.appendChild(header);
         groupWrapper.appendChild(listDiv);

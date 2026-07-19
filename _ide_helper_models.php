@@ -66,9 +66,12 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereX($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereY($value)
  * @mixin \Eloquent
+ * @property int|null $graph_id
+ * @property-read \App\Models\ProgressionGraph|null $graph
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Progression> $progressions
  * @property-read int|null $progressions_count
  * @property-read \App\Models\Stage|null $stage
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Milestone whereGraphId($value)
  */
 	class Milestone extends \Eloquent {}
 }
@@ -259,11 +262,23 @@ namespace App\Models{
 /**
  * 
  *
+ * @property int $id
+ * @property string $name
+ * @property string $icon_item_id
+ * @property array<array-key, mixed>|null $categories
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Milestone> $milestones
  * @property-read int|null $milestones_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph whereCategories($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph whereIconItemId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ProgressionGraph whereUpdatedAt($value)
  */
 	class ProgressionGraph extends \Eloquent {}
 }
@@ -473,6 +488,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereSoloProgressionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTeamId($value)
  * @mixin \Eloquent
+ * @property string|null $last_connection
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastConnection($value)
  */
 	class User extends \Eloquent {}
 }

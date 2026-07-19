@@ -48,6 +48,7 @@ RUN apk add --no-cache \
     postgresql-client \
     libpq-dev \
     bash \
+    rsync \
     && docker-php-ext-install zip pdo pdo_pgsql pgsql opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 

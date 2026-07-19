@@ -17,3 +17,5 @@ yarn-error.log
 /.fleet
 /.idea
 data/
+/public/images/item_textures/
+

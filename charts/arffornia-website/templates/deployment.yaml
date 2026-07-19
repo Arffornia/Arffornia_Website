@@ -91,9 +91,15 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
+          {{- if or .Values.volumeMounts .Values.itemTextures.persistence.enabled }}
           volumeMounts:
+            {{- if .Values.itemTextures.persistence.enabled }}
+            - name: item-textures
+              mountPath: {{ .Values.itemTextures.persistence.mountPath }}
+            {{- end }}
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- end }}
 
         - name: {{ .Chart.Name }}-frontend
@@ -140,14 +146,25 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
+          {{- if or .Values.volumeMounts .Values.itemTextures.persistence.enabled }}
           volumeMounts:
+            {{- if .Values.itemTextures.persistence.enabled }}
+            - name: item-textures
+              mountPath: {{ .Values.itemTextures.persistence.mountPath }}
+            {{- end }}
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
           {{- end }}
-      {{- with .Values.volumes }}
       volumes:
+        {{- if .Values.itemTextures.persistence.enabled }}
+        - name: item-textures
+          persistentVolumeClaim:
+            claimName: {{ include "arffornia-website.fullname" . }}-item-textures
+        {{- end }}
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
