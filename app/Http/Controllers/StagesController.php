@@ -61,6 +61,7 @@ class StagesController extends Controller
                     'y' => $milestone->y,
                     'stage_number' => $milestone->stage ? $milestone->stage->number : 1,
                     'first_unlock_image_url' => $firstUnlock ? $firstUnlock->image_url : null,
+                    'first_unlock_item_id' => $firstUnlock ? $firstUnlock->item_id : null,
                 ];
             }),
             'milestone_closure' => MilestoneClosure::all(),
@@ -301,6 +302,7 @@ class StagesController extends Controller
                     'y' => $milestone->y,
                     'stage_number' => $stageNumber,
                     'first_unlock_image_url' => $firstUnlock ? $firstUnlock->image_url : null,
+                    'first_unlock_item_id' => $firstUnlock ? $firstUnlock->item_id : null,
                 ];
             }),
             'milestone_closure' => MilestoneClosure::all()->map(function ($closure) {
