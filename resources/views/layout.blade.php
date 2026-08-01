@@ -24,7 +24,7 @@
         </div>
 
         <div class="contentContainer">
-            <a href="#">Map</a>
+            <a href="https://map.arffornia.com/">Map</a>
             <a href="/news">News</a>
             <a href="/vote">Vote</a>
             <a href="/shop">Boutique</a>
