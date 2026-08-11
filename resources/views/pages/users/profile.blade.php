@@ -29,10 +29,10 @@
 
                     <p class="lastConnexion">
                         <span class="sectionTitle">Last connexion :</span>
-                        @if ($user->last_connexion == null)
+                        @if ($user->last_connection == null)
                             Never connected
                         @else
-                            {{ $user->last_connexion }}
+                            {{ $user->last_connection }}
                         @endif
                     </p>
 
