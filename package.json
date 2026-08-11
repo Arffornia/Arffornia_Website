@@ -19,7 +19,7 @@
         "vite": "^6.3"
     },
     "dependencies": {
-        "express": "^4.21.2",
+        "express": "^4.22.1",
         "skinview3d": "^3.0.1"
     },
     "name": "arffornia_website",
