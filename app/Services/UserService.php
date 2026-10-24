@@ -2,14 +2,16 @@
 
 namespace App\Services;
 
+use App\Models\PendingReward;
 use App\Models\User;
 use App\Repositories\UserRepository;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Database\Eloquent\Collection;
-
-use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
+use Arffornia\MinecraftOauth\MinecraftOauth;
+use DateTime;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class UserService
 {
@@ -207,5 +209,55 @@ class UserService
         }
 
         return $user;
+    }
+
+    /**
+     * Update Player Streak if this is their first connection of the day.
+     * Automatically grants a Streak Key as a pending reward.
+     *
+     * @param User $user
+     * @return bool
+     */
+    public function updateDayStreak(User $user): bool
+    {
+        $lastConnection = $user->last_connection;
+        $now = now();
+        $isFirstDay = false;
+
+        if ($lastConnection === null) {
+            $user->day_streak = 1;
+            $isFirstDay = true;
+        } else {
+            $lastConnectionFormatted = \Carbon\Carbon::parse($lastConnection);
+            if (!$lastConnectionFormatted->isToday()) {
+                // If last connection was yesterday, keep the streak going
+                if ($lastConnectionFormatted->isYesterday()) {
+                    $user->day_streak++;
+                } else {
+                    $user->day_streak = 1;
+                }
+                $isFirstDay = true;
+            }
+        }
+
+        $user->last_connection = $now;
+        $user->save();
+
+        // If it's the first connection of the day, give the Streak Key
+        if ($isFirstDay) {
+            // Multiplier: Week 1 = 1 key, Week 2 = 2 keys, etc.
+            $weekMultiplier = (int) ceil($user->day_streak / 7);
+
+            // Generate the command to give the keys
+            $command = "give {player} arffornia:streak_key " . $weekMultiplier;
+
+            PendingReward::create([
+                'user_id' => $user->id,
+                'commands' => [$command],
+                'status' => 'pending'
+            ]);
+        }
+
+        return $isFirstDay;
     }
 }

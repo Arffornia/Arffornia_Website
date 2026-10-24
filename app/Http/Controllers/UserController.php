@@ -170,6 +170,39 @@ class UserController extends Controller
     }
 
     /**
+     * Update Player Streak if this is their first connection of the day
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function updateDayStreak(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'player_uuid' => 'required|string|size:32',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $data = $validator->validated();
+        $playerUuid = $this->userService->getCleanPlayerUuid($data['player_uuid']);
+
+        $user = $this->userService->getUserByUuid($playerUuid);
+
+        if (!$user) {
+            return response()->json(['error' => 'Player not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $isFirstDayConnection = $this->userService->updateDayStreak($user);
+
+        return response()->json([
+            'day_streak' => $user->day_streak,
+            'is_first_day_connection' => $isFirstDayConnection,
+        ]);
+    }
+
+    /**
      * Redirect the user to the MS auth
      *
      * @return RedirectResponse
@@ -363,5 +396,26 @@ class UserController extends Controller
             Log::error("Failed to create user on first join for UUID {$cleanUuid}: " . $e->getMessage());
             return response()->json(['message' => 'Failed to create user.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function claimStreak(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'player_uuid' => 'required|string|size:32',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $playerUuid = $this->userService->getCleanPlayerUuid($request->input('player_uuid'));
+        $user = $this->userService->getUserByUuid($playerUuid);
+
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Player not found.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $result = $this->userService->claimDayStreak($user);
+        return response()->json($result);
     }
 }

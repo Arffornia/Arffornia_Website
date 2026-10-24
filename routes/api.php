@@ -115,4 +115,8 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(f
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,user_editor'])->group(function () {
     Route::post('/player/ensure-exists', [UserController::class, 'ensurePlayerExists']);
+
+    // Day Streak
+    Route::post('/day-streak', [UserController::class, 'updateDayStreak']);
+    Route::post('/day-streak/claim', [UserController::class, 'claimStreak']);
 });
