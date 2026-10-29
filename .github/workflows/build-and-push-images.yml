@@ -8,6 +8,17 @@ on:
       - main
     tags:
       - "v*.*.*"
+  # Build (without pushing or signing) on PRs so a broken image is caught before merge
+  pull_request:
+    paths:
+      - "prod.Dockerfile"
+      - "nginx.Dockerfile"
+      - ".dockerignore"
+      - "composer.json"
+      - "composer.lock"
+      - "package.json"
+      - "package-lock.json"
+      - ".docker/**"
 
 env:
   REGISTRY: ghcr.io
