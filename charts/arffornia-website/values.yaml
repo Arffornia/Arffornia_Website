@@ -6,6 +6,9 @@ images:
     repository: ghcr.io/arffornia/nginx_arffornia_website
     pullPolicy: Always
     tag: ""
+    # Port nginx listens on inside the pod. Must be > 1024 because nginx runs as a non-root user.
+    # The Service still exposes `service.port` (80) and targets this port by name.
+    port: 8080
 
   # Image of the Laravel app used
   backend:
@@ -19,8 +22,16 @@ images:
 syncServiceAccounts:
   enabled: false
 
-# If enabled, the application will run database migrations and seed the database on startup.
-migrateAndSeedDB:
+# If enabled, pending database migrations are applied on startup with `php artisan migrate --force`
+# (non-destructive: existing tables and data are kept).
+migrations:
+  enabled: false
+
+# DANGER: if enabled, every pod start runs `php artisan migrate:fresh --seed --force`, which DROPS ALL
+# TABLES and reseeds demo data. Only for throwaway environments. Never enable it in production.
+# (Seeding needs dev dependencies, which production images do not ship.)
+# This replaces the former `migrateAndSeedDB` option; setting `migrateAndSeedDB.enabled` now fails the render.
+dangerouslyResetDatabase:
   enabled: false
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -32,8 +43,8 @@ fullnameOverride: ""
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: true
+  # Automatically mount a ServiceAccount's API credentials? The app does not call the Kubernetes API.
+  automount: false
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
@@ -47,26 +58,47 @@ podAnnotations: {}
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels: {}
 
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext:
+  runAsNonRoot: true
+  # www-data in the php:alpine image; gives the backend write access to mounted volumes
+  fsGroup: 82
+  fsGroupChangePolicy: OnRootMismatch
+  seccompProfile:
+    type: RuntimeDefault
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
-  # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
+# Applied to both containers, then merged with the per-container values below.
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  # readOnlyRootFilesystem needs writable emptyDirs for storage/, bootstrap/cache and nginx temp dirs (follow-up).
+  readOnlyRootFilesystem: false
 
+# php-fpm runs as www-data (uid/gid 82 in php:*-alpine).
+backendSecurityContext:
+  runAsUser: 82
+  runAsGroup: 82
+
+# nginx runs as the nginx user (uid/gid 101 in nginx:*-alpine).
+frontendSecurityContext:
+  runAsUser: 101
+  runAsGroup: 101
+
+# Environment of the Laravel (backend) container only.
 env: []
   # - name: MY_DOMAIN
   #   value: "example.com"
 
+# Secrets and ConfigMaps for the Laravel (backend) container only. They are not given to nginx.
 envFrom: []
 # - secretRef:
 #     name: my-secret
 # - configMapRef:
 #     name: my-config-map
+
+# Extra environment for the nginx (frontend) container.
+frontendEnv: []
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
@@ -104,7 +136,8 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+# Liveness and readiness probes of the nginx (frontend) container. php-fpm speaks FastCGI, not HTTP.
+# More information: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 liveness:
   enabled: false
   spec:

@@ -18,6 +18,12 @@ ENV TARGET_HOST=127.0.0.1 \
 
 COPY .docker/nginx/nginx_template_local.conf /etc/nginx/conf.d/default.conf.template
 
+# Allow running as the unprivileged nginx user (uid 101), as the Helm chart does:
+# pid file in /tmp, writable cache and conf.d (the config is rendered at start-up).
+# The image still runs as root by default, so existing deployments keep working.
+RUN sed -i 's#^pid .*#pid /tmp/nginx.pid;#' /etc/nginx/nginx.conf \
+    && chown -R nginx:nginx /var/cache/nginx /etc/nginx/conf.d
+
 # Copy built assets from the frontend build stage
 COPY --from=npm-builder /app/public /var/www/html/public
 
