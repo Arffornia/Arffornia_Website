@@ -97,13 +97,6 @@ class RateLimitTest extends TestCase
         $this->actingAs($second)->postJson('/shop/buy/999')->assertStatus(404);
     }
 
-    public function test_api_shop_buy_is_limited_per_user(): void
-    {
-        Sanctum::actingAs($this->user(), ['user']);
-
-        $this->assertLimitedAfter(2, fn () => $this->postJson('/api/shop/buy/999'));
-    }
-
     public function test_vote_verify_is_limited_per_user(): void
     {
         $user = $this->user();

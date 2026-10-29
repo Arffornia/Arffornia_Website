@@ -18,7 +18,7 @@ return [
     // POST /api/auth/token/session (per user, called on shop and stages page loads)
     'session_token' => (int) env('RATE_LIMIT_SESSION_TOKEN', 30),
 
-    // POST /shop/buy/{item} and /api/shop/buy/{item} (per user)
+    // POST /shop/buy/{item} (per user)
     'shop_buy' => (int) env('RATE_LIMIT_SHOP_BUY', 10),
 
     // POST /vote/verify (per user)

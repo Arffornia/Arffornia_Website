@@ -34,7 +34,6 @@ Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJ
 Route::get('shop/newest/{size}', [ShopItemsController::class, 'newestJson']);
 Route::get('shop/sales/{size}', [ShopItemsController::class, 'salesJson']);
 Route::get('shop/item/{item}', [ShopItemsController::class, 'itemDetailsJson']);
-Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItem'])->middleware(['auth:sanctum', 'throttle:shop-buy']);
 
 // Get auth token routes:
 Route::post('/auth/token/session', [UserController::class, 'getAuthTokenBySession'])->middleware(['auth:sanctum', 'throttle:session-token']);
@@ -89,7 +88,6 @@ Route::middleware(['auth:sanctum', 'anyRole:nuvotifier_service'])->group(functio
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
-    Route::post('/teams/create', [TeamController::class, 'create']);
     Route::post('/teams/player/join', [TeamController::class, 'playerJoin']);
     Route::post('/teams/player/leave', [TeamController::class, 'playerLeave']);
     Route::post('/teams/disband', [TeamController::class, 'disband']);
