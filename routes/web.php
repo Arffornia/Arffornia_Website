@@ -38,11 +38,11 @@ Route::get('news/{newsId}', [NewsController::class, 'newsView']);
 // Shop
 Route::get('shop', [ShopController::class, 'shopView']);
 Route::get('shop/{item}', [ShopController::class, 'shopItemView'])->name('shop.item');
-Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItemWeb'])->middleware('auth')->name('shop.buy');
+Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItemWeb'])->middleware(['auth', 'throttle:shop-buy'])->name('shop.buy');
 
 // Vote
 Route::get('/vote', [VoteController::class, 'showVotePage'])->name('vote.page');
-Route::post('/vote/verify', [VoteController::class, 'verifyVote'])->middleware('auth')->name('vote.verify');
+Route::post('/vote/verify', [VoteController::class, 'verifyVote'])->middleware(['auth', 'throttle:vote-verify'])->name('vote.verify');
 
 // Authentification
 Route::get('/login/MS-Auth', [UserController::class, 'msAuth']);
