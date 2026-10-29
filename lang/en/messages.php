@@ -25,7 +25,7 @@ return [
         'thanks' => 'Thank you for your vote! Your reward is on its way.',
     ],
     'admin' => [
-        'uploaded' => 'Successfully uploaded :file!',
+        'uploaded' => 'Launcher image uploaded.',
         'updated' => 'Changes saved.',
     ],
 ];
