@@ -102,55 +102,28 @@
 
         <div class="podium homeSection">
             <div class="content">
-                <div class="p2">
-                    <p class="playerName">{{ $bestAllTimePlayers[1]->name }}</p>
+                {{-- Podium order on screen: #2, #1, #3. Missing slots are skipped when fewer than 3 players exist. --}}
+                @foreach ([1 => 'p2', 0 => 'p1', 2 => 'p3'] as $rankIndex => $podiumClass)
+                    @php($podiumPlayer = $bestAllTimePlayers[$rankIndex] ?? null)
+                    @if ($podiumPlayer)
+                        <div class="{{ $podiumClass }}">
+                            <p class="playerName">{{ $podiumPlayer->name }}</p>
 
-                    <div class="player-skin">
-                        <a href="/profile/{{ $bestAllTimePlayers[1]->name }}" title="Show profile">
-                            <canvas class="skin_viewer" data-username="{{ $bestAllTimePlayers[1]->name }}"></canvas>
-                        </a>
-                    </div>
+                            <div class="player-skin">
+                                <a href="/profile/{{ $podiumPlayer->name }}" title="Show profile">
+                                    <canvas class="skin_viewer" data-username="{{ $podiumPlayer->name }}"></canvas>
+                                </a>
+                            </div>
 
-                    <div class="shape">
-                        <div class="textContainer">
-                            <div class="rank">#2</div>
-                            <div class="score">{{ $bestAllTimePlayers[1]->progress_point }} points</div>
+                            <div class="shape">
+                                <div class="textContainer">
+                                    <div class="rank">#{{ $rankIndex + 1 }}</div>
+                                    <div class="score">{{ $podiumPlayer->progress_point }} points</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="p1">
-                    <p class="playerName">{{ $bestAllTimePlayers[0]->name }}</p>
-
-                    <div class="player-skin">
-                        <a href="/profile/{{ $bestAllTimePlayers[0]->name }}" title="Show profile">
-                            <canvas class="skin_viewer" data-username="{{ $bestAllTimePlayers[0]->name }}"></canvas>
-                        </a>
-                    </div>
-
-                    <div class="shape">
-                        <div class="textContainer">
-                            <div class="rank">#1</div>
-                            <div class="score">{{ $bestAllTimePlayers[0]->progress_point }} points</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="p3">
-                    <p class="playerName">{{ $bestAllTimePlayers[2]->name }}</p>
-
-                    <div class="player-skin">
-                        <a href="/profile/{{ $bestAllTimePlayers[2]->name }}" title="Show profile">
-                            <canvas class="skin_viewer" data-username="{{ $bestAllTimePlayers[2]->name }}"></canvas>
-                        </a>
-                    </div>
-
-                    <div class="shape">
-                        <div class="textContainer">
-                            <div class="rank">#3</div>
-                            <div class="score">{{ $bestAllTimePlayers[2]->progress_point }} points</div>
-                        </div>
-                    </div>
-                </div>
+                    @endif
+                @endforeach
             </div>
             <div class="title">
                 <p>Meilleurs joueurs</p>
