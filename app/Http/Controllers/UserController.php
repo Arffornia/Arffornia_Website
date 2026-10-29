@@ -184,10 +184,23 @@ class UserController extends Controller
      *
      * @return RedirectResponse|View
      */
-    public function msAuthCallback()
+    public function msAuthCallback(Request $request)
     {
+        if (! $this->userService->isValidOAuthState($request->query('state'))) {
+            Log::warning('Microsoft OAuth callback with a missing or invalid state.');
+
+            return redirect('/')->with('error', 'Authentication failed. Please try again.');
+        }
+
+        $code = $request->query('code');
+        if ($request->has('error') || ! is_string($code) || $code === '') {
+            Log::info('Microsoft OAuth callback without a code.', ['error' => $request->query('error')]);
+
+            return redirect('/')->with('error', 'Authentication failed. Please try again.');
+        }
+
         try {
-            $user = $this->userService->getUserFromMsAuthCallback();
+            $user = $this->userService->getUserFromMsAuthCallback($code);
 
             if ($user) {
                 return redirect('/')->with('message', 'Welcome ' . $user->name . ' !');
