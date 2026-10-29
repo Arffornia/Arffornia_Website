@@ -93,6 +93,13 @@ return [
 
     'web_default_locale' => env('APP_WEB_DEFAULT_LOCALE', 'fr'),
 
+    /*
+    | API locale (see App\Http\Middleware\SetApiLocale): `?locale=`, then the `locale` cookie, then
+    | Accept-Language, then `api_default_locale`. English by default, so clients that send nothing
+    | (the mod and the proxy use Java's HttpClient, which sends no Accept-Language) get the same text as before.
+    */
+    'api_default_locale' => env('APP_API_DEFAULT_LOCALE', 'en'),
+
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
     /*

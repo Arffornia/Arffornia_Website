@@ -63,7 +63,7 @@ class VoteController extends Controller
 
         if (!$user) {
             Log::warning("Received NuVotifier vote for non-existent user: " . $validated['username']);
-            return response()->json(['message' => 'User not found, vote ignored.'], Response::HTTP_OK);
+            return response()->json(['message' => __('api.vote.user_not_found')], Response::HTTP_OK);
         }
 
         $result = $this->voteService->recordTrustedVoteAndReward(
