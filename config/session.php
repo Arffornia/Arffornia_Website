@@ -216,4 +216,20 @@ return [
 
     'partitioned' => env('SESSION_PARTITIONED_COOKIE', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Session Serialization
+    |--------------------------------------------------------------------------
+    |
+    | "php" keeps every active session valid across the Laravel 13 upgrade.
+    | "json" (the Laravel 13 skeleton default) hardens against PHP
+    | deserialization gadget chains, but switching to it logs every user out
+    | once. The app stores no PHP objects in the session, so "json" is safe.
+    |
+    | Supported: "php", "json"
+    |
+    */
+
+    'serialization' => env('SESSION_SERIALIZATION', 'php'),
+
 ];

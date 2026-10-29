@@ -55,39 +55,39 @@ class ProgressionController extends Controller
     {
         $user = $this->getUserFromRequest($request);
         if (!$user) {
-            return response()->json(['message' => 'Player not found.'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
         }
 
         $milestoneId = $request->input('milestone_id');
         if (!is_numeric($milestoneId) || !Milestone::find($milestoneId)) {
-            return response()->json(['message' => 'Invalid milestone_id.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json(['message' => __('api.progression.invalid_milestone_id')], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $this->progressionService->addMilestone($user, $milestoneId);
-        return response()->json(['message' => 'Milestone added successfully.']);
+        return response()->json(['message' => __('api.progression.milestone_added')]);
     }
 
     public function removeMilestone(Request $request): JsonResponse
     {
         $user = $this->getUserFromRequest($request);
         if (!$user) {
-            return response()->json(['message' => 'Player not found.'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
         }
 
         $milestoneId = $request->input('milestone_id');
         if (!is_numeric($milestoneId)) {
-            return response()->json(['message' => 'Invalid milestone_id.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json(['message' => __('api.progression.invalid_milestone_id')], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $this->progressionService->removeMilestone($user, $milestoneId);
-        return response()->json(['message' => 'Milestone removed successfully.']);
+        return response()->json(['message' => __('api.progression.milestone_removed')]);
     }
 
     public function listMilestones(Request $request): JsonResponse
     {
         $user = $this->getUserFromRequest($request);
         if (!$user) {
-            return response()->json(['message' => 'Player not found.'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
         }
 
         $user->load('activeProgression');
@@ -110,15 +110,15 @@ class ProgressionController extends Controller
 
         $user = $this->getUserFromRequest($request);
         if (!$user) {
-            return response()->json(['message' => 'Player not found.'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
         }
 
         $success = $this->progressionService->setTargetMilestone($user, $validated['milestone_id'] ?? null);
 
         if ($success) {
-            return response()->json(['message' => 'Target milestone updated successfully.']);
+            return response()->json(['message' => __('api.progression.target_updated')]);
         }
 
-        return response()->json(['message' => 'Failed to update target milestone.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return response()->json(['message' => __('api.progression.target_update_failed')], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

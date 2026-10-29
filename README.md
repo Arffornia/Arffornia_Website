@@ -1,6 +1,6 @@
 # Arffornia Website
 
-Public website and central API of the Arffornia modded Minecraft server. It is a Laravel 12 monolith:
+Public website and central API of the Arffornia modded Minecraft server. It is a Laravel 13 monolith:
 the public site (home, news, rules, profiles, shop, vote, progression graph), the admin panel, and the
 REST API used by the NeoForge mod, the Velocity proxy and the launcher. It is the source of truth for
 players, progression, teams, shop and votes. Players sign in with Microsoft / Xbox Live; API callers use
@@ -10,7 +10,7 @@ Architecture docs (coming soon): https://arffornia.github.io/docs/
 
 ## Requirements
 
-- PHP 8.3 with `pdo_pgsql`, `pdo_sqlite`, `zip`, `mbstring`, `intl`
+- PHP 8.5 with `pdo_pgsql`, `pdo_sqlite`, `zip`, `mbstring`, `intl` (and `gd` for the upload tests)
 - Composer 2
 - Node.js 22 LTS and npm (Vite 8 needs Node >= 20.19)
 - PostgreSQL in production; SQLite is enough for local work and tests
@@ -88,8 +88,9 @@ Configuration is environment-driven (see `.env.example`). Main variables (no val
 | `AZURE_OAUTH_CLIENT_ID`, `AZURE_OAUTH_CLIENT_SECRET`, `AZURE_OAUTH_REDIRECT_URI` | Microsoft login |
 | `SVC_ACCOUNT_<KEY>_CLIENT_ID`, `_CLIENT_SECRET`, `_NAME`, `_ROLES` | Service accounts, synced by `php artisan app:sync-service-accounts` |
 | `VOTE_SMC_SERVER_ID` | serveurs-minecraft.org vote verification |
-| `SANCTUM_STATEFUL_DOMAINS`, `SESSION_*` | Session and Sanctum SPA auth |
-| `APP_WEB_DEFAULT_LOCALE` | Website language when the visitor has no cookie or matching `Accept-Language` (`fr` by default; API stays `en`) |
+| `SANCTUM_STATEFUL_DOMAINS`, `SESSION_*` | Session and Sanctum SPA auth. `SESSION_SERIALIZATION` is `php` (default) or `json`; changing it logs every user out once |
+| `APP_WEB_DEFAULT_LOCALE` | Website language when the visitor has no cookie or matching `Accept-Language` (`fr` by default) |
+| `APP_API_DEFAULT_LOCALE` | API language when the request has no `?locale=`, cookie or matching `Accept-Language` (`en` by default) |
 
 In Kubernetes, non-secret values come from a ConfigMap and secrets from Vault (see the `infra` repository).
 The Helm chart values are documented in `charts/arffornia-website/values.yaml`.

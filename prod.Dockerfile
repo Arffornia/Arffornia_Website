@@ -1,7 +1,7 @@
 ARG HTML_ENDPOINT="/var/www/html/"
 
 # Composer dependencies
-FROM composer:2.8.6 AS composer-builder
+FROM composer:2.10.3 AS composer-builder
 
 ARG HTML_ENDPOINT
 
@@ -38,12 +38,13 @@ COPY public ${HTML_ENDPOINT}public/
 
 RUN npm ci && npm run build
 
-FROM php:8.3-fpm-alpine AS runner
+FROM php:8.5-fpm-alpine AS runner
 
 ARG HTML_ENDPOINT
 
 WORKDIR ${HTML_ENDPOINT}
 
+# OPcache is always compiled in since PHP 8.5: only its settings are added (opcache.ini).
 RUN apk add --no-cache \
     libzip-dev \
     zip \
@@ -52,7 +53,7 @@ RUN apk add --no-cache \
     libpq-dev \
     bash \
     rsync \
-    && docker-php-ext-install zip pdo pdo_pgsql pgsql opcache \
+    && docker-php-ext-install zip pdo pdo_pgsql pgsql \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY .docker/php/opcache.ini $PHP_INI_DIR/conf.d/

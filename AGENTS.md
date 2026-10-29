@@ -4,7 +4,7 @@ Guide for AI agents and newcomers working on the Arffornia website.
 
 ## Purpose
 
-Laravel 12 monolith: public site, admin panel and the central REST API of Arffornia (players,
+Laravel 13 monolith (PHP 8.5): public site, admin panel and the central REST API of Arffornia (players,
 progression, teams, shop, votes). Consumers: the NeoForge mod (`Arffornia_Mods`), the Velocity proxy
 (`Arffornia_Proxy`) and the launcher (`Arffornia_Launcher_V.5.2`). Changing an API response shape or the
 `pending_rewards` table breaks them.
@@ -58,12 +58,14 @@ php artisan route:list --path=api
 - Every key exists in both locales with the same `:placeholders` (`tests/Unit/TranslationParityTest.php`).
 - Locale: `App\Http\Middleware\SetLocale` on the `web` group: `locale` cookie (set by the EN/FR
   switcher, `POST /locale`), then `Accept-Language`, then `APP_WEB_DEFAULT_LOCALE` (`fr`). No URL prefix.
-  API routes stay in `config('app.locale')` = `en`; do not change English strings that the mod, proxy or
-  launcher read.
+  API routes use `App\Http\Middleware\SetApiLocale`: `?locale=`, `locale` cookie, `Accept-Language`, then
+  `APP_API_DEFAULT_LOCALE` (`en`); the chosen locale is sent back in `Content-Language`. API JSON messages
+  live in `lang/{en,fr}/api.php`; keep the English lines stable (the mod and proxy send no locale).
 - JS: Blade renders the strings as JSON (`window.AppData.i18n = @json(__('shop.js'))`,
   `window.ArfforniaI18n.widgets` in the layout); `resources/js/i18n.js` has a `t()` helper.
 - Database content (news, shop items, milestones) is not translated yet (see #100).
-- `make lint` runs `scripts/lint-i18n.php`, which flags bare text in Blade. Justified exceptions go in
+- `make lint` runs `scripts/lint-i18n.php`, which flags bare text in Blade and literal `'message'`/`'error'`
+  values or `abort()` texts in controllers, middleware and services. Justified exceptions go in
   `.i18n-lint-ignore`.
 
 ## Hard rules
@@ -85,7 +87,11 @@ php artisan route:list --path=api
 
 ## Gotchas
 
-- The lock is pinned to PHP 8.3 (`config.platform.php`). Bump it together with the runtime image.
+- The lock is resolved for PHP 8.5 (`config.platform.php`). Bump it together with the runtime image
+  (`prod.Dockerfile`) and the CI `php-version` (`ci.yml`, `e2e.yml`).
+- Cache and session cookie prefixes keep the Laravel 12 formula in `config/` on purpose: the Laravel 13
+  skeleton default would log everyone out and orphan cache keys. Do not "sync" them with the skeleton.
+- OPcache is built into PHP 8.5; do not add it to `docker-php-ext-install`.
 - Production images are built with `composer install --no-dev`: faker, ignition, phpunit are absent, so
   seeders that use factories do not run in prod.
 - The mod reads `pending_rewards` over JDBC: schema changes there are cross-repo changes.

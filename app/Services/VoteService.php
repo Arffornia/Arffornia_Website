@@ -79,7 +79,7 @@ class VoteService
 
         Log::info("Recorded trusted vote for user {$user->name} from service {$serviceName}");
 
-        return ['success' => true, 'message' => 'Vote recorded successfully.'];
+        return ['success' => true, 'message' => __('api.vote.recorded')];
     }
 
     /**
