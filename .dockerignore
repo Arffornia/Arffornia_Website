@@ -14,10 +14,11 @@ auth.json
 # Local data and caches
 data/
 database/*.sqlite
-storage/logs/*
+storage/logs/*.log
 storage/framework/cache/data/*
 storage/framework/sessions/*
 storage/framework/views/*
+!storage/**/.gitignore
 bootstrap/cache/*.php
 public/hot
 public/build
