@@ -11,7 +11,7 @@ See the Quickstart in [README.md](README.md): `composer install`, `npm ci`, `.en
 1. Pick or open an issue. Behaviour changes need an issue; design questions get the `needs-decision` label.
 2. Branch from `main`: `fix/<slug>`, `feat/<slug>`, `security/<slug>`, `test/<slug>`, `ci/<slug>`, `docs/<slug>`.
 3. Commit with [Conventional Commits](https://www.conventionalcommits.org/): `fix(shop): ...`, `test(api): ...`.
-4. Run `make check` (composer validate, PHPUnit, frontend build). It is what CI runs.
+4. Run `make check` (composer validate, frontend build, PHPUnit). It is what CI runs.
 5. Open a PR using the template (What / Why / How it was tested / Risk & revert) with `Closes #n`.
 
 ## Rules
