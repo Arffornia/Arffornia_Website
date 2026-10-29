@@ -1,4 +1,32 @@
+.git/
+.github/
 vendor/
 node_modules/
 tests/
-.git/
+charts/
+
+# Local environment and secrets: never bake them into the image
+.env
+.env.*
+!.env.example
+auth.json
+
+# Local data and caches
+data/
+database/*.sqlite
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+!storage/**/.gitignore
+bootstrap/cache/*.php
+public/hot
+public/build
+public/storage
+.phpunit.cache
+.phpunit.result.cache
+
+# Editor files
+.idea/
+.vscode/
+.fleet/
