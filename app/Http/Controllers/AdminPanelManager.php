@@ -49,7 +49,8 @@ class AdminPanelManager extends Controller
     public function uploadNewLauncherImage(Request $request)
     {
         $request->validate([
-            'launcher_file' => 'required|max:2048',
+            // Images only (content-sniffed), max 2 MB
+            'launcher_file' => 'required|file|image|mimes:png,jpg,jpeg,webp|max:2048',
             'player_name' => 'nullable|string|max:255',
         ]);
 
@@ -59,7 +60,7 @@ class AdminPanelManager extends Controller
 
         $this->adminPanelService->uploadNewLauncherImage($in_prod, $file, $playerName);
 
-        return back()->with('message', 'Success to upload: ' . $file->getClientOriginalName() . ' !');
+        return back()->with('message', 'Launcher image uploaded.');
     }
 
     /**
