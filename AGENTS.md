@@ -62,7 +62,7 @@ php artisan route:list --path=api
   launcher read.
 - JS: Blade renders the strings as JSON (`window.AppData.i18n = @json(__('shop.js'))`,
   `window.ArfforniaI18n.widgets` in the layout); `resources/js/i18n.js` has a `t()` helper.
-- Database content (news, shop items, milestones) is not translated yet (see the content i18n issue).
+- Database content (news, shop items, milestones) is not translated yet (see #100).
 - `make lint` runs `scripts/lint-i18n.php`, which flags bare text in Blade. Justified exceptions go in
   `.i18n-lint-ignore`.
 
