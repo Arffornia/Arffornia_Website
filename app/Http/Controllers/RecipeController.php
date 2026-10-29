@@ -34,7 +34,7 @@ class RecipeController extends Controller
         $recipe = Recipe::where('type', $type)->first();
 
         if (!$recipe) {
-            return response()->json(['message' => 'Recipe not found.'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => __('api.recipe.not_found')], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json($recipe);

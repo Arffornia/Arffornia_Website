@@ -21,7 +21,7 @@ class CheckAnyRole
 
         if (!$user || !$user->hasAnyRole($roles)) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Forbidden'], 403);
+                return response()->json(['message' => __('api.forbidden')], 403);
             }
 
             abort(403);

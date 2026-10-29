@@ -58,12 +58,14 @@ php artisan route:list --path=api
 - Every key exists in both locales with the same `:placeholders` (`tests/Unit/TranslationParityTest.php`).
 - Locale: `App\Http\Middleware\SetLocale` on the `web` group: `locale` cookie (set by the EN/FR
   switcher, `POST /locale`), then `Accept-Language`, then `APP_WEB_DEFAULT_LOCALE` (`fr`). No URL prefix.
-  API routes stay in `config('app.locale')` = `en`; do not change English strings that the mod, proxy or
-  launcher read.
+  API routes use `App\Http\Middleware\SetApiLocale`: `?locale=`, `locale` cookie, `Accept-Language`, then
+  `APP_API_DEFAULT_LOCALE` (`en`); the chosen locale is sent back in `Content-Language`. API JSON messages
+  live in `lang/{en,fr}/api.php`; keep the English lines stable (the mod and proxy send no locale).
 - JS: Blade renders the strings as JSON (`window.AppData.i18n = @json(__('shop.js'))`,
   `window.ArfforniaI18n.widgets` in the layout); `resources/js/i18n.js` has a `t()` helper.
 - Database content (news, shop items, milestones) is not translated yet (see #100).
-- `make lint` runs `scripts/lint-i18n.php`, which flags bare text in Blade. Justified exceptions go in
+- `make lint` runs `scripts/lint-i18n.php`, which flags bare text in Blade and literal `'message'`/`'error'`
+  values or `abort()` texts in controllers, middleware and services. Justified exceptions go in
   `.i18n-lint-ignore`.
 
 ## Hard rules
