@@ -1,5 +1,5 @@
 # Stage 1: Build frontend assets
-FROM node:18-alpine3.20 AS npm-builder
+FROM node:22-alpine AS npm-builder
 
 WORKDIR /app
 
