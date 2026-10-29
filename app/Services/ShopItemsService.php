@@ -107,19 +107,19 @@ class ShopItemsService
                 ->exists();
 
             if ($isAlreadyOwned) {
-                return ['success' => false, 'message' => 'You already own this item.'];
+                return ['success' => false, 'message' => __('messages.shop.already_owned')];
             }
         }
 
         $price = $item->promo_price > 0 ? $item->promo_price : $item->real_price;
 
         if ($user->money < $price) {
-            return ['success' => false, 'message' => 'You do not have enough money.'];
+            return ['success' => false, 'message' => __('messages.shop.not_enough_money')];
         }
 
         // Ensure the item has commands to execute
         if (empty($item->commands)) {
-            return ['success' => false, 'message' => 'This item is not configured for delivery.'];
+            return ['success' => false, 'message' => __('messages.shop.not_deliverable')];
         }
 
         try {
@@ -144,9 +144,9 @@ class ShopItemsService
             });
         } catch (Exception $e) {
             report($e);
-            return ['success' => false, 'message' => 'An error occurred during the transaction. Please try again.'];
+            return ['success' => false, 'message' => __('messages.shop.transaction_error')];
         }
 
-        return ['success' => true, 'message' => 'You have successfully purchased ' . $item->name . '! Your items will be delivered in-game shortly.'];
+        return ['success' => true, 'message' => __('messages.shop.purchased', ['item' => $item->name])];
     }
 }

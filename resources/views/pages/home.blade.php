@@ -18,12 +18,12 @@
             <div class="sloganLeftContainer">
                 <div class="sloganLeftOverlay">
                     <div class="sloganTextContainer">
-                        <p>Arffornia c'est:</p>
-                        <p>+ 330 Mods</p>
-                        <p>+ 25 Paliers de progression</p>
+                        <p>{{ __('home.slogan.intro') }}</p>
+                        <p>{{ __('home.slogan.mods') }}</p>
+                        <p>{{ __('home.slogan.stages') }}</p>
                     </div>
                     <div class="sloganPlayBtnContainer">
-                        <x-dropDownBtn title="Download" :items="[
+                        <x-dropDownBtn :title="__('home.download')" :items="[
                             ['label' => 'Windows', 'url' => '/download/windows'],
                             ['label' => 'Linux', 'url' => '/download/linux'],
                             ['label' => 'Mac', 'url' => '/download/mac'],
@@ -42,7 +42,7 @@
                 ->map(function ($news) {
                     return [
                         'title' => $news->title,
-                        'description' => 'Publié le ' . $news->created_at->format('d/m/Y'),
+                        'description' => __('home.published_on', ['date' => $news->created_at->format('d/m/Y')]),
                         'image' => asset($news->imgUrl),
                         'link' => url('/news/' . $news->id),
                     ];
@@ -50,18 +50,18 @@
                 ->all();
         @endphp
 
-        <x-newsSection :blocks="$newsBlocks" see-more-link="{{ url('/news') }}" />
+        <x-newsSection :title="__('news.latest')" :blocks="$newsBlocks" see-more-link="{{ url('/news') }}" />
 
-        <x-home-presentation-section image-src="{{ asset('images/join_us.png') }}" image-alt="Une image cool"
-            overview="Survie - Build - Chill" title="🌍 Arffornia – Ton évasion après la journée"
-            description="<p>✨ Plonge dans un monde survie moddé avec plus de <strong>300 mods</strong> pour redécouvrir ce bon vieux Minecraft.</p><p>🏗️ Construis ta base en solo ou en team, de simples cabanes aux mégaprojets fous.</p><p>⚙️ Automatise et créer des machines dignes d’une usine futuriste, ou maîtrise des pouvoirs magiques.</p><p>🤝 Rencontre une communauté prête à partager fun et créativité.</p><p>😌 Du chill, des rires, et la fierté de partager tes créations.</p>" />
+        <x-home-presentation-section image-src="{{ asset('images/join_us.png') }}" :image-alt="__('home.presentation.image_alt')"
+            :overview="__('home.presentation.overview')" :title="__('home.presentation.title')"
+            :description="__('home.presentation.description')" />
 
         <div class="discord__container homeSection">
             <div class="discord__left-container">
-                <p class="default-title">Rejoins Notre Discord :</p>
+                <p class="default-title">{{ __('home.discord_title') }}</p>
                 <p class="discord__text"></p>
 
-                <img id=join-us-img src="{{ asset('images/join_us.png') }}" alt="">
+                <img id=join-us-img src="{{ asset('images/join_us.png') }}" alt="{{ __('home.discord_title') }}">
             </div>
 
 
@@ -70,35 +70,32 @@
             </div>
         </div>
 
-        <x-technoSection title="Les mods phares" :blocks="[
+        <x-technoSection :title="__('home.featured_mods.title')" :blocks="[
             [
                 'title' => 'Create',
-                'description' => 'This is Create.',
+                'description' => __('home.featured_mods.create'),
                 'image' => 'https://media.forgecdn.net/avatars/1065/184/638598725500886388.png',
             ],
             [
                 'title' => 'Applied Energistics 2',
-                'description' => 'Inventory management and Automation',
+                'description' => __('home.featured_mods.ae2'),
                 'image' => 'https://media.forgecdn.net/avatars/1025/127/638548475358792693.webp',
             ],
             [
                 'title' => 'Mekanism',
-                'description' => 'High-tech tools',
+                'description' => __('home.featured_mods.mekanism'),
                 'image' => 'https://cdn.modrinth.com/data/Ce6I4WUE/icon.png',
             ],
             [
                 'title' => 'Ender IO',
-                'description' => 'Full-featured tech mod',
+                'description' => __('home.featured_mods.enderio'),
                 'image' => 'https://media.forgecdn.net/avatars/thumbnails/6/770/64/64/635368290959736289.png',
             ],
         ]" />
 
-        <x-presentationSection image-src="{{ asset('images/palier_progres.png') }}" image-alt="Progression stage"
-            overview="Une autre façon de jouer à Minecraft" title="Paliers de progression"
-            description="<p>Débloquez de nombreux jalons, en solo ou en équipe !</br>
-            Chaque palier vous permet de progresser un peu plus dans votre aventure.</br>
-            Le but, faire découvrir de nouveaux mods ainsi qu’équilibrer les mods entre eux.</p>"
-            dir="right" />
+        <x-presentationSection image-src="{{ asset('images/palier_progres.png') }}" :image-alt="__('home.stages.image_alt')"
+            :overview="__('home.stages.overview')" :title="__('home.stages.title')"
+            :description="__('home.stages.description')" dir="right" />
 
         <div class="podium homeSection">
             <div class="content">
@@ -110,7 +107,7 @@
                             <p class="playerName">{{ $podiumPlayer->name }}</p>
 
                             <div class="player-skin">
-                                <a href="/profile/{{ $podiumPlayer->name }}" title="Show profile">
+                                <a href="/profile/{{ $podiumPlayer->name }}" title="{{ __('common.show_profile') }}">
                                     <canvas class="skin_viewer" data-username="{{ $podiumPlayer->name }}"></canvas>
                                 </a>
                             </div>
@@ -118,7 +115,7 @@
                             <div class="shape">
                                 <div class="textContainer">
                                     <div class="rank">#{{ $rankIndex + 1 }}</div>
-                                    <div class="score">{{ $podiumPlayer->progress_point }} points</div>
+                                    <div class="score">{{ __('common.points', ['count' => $podiumPlayer->progress_point]) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -126,7 +123,7 @@
                 @endforeach
             </div>
             <div class="title">
-                <p>Meilleurs joueurs</p>
+                <p>{{ __('home.best_players') }}</p>
             </div>
         </div>
 
@@ -135,17 +132,17 @@
                 <div class="sloganLeftContainer">
                     <div class="sloganLeftOverlay">
                         <div>
-                            <p id="slogan__title">A propos:</p>
+                            <p id="slogan__title">{{ __('home.about.title') }}</p>
                             <div class="slogan__text-container">
-                                <p>Arffornia est un serveur survie moddé,</p>
-                                <p> orienté build.</p>
+                                <p>{{ __('home.about.line1') }}</p>
+                                <p>{{ __('home.about.line2') }}</p>
                                 <br>
-                                <p>Construisiez votre nouvelle base,</p>
-                                <p>usine avec plus de 330 mods.</p>
+                                <p>{{ __('home.about.line3') }}</p>
+                                <p>{{ __('home.about.line4') }}</p>
                             </div>
                         </div>
                         <div class="sloganPlayBtnContainer">
-                            <a href="#"><input class="mediumPlayBtn" type="button" value="Jouer"></a>
+                            <a href="#"><input class="mediumPlayBtn" type="button" value="{{ __('home.about.play') }}"></a>
                         </div>
                     </div>
                 </div>

@@ -59,7 +59,7 @@ class AdminPanelManager extends Controller
 
         $this->adminPanelService->uploadNewLauncherImage($in_prod, $file, $playerName);
 
-        return back()->with('message', 'Success to upload: ' . $file->getClientOriginalName() . ' !');
+        return back()->with('message', __('messages.admin.uploaded', ['file' => $file->getClientOriginalName()]));
     }
 
     /**
@@ -74,7 +74,7 @@ class AdminPanelManager extends Controller
         $image->save();
 
         return response()->json([
-            'message' => 'Success to update informations.',
+            'message' => __('messages.admin.updated'),
             'in_prod' => $image->in_prod,
         ]);
     }

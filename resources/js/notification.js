@@ -50,7 +50,7 @@ export function showNotification(message, type = 'msg', duration = 7000) {
     // Populate the notification's HTML structure
     notificationElement.innerHTML = `
         <a class="close-btn">&times;</a>
-        <img class="image" src="${imageUrl}" alt="Notification Icon"/>
+        <img class="image" src="${imageUrl}" alt="${window.ArfforniaI18n?.widgets?.notification_icon ?? ''}"/>
         <p class="title">${message}</p>
         <p class="time">${timeString}</p>
     `;

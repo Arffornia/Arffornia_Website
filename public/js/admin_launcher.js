@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred. The status could not be updated.');
+                    alert(window.AdminI18n?.toggle_failed ?? 'toggle_failed');
                     this.checked = !inProd;
                 });
         });

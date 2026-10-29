@@ -117,7 +117,7 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('error', 'You have been logged out !');
+        return redirect('/')->with('error', __('messages.auth.logged_out'));
     }
 
     /**
@@ -190,14 +190,14 @@ class UserController extends Controller
             $user = $this->userService->getUserFromMsAuthCallback();
 
             if ($user) {
-                return redirect('/')->with('message', 'Welcome ' . $user->name . ' !');
+                return redirect('/')->with('message', __('messages.auth.welcome', ['name' => $user->name]));
             }
 
-            return redirect('/')->with('error', 'Could not authenticate you. Please try again.');
+            return redirect('/')->with('error', __('messages.auth.could_not_authenticate'));
         } catch (MinecraftOauthException $e) {
             Log::error('Minecraft OAuth Exception: ' . $e->getMessage());
 
-            return redirect('/')->with('error', 'Authentication failed. Please try again.');
+            return redirect('/')->with('error', __('messages.auth.failed'));
         }
     }
 

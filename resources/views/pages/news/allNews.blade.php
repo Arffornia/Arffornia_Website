@@ -9,12 +9,12 @@
     <div class="standart-page">
         <div class="news-section">
             <div class="info">
-                <p class="title-midle">Toutes les News</p>
+                <p class="title-midle">{{ __('news.all') }}</p>
             </div>
 
             <div class="content">
                 @foreach ($newsList as $news)
-                    <a href="news/{{ $news->id }}" title="Show news" class="block-link">
+                    <a href="news/{{ $news->id }}" title="{{ __('news.show_news') }}" class="block-link">
                         <div class="block">
                             <div class="img-container">
                                 <img src="{{ $news->imgUrl }}" alt="{{ $news->title }}" class="block-image" />
