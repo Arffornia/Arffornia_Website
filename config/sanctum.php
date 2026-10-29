@@ -77,7 +77,8 @@ return [
     'middleware' => [
         'authenticate_session' => Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
         'encrypt_cookies' => Illuminate\Cookie\Middleware\EncryptCookies::class,
-        'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
+        // Laravel 13 renamed the CSRF middleware; ValidateCsrfToken is now a deprecated alias of it.
+        'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
     ],
 
 ];
