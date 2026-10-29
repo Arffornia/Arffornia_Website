@@ -55,7 +55,7 @@ class UserController extends Controller
             ]);
         }
 
-        return response()->json(['error' => 'player name not found.'], Response::HTTP_NOT_FOUND);
+        return response()->json(['error' => __('api.player.name_not_found')], Response::HTTP_NOT_FOUND);
     }
 
     /**
@@ -80,7 +80,7 @@ class UserController extends Controller
             ]);
         }
 
-        return response()->json(['error' => 'player name not found.'], Response::HTTP_NOT_FOUND);
+        return response()->json(['error' => __('api.player.name_not_found')], Response::HTTP_NOT_FOUND);
     }
 
     /**
@@ -133,7 +133,7 @@ class UserController extends Controller
         }
 
         if (!$user) {
-            abort(404, 'User not found.');
+            abort(404, __('api.user.not_found'));
         }
 
         $user->load('activeProgression.maxStage');
@@ -184,10 +184,23 @@ class UserController extends Controller
      *
      * @return RedirectResponse|View
      */
-    public function msAuthCallback()
+    public function msAuthCallback(Request $request)
     {
+        if (! $this->userService->isValidOAuthState($request->query('state'))) {
+            Log::warning('Microsoft OAuth callback with a missing or invalid state.');
+
+            return redirect('/')->with('error', __('messages.auth.failed'));
+        }
+
+        $code = $request->query('code');
+        if ($request->has('error') || ! is_string($code) || $code === '') {
+            Log::info('Microsoft OAuth callback without a code.', ['error' => $request->query('error')]);
+
+            return redirect('/')->with('error', __('messages.auth.failed'));
+        }
+
         try {
-            $user = $this->userService->getUserFromMsAuthCallback();
+            $user = $this->userService->getUserFromMsAuthCallback($code);
 
             if ($user) {
                 return redirect('/')->with('message', __('messages.auth.welcome', ['name' => $user->name]));
@@ -219,14 +232,14 @@ class UserController extends Controller
             $user = $this->userService->getUserWithAccessToken($request->input('access_token'));
 
             if (!$user) {
-                return response()->json(['message' => 'Not authenticated'], 401);
+                return response()->json(['message' => __('api.auth.not_authenticated')], 401);
             }
 
             $token = $this->genApiTokenWithUserScope($user);
 
             return response()->json(['token' => $token]);
         } catch (MinecraftOauthException) {
-            return response()->json(['message' => 'Authentication failed. Please try again.'], 401);
+            return response()->json(['message' => __('api.auth.failed')], 401);
         }
     }
 
@@ -242,7 +255,7 @@ class UserController extends Controller
         $user = $request->user();
 
         if (!$user) {
-            return response()->json(['message' => 'Unauthenticated.'], 401);
+            return response()->json(['message' => __('api.auth.unauthenticated')], 401);
         }
 
         $token = $this->genApiTokenWithUserScope($user);
@@ -266,7 +279,7 @@ class UserController extends Controller
         $serviceAccount = ServiceAccount::where('client_id', $request->input('client_id'))->first();
 
         if (!$serviceAccount || !Hash::check($request->input('client_secret'), $serviceAccount->client_secret)) {
-            return response()->json(['message' => 'Invalid service account credentials'], 401);
+            return response()->json(['message' => __('api.auth.invalid_service_credentials')], 401);
         }
 
         $token = $serviceAccount->createToken(
@@ -361,7 +374,7 @@ class UserController extends Controller
             return response()->json(['status' => 'created'], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error("Failed to create user on first join for UUID {$cleanUuid}: " . $e->getMessage());
-            return response()->json(['message' => 'Failed to create user.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => __('api.user.create_failed')], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

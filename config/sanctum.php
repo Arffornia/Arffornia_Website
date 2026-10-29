@@ -46,7 +46,11 @@ return [
     |
     */
 
-    'expiration' => null,
+    // SANCTUM_EXPIRATION (minutes). Unset = tokens never expire. Before setting it, make sure every API
+    // client gets a new token on 401: the NeoForge mod caches its service token for the server lifetime.
+    'expiration' => env('SANCTUM_EXPIRATION') !== null && env('SANCTUM_EXPIRATION') !== ''
+        ? (int) env('SANCTUM_EXPIRATION')
+        : null,
 
     /*
     |--------------------------------------------------------------------------

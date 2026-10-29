@@ -34,12 +34,11 @@ Route::get('shop/bestSallers/{size}', [ShopItemsController::class, 'bestSellersJ
 Route::get('shop/newest/{size}', [ShopItemsController::class, 'newestJson']);
 Route::get('shop/sales/{size}', [ShopItemsController::class, 'salesJson']);
 Route::get('shop/item/{item}', [ShopItemsController::class, 'itemDetailsJson']);
-Route::post('shop/buy/{item}', [ShopItemsController::class, 'buyItem'])->middleware('auth:sanctum');
 
 // Get auth token routes:
-Route::post('/auth/token/session', [UserController::class, 'getAuthTokenBySession'])->middleware('auth:sanctum');;
-Route::post('/auth/token/ms', [UserController::class, 'getAuthTokenByMSAuth']);
-Route::post('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcCredentials']);
+Route::post('/auth/token/session', [UserController::class, 'getAuthTokenBySession'])->middleware(['auth:sanctum', 'throttle:session-token']);
+Route::post('/auth/token/ms', [UserController::class, 'getAuthTokenByMSAuth'])->middleware('throttle:auth-token');
+Route::post('/auth/token/svc', [UserController::class, 'getAuthTokenBySvcCredentials'])->middleware('throttle:auth-token');
 
 // Recipes
 Route::get('recipes', [RecipeController::class, 'index']);
@@ -89,7 +88,6 @@ Route::middleware(['auth:sanctum', 'anyRole:nuvotifier_service'])->group(functio
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
-    Route::post('/teams/create', [TeamController::class, 'create']);
     Route::post('/teams/player/join', [TeamController::class, 'playerJoin']);
     Route::post('/teams/player/leave', [TeamController::class, 'playerLeave']);
     Route::post('/teams/disband', [TeamController::class, 'disband']);

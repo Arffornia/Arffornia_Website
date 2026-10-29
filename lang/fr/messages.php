@@ -24,7 +24,7 @@ return [
         'thanks' => 'Merci pour ton vote ! Ta récompense arrive.',
     ],
     'admin' => [
-        'uploaded' => 'Fichier envoyé : :file !',
+        'uploaded' => 'Image du launcher envoyée.',
         'updated' => 'Modifications enregistrées.',
     ],
 ];
