@@ -4,7 +4,7 @@ Guide for AI agents and newcomers working on the Arffornia website.
 
 ## Purpose
 
-Laravel 12 monolith: public site, admin panel and the central REST API of Arffornia (players,
+Laravel 13 monolith (PHP 8.5): public site, admin panel and the central REST API of Arffornia (players,
 progression, teams, shop, votes). Consumers: the NeoForge mod (`Arffornia_Mods`), the Velocity proxy
 (`Arffornia_Proxy`) and the launcher (`Arffornia_Launcher_V.5.2`). Changing an API response shape or the
 `pending_rewards` table breaks them.
@@ -85,7 +85,11 @@ php artisan route:list --path=api
 
 ## Gotchas
 
-- The lock is pinned to PHP 8.3 (`config.platform.php`). Bump it together with the runtime image.
+- The lock is resolved for PHP 8.5 (`config.platform.php`). Bump it together with the runtime image
+  (`prod.Dockerfile`) and the CI `php-version` (`ci.yml`, `e2e.yml`).
+- Cache and session cookie prefixes keep the Laravel 12 formula in `config/` on purpose: the Laravel 13
+  skeleton default would log everyone out and orphan cache keys. Do not "sync" them with the skeleton.
+- OPcache is built into PHP 8.5; do not add it to `docker-php-ext-install`.
 - Production images are built with `composer install --no-dev`: faker, ignition, phpunit are absent, so
   seeders that use factories do not run in prod.
 - The mod reads `pending_rewards` over JDBC: schema changes there are cross-repo changes.
