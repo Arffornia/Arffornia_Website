@@ -101,52 +101,66 @@ class ShopItemsService
      */
     public function purchaseItem(User $user, ShopItem $item): array
     {
-        if ($item->is_unique) {
-            $isAlreadyOwned = UserSale::where('user_id', $user->id)
-                ->where('shop_item_id', $item->id)
-                ->exists();
-
-            if ($isAlreadyOwned) {
-                return ['success' => false, 'message' => 'You already own this item.'];
-            }
+        // Ensure the item has commands to execute
+        if (empty($item->commands)) {
+            return ['success' => false, 'message' => __('messages.shop.not_deliverable')];
         }
 
         $price = $item->promo_price > 0 ? $item->promo_price : $item->real_price;
 
-        if ($user->money < $price) {
-            return ['success' => false, 'message' => 'You do not have enough money.'];
-        }
-
-        // Ensure the item has commands to execute
-        if (empty($item->commands)) {
-            return ['success' => false, 'message' => 'This item is not configured for delivery.'];
-        }
-
         try {
-            DB::transaction(function () use ($user, $item, $price) {
+            // Balance and ownership are checked and updated while holding a lock on the
+            // buyer's row, so concurrent purchases by the same user are serialized.
+            $failure = DB::transaction(function () use ($user, $item, $price) {
+                /** @var User $buyer */
+                $buyer = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+
+                if ($item->is_unique) {
+                    $isAlreadyOwned = UserSale::where('user_id', $buyer->id)
+                        ->where('shop_item_id', $item->id)
+                        ->exists();
+
+                    if ($isAlreadyOwned) {
+                        return __('messages.shop.already_owned');
+                    }
+                }
+
+                if ($buyer->money < $price) {
+                    return __('messages.shop.not_enough_money');
+                }
+
                 // 1. Deduct money from the user
-                $user->money -= $price;
-                $user->save();
+                $buyer->money -= $price;
+                $buyer->save();
 
                 // 2. Log the sale
                 UserSale::create([
-                    'user_id' => $user->id,
+                    'user_id' => $buyer->id,
                     'shop_item_id' => $item->id,
                 ]);
 
                 // 3. Create the pending reward for the in-game mod to pick up
                 PendingReward::create([
-                    'user_id' => $user->id,
+                    'user_id' => $buyer->id,
                     'shop_item_id' => $item->id,
                     'commands' => $item->commands,
                     'status' => 'pending',
                 ]);
+
+                return null;
             });
         } catch (Exception $e) {
             report($e);
-            return ['success' => false, 'message' => 'An error occurred during the transaction. Please try again.'];
+            return ['success' => false, 'message' => __('messages.shop.transaction_error')];
         }
 
-        return ['success' => true, 'message' => 'You have successfully purchased ' . $item->name . '! Your items will be delivered in-game shortly.'];
+        if ($failure !== null) {
+            return ['success' => false, 'message' => $failure];
+        }
+
+        // Keep the caller's model in sync with the database
+        $user->refresh();
+
+        return ['success' => true, 'message' => __('messages.shop.purchased', ['item' => $item->name])];
     }
 }

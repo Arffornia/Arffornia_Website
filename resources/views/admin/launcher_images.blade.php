@@ -14,7 +14,7 @@
                     <div>
                         <form action="{{ route('launcherImages.upload') }}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <p class="overlay__title">Upload a new Launcher Image:</p>
+                            <p class="overlay__title">{{ __('admin.upload_title') }}</p>
 
                             <div class="overlay__entries">
                                 @if ($errors->any())
@@ -28,7 +28,7 @@
                                 @endif
 
                                 <div class="checkbox-container">
-                                    <label for="in_prod">✅ In production:</label>
+                                    <label for="in_prod">{{ __('admin.in_prod') }}</label>
                                     <x-inputCheckbox01 id="in_prod" name="in_prod" value="1"></x-inputCheckbox01>
                                 </div>
                                 @error('in_prod')
@@ -36,16 +36,16 @@
                                 @enderror
 
                                 <x-inputText01 id="player_name" name="player_name"
-                                    placeholder="Associated Player Name (Optional)"
+                                    :placeholder="__('admin.player_name')"
                                     value="{{ old('player_name') }}"></x-inputText01>
 
-                                <x-inputFile01 id="launcher_file" name="launcher_file" placeholder="Launcher file"
+                                <x-inputFile01 id="launcher_file" name="launcher_file" :placeholder="__('admin.launcher_file')"
                                     value="{{ old('launcher_file') }}"></x-inputFile01>
                             </div>
 
                             <div style="margin-top: 10%">
                                 <div class="overlay__btn-container">
-                                    <x-inputSubmit01 value="Send !"></x-inputButton01>
+                                    <x-inputSubmit01 :value="__('admin.send')"></x-inputButton01>
                                 </div>
                             </div>
                         </form>
@@ -60,14 +60,14 @@
             @foreach ($launcherImages as $launcherImage)
                 <div class="item">
                     <div class="content">
-                        <div class="name">name: <a
+                        <div class="name">{{ __('admin.name') }} <a
                                 href="/{{ $launcherImage->path }}"><b>{{ basename($launcherImage->path) }}</b></a></div>
                         <div class="in_prod">
-                            <label for="prod-{{ $launcherImage->id }}">in prod:</label>
+                            <label for="prod-{{ $launcherImage->id }}">{{ __('admin.in_prod_short') }}</label>
                             <input type="checkbox" class="prod-toggle-checkbox" id="prod-{{ $launcherImage->id }}"
                                 data-id="{{ $launcherImage->id }}" {{ $launcherImage->in_prod ? 'checked' : '' }} />
                         </div>
-                        <div class="date">date: <b>{{ $launcherImage->created_at }}</b></div>
+                        <div class="date">{{ __('admin.date') }} <b>{{ $launcherImage->created_at }}</b></div>
                     </div>
                 </div>
             @endforeach
@@ -76,5 +76,8 @@
 @endsection
 
 @section('script')
+    <script>
+        window.AdminI18n = @json(__('admin.js'));
+    </script>
     <script src="{{ asset('js/admin_launcher.js') }}" defer></script>
 @endsection

@@ -46,7 +46,7 @@ window.addEventListener('load', () => {
             }
         });
         footerInfo.innerText = footerText;
-        joinButton.innerText = 'Join';
+        joinButton.innerText = window.ArfforniaI18n?.widgets?.discord_join ?? 'discord_join';
         footer.append(footerInfo, joinButton);
         widget.style.height = height;
         widget.style.width = width;
@@ -65,7 +65,8 @@ window.addEventListener('load', () => {
         widget.append(head, body, footer);
         fetch(`https://discord.com/api/guilds/${id}/widget.json`).then((data) => {
             data.json().then((data) => {
-                count.innerHTML = `<strong>${data.presence_count - 1}</strong> Members Online`;
+                count.innerHTML = (window.ArfforniaI18n?.widgets?.discord_online ?? 'discord_online')
+                    .replace(':count', `<strong>${data.presence_count - 1}</strong>`);
                 joinButton.setAttribute('href', data.instant_invite);
                 joinButton.setAttribute('target', '_blank');
                 if (data.instant_invite === null || data.instant_invite === undefined) joinButton.remove();

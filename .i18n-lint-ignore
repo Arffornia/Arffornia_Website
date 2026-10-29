@@ -1,0 +1,5 @@
+# Allow-list for scripts/lint-i18n.php (`make lint`). Keep it short and justified.
+# text:<exact text>  ignores that text everywhere; file:<path> ignores a whole file.
+
+# Brand name (page <title>)
+text:Arffornia

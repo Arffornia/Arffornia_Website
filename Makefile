@@ -1,5 +1,5 @@
 # Thin wrappers over the native tools. `make check` is what CI runs.
-.PHONY: check lint test build fmt pint-test phpstan install
+.PHONY: check lint lint-i18n test build fmt pint-test phpstan install
 
 install:
 	composer install
@@ -8,8 +8,12 @@ install:
 # build runs before test: feature tests render Blade views that need public/build/manifest.json.
 check: lint build test
 
-lint:
+lint: lint-i18n
 	composer validate --no-check-publish
+
+# Flags user-visible text hardcoded in Blade views (allow-list: .i18n-lint-ignore)
+lint-i18n:
+	php scripts/lint-i18n.php
 
 test:
 	vendor/bin/phpunit

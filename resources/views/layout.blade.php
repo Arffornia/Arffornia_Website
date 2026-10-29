@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="UTF-8">
@@ -13,6 +13,14 @@
 
     @yield('extraHead')
 
+    {{-- Translations for public/js widgets (window.ArfforniaI18n.widgets.*) --}}
+    <script>
+        window.ArfforniaI18n = {
+            locale: @json(app()->getLocale()),
+            widgets: @json(__('widgets')),
+        };
+    </script>
+
     <title>Arffornia</title>
 </head>
 
@@ -24,24 +32,26 @@
         </div>
 
         <div class="contentContainer">
-            <a href="https://map.arffornia.com/">Map</a>
-            <a href="/news">News</a>
-            <a href="/vote">Vote</a>
-            <a href="/shop">Boutique</a>
-            <a href="/reglement">Règlement</a>
-            <a href="/stages">Paliers</a>
+            <a href="https://map.arffornia.com/">{{ __('nav.map') }}</a>
+            <a href="/news">{{ __('nav.news') }}</a>
+            <a href="/vote">{{ __('nav.vote') }}</a>
+            <a href="/shop">{{ __('nav.shop') }}</a>
+            <a href="/reglement">{{ __('nav.rules') }}</a>
+            <a href="/stages">{{ __('nav.stages') }}</a>
 
             @if (auth()->check() && auth()->user()->hasRole('admin'))
-                <a href="{{ route('adminPanel') }}">Admin Panel</a>
+                <a href="{{ route('adminPanel') }}">{{ __('nav.admin_panel') }}</a>
             @endif
         </div>
 
+        <x-localeSwitcher />
+
         <div class="profileImageContainer">
             @if (auth()->check())
-                <a href="/profile"><img id=profileImage src="https://minotar.net/avatar/{{ auth()->user()->name }}/50"
-                        alt=""></a>
+                <a href="/profile" title="{{ __('nav.profile') }}"><img id=profileImage src="https://minotar.net/avatar/{{ auth()->user()->name }}/50"
+                        alt="{{ __('nav.profile') }}"></a>
             @else
-                <a href="/login"><img id=profileImage src="https://minotar.net/avatar/Steve/50" alt=""></a>
+                <a href="/login" title="{{ __('nav.login') }}"><img id=profileImage src="https://minotar.net/avatar/Steve/50" alt="{{ __('nav.login') }}"></a>
             @endif
 
         </div>
@@ -54,7 +64,7 @@
 
 <footer>
     <div class="copyright">
-        <p>© Arffornia - Tous droits réservés</p>
+        <p>{{ __('common.copyright') }}</p>
     </div>
 </footer>
 
@@ -67,7 +77,7 @@
         } from '{{ Vite::asset('resources/js/notification.js') }}';
 
         document.addEventListener('DOMContentLoaded', () => {
-            const message = `{!! addslashes(session('message') ?? session('error')) !!}`;
+            const message = @json(session('message') ?? session('error'));
             const type = "{{ session('message') ? 'success' : 'error' }}";
 
             showNotification(message, type);
