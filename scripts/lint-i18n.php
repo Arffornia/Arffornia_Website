@@ -7,7 +7,7 @@
  *   - text nodes:          >Some words<
  *   - text-bearing attributes: title/alt/placeholder/aria-label/value="Some words"
  * Blade echoes ({{ }}, {!! !!}), directives and comments are stripped first.
- * And, in app/Http/Controllers, app/Http/Middleware and app/Services (API JSON bodies, see ADR 0008
+ * And, in app/Http/Controllers, app/Http/Middleware and app/Services (API JSON bodies, see ADR 0009
  * "Player-visible text in data and APIs"):
  *   - literal values of 'message' / 'error' keys:   ['message' => 'Some words']
  *   - literal abort() messages:                     abort(404, 'Some words')

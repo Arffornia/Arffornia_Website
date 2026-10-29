@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
  * `?locale=en|fr`, then the `locale` cookie (website pages calling the API), then Accept-Language, then
  * config('app.api_default_locale') = `en`. The chosen locale is echoed in Content-Language.
  *
- * See the decision record "Player-visible text in data and APIs" (Arffornia/docs, ADR 0008).
+ * See the decision record "Player-visible text in data and APIs" (Arffornia/docs, ADR 0009).
  */
 class SetApiLocale
 {
