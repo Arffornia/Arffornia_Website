@@ -110,6 +110,12 @@ a {
     padding-bottom: 1%;
 }
 
+.copyright .minecraft-disclaimer {
+    font-size: 85%;
+    opacity: 0.75;
+    margin-top: 0.4em;
+}
+
 /*
     Flash message
 */
