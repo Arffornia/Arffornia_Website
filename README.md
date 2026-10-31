@@ -107,4 +107,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md). Security repo
 
 ## License
 
-No license file yet (tracked in #78). `composer.json` still carries the Laravel skeleton's MIT metadata.
+Code: [MIT](LICENSE), © Brian Perret and Arffornia contributors.
+Original art assets: [CC BY 4.0](LICENSE-ASSETS); credit "Brian Perret and Arffornia contributors".
+Minecraft textures, skins, screenshots and mod logos in `public/images/` stay with their owners (listed in `LICENSE-ASSETS`).
+
+NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.
