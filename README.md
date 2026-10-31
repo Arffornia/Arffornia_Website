@@ -88,7 +88,7 @@ Configuration is environment-driven (see `.env.example`). Main variables (no val
 | `AZURE_OAUTH_CLIENT_ID`, `AZURE_OAUTH_CLIENT_SECRET`, `AZURE_OAUTH_REDIRECT_URI` | Microsoft login |
 | `SVC_ACCOUNT_<KEY>_CLIENT_ID`, `_CLIENT_SECRET`, `_NAME`, `_ROLES` | Service accounts, synced by `php artisan app:sync-service-accounts` |
 | `VOTE_SMC_SERVER_ID` | serveurs-minecraft.org vote verification |
-| `SANCTUM_STATEFUL_DOMAINS`, `SESSION_*` | Session and Sanctum SPA auth. `SESSION_SERIALIZATION` is `php` (default) or `json`; changing it logs every user out once |
+| `SANCTUM_STATEFUL_DOMAINS`, `SESSION_*` | Session and Sanctum SPA auth. `SESSION_SERIALIZATION` is `json` (default since the Laravel 13 upgrade) or `php`; changing it logs every user out once |
 | `APP_WEB_DEFAULT_LOCALE` | Website language when the visitor has no cookie or matching `Accept-Language` (`fr` by default) |
 | `APP_API_DEFAULT_LOCALE` | API language when the request has no `?locale=`, cookie or matching `Accept-Language` (`en` by default) |
 

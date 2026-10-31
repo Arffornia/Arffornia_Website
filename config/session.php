@@ -221,15 +221,15 @@ return [
     | Session Serialization
     |--------------------------------------------------------------------------
     |
-    | "php" keeps every active session valid across the Laravel 13 upgrade.
-    | "json" (the Laravel 13 skeleton default) hardens against PHP
-    | deserialization gadget chains, but switching to it logs every user out
-    | once. The app stores no PHP objects in the session, so "json" is safe.
+    | "json" (the Laravel 13 skeleton default, chosen by Brian on 2026-10-31)
+    | hardens against PHP deserialization gadget chains. The app stores no PHP
+    | objects in the session. Switching from "php" logs every user out once,
+    | which is accepted (see the deploy notes in the upgrade PR).
     |
     | Supported: "php", "json"
     |
     */
 
-    'serialization' => env('SESSION_SERIALIZATION', 'php'),
+    'serialization' => env('SESSION_SERIALIZATION', 'json'),
 
 ];
