@@ -51,9 +51,11 @@ export function showNotification(message, type = 'msg', duration = 7000) {
     notificationElement.innerHTML = `
         <a class="close-btn">&times;</a>
         <img class="image" src="${imageUrl}" alt="Notification Icon"/>
-        <p class="title">${message}</p>
+        <p class="title"></p>
         <p class="time">${timeString}</p>
     `;
+    // The message can contain user-controlled text: never parse it as HTML.
+    notificationElement.querySelector('.title').textContent = message;
 
     // Add the new notification to the top of the container
     notificationContainer.prepend(notificationElement);
