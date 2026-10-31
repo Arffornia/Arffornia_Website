@@ -22,7 +22,7 @@ progression, teams, shop, votes). Consumers: the NeoForge mod (`Arffornia_Mods`)
 | `database/migrations`, `database/factories`, `database/seeders` | Schema, factories, demo seed |
 | `resources/views`, `resources/js`, `resources/css`, `public/js` | Blade views and frontend (Vite 8) |
 | `config/` | Laravel config (`app.php` has Azure OAuth, `voting.php` vote sites) |
-| `tests/Feature`, `tests/Unit` | PHPUnit 12 |
+| `tests/Feature`, `tests/Unit` | PHPUnit 13 |
 | `prod.Dockerfile`, `nginx.Dockerfile`, `.docker/` | php-fpm and nginx images |
 | `charts/arffornia-website` | Helm chart (php-fpm + nginx in one pod) |
 | `.github/workflows` | CI, image build, Helm publish, Trivy |
