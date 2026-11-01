@@ -1,5 +1,5 @@
 @props([
-    'title' => 'Technologies',
+    'title' => null,
     'blocks' => [],
     'limit' => 3,
     'showAll' => false,
@@ -12,11 +12,11 @@
 
 <div class="techno-section">
     <div class="info">
-        <p class="title-midle">{{ $title }}</p>
+        <p class="title-midle">{{ $title ?? __('home.featured_mods.title') }}</p>
 
         @if ($total > $limit)
             <a href="?showAll=1" class="medium-btn weak-border">
-                {{ request('showAll') ? 'Voir moins' : 'Voir plus' }}
+                {{ request('showAll') ? __('news.see_less') : __('news.see_more') }}
             </a>
         @endif
     </div>

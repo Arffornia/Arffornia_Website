@@ -117,7 +117,7 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('error', 'You have been logged out !');
+        return redirect('/')->with('error', __('messages.auth.logged_out'));
     }
 
     /**
@@ -184,20 +184,33 @@ class UserController extends Controller
      *
      * @return RedirectResponse|View
      */
-    public function msAuthCallback()
+    public function msAuthCallback(Request $request)
     {
+        if (! $this->userService->isValidOAuthState($request->query('state'))) {
+            Log::warning('Microsoft OAuth callback with a missing or invalid state.');
+
+            return redirect('/')->with('error', __('messages.auth.failed'));
+        }
+
+        $code = $request->query('code');
+        if ($request->has('error') || ! is_string($code) || $code === '') {
+            Log::info('Microsoft OAuth callback without a code.', ['error' => $request->query('error')]);
+
+            return redirect('/')->with('error', __('messages.auth.failed'));
+        }
+
         try {
-            $user = $this->userService->getUserFromMsAuthCallback();
+            $user = $this->userService->getUserFromMsAuthCallback($code);
 
             if ($user) {
-                return redirect('/')->with('message', 'Welcome ' . $user->name . ' !');
+                return redirect('/')->with('message', __('messages.auth.welcome', ['name' => $user->name]));
             }
 
-            return redirect('/')->with('error', 'Could not authenticate you. Please try again.');
+            return redirect('/')->with('error', __('messages.auth.could_not_authenticate'));
         } catch (MinecraftOauthException $e) {
             Log::error('Minecraft OAuth Exception: ' . $e->getMessage());
 
-            return redirect('/')->with('error', 'Authentication failed. Please try again.');
+            return redirect('/')->with('error', __('messages.auth.failed'));
         }
     }
 

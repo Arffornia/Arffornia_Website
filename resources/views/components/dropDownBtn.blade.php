@@ -1,16 +1,16 @@
 @props([
-    'title' => 'Play',
+    'title' => null,
     'items' => [],
 ])
 
 <div class="dropdown">
     <div class="mediumPlayBtn">
-        {{ $title }} <span class="arrow-down">▼</span>
+        {{ $title ?? __('home.about.play') }} <span class="arrow-down">▼</span>
     </div>
     <div class="dropdown-content">
         @foreach ($items as $item)
             <a href="{{ $item['url'] ?? '#' }}">
-                {{ $item['label'] ?? 'Item' }}
+                {{ $item['label'] ?? '' }}
             </a>
         @endforeach
     </div>

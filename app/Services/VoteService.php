@@ -31,7 +31,7 @@ class VoteService
     {
         $siteConfig = config("voting.sites.{$siteKey}");
         if (!$siteConfig) {
-            return ['success' => false, 'message' => 'Unknown voting site.'];
+            return ['success' => false, 'message' => __('messages.vote.unknown_site')];
         }
 
         // 1. Internal Cooldown Check
@@ -40,7 +40,7 @@ class VoteService
             $cooldownEndsAt = $lastVote->created_at->addHours($siteConfig['cooldown_hours']);
             if (Carbon::now()->isBefore($cooldownEndsAt)) {
                 $timeLeft = Carbon::now()->diffForHumans($cooldownEndsAt, true);
-                return ['success' => false, 'message' => "You can vote on this site again in {$timeLeft}."];
+                return ['success' => false, 'message' => __('messages.vote.cooldown', ['time' => $timeLeft])];
             }
         }
 
@@ -48,20 +48,20 @@ class VoteService
         $verifierClass = $siteConfig['verifier_class'];
         if (!class_exists($verifierClass)) {
             Log::error("Vote Verifier class not found: {$verifierClass}");
-            return ['success' => false, 'message' => 'Server configuration error.'];
+            return ['success' => false, 'message' => __('messages.vote.server_error')];
         }
         /** @var VoteVerifierInterface $verifier */
         $verifier = app($verifierClass);
 
         if (!$verifier->verify($user, $request)) {
-            return ['success' => false, 'message' => 'We could not confirm your vote. Please try again.'];
+            return ['success' => false, 'message' => __('messages.vote.not_confirmed')];
         }
 
         // 3. Record Vote and Grant Reward
         $this->voteRepository->recordVote($user, $siteKey, $request->ip());
         $this->grantReward($user);
 
-        return ['success' => true, 'message' => 'Thank you for your vote! Your reward is on its way.'];
+        return ['success' => true, 'message' => __('messages.vote.thanks')];
     }
 
     /**

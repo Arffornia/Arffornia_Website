@@ -1,4 +1,5 @@
 import { showNotification } from "./notification.js";
+import { t } from "./i18n.js";
 
 /**
  * Stores the Sanctum API token to avoid repeated requests.
@@ -6,7 +7,7 @@ import { showNotification } from "./notification.js";
  */
 let apiToken = null;
 
-const { csrfToken, baseUrl, isAuth, bestSellerItems, initialItemId } = window.AppData;
+const { csrfToken, baseUrl, isAuth, bestSellerItems, initialItemId, i18n } = window.AppData;
 
 document.addEventListener('DOMContentLoaded', () => {
     let currentItemId = null;
@@ -38,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error fetching item details:', error);
-                detailsLoader.innerHTML = '<p class="error-message">Failed to load item details.</p>';
+                detailsLoader.innerHTML = `<p class="error-message">${t(i18n, 'load_failed')}</p>`;
             });
     };
 
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (buyButton) {
             buyButton.dataset.itemId = item.id;
             buyButton.disabled = !isAuth;
-            buyButton.title = isAuth ? '' : 'You must be logged in to purchase this item.';
+            buyButton.title = isAuth ? '' : t(i18n, 'login_required');
         }
     };
 
@@ -77,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             console.warn('No best seller items available to display by default.');
             detailsLoader.style.display = 'none';
-            detailsContent.innerHTML = '<p>No items to display.</p>';
+            detailsContent.innerHTML = `<p>${t(i18n, 'no_items')}</p>`;
             detailsContent.style.display = 'flex';
         }
     };
@@ -95,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const itemId = buyButton.dataset.itemId;
 
         const originalText = buyButton.textContent;
-        buyButton.textContent = 'Processing...';
+        buyButton.textContent = t(i18n, 'processing');
         buyButton.disabled = true;
 
         try {
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification(result.message, result.success ? 'success' : 'error');
         } catch (error) {
             console.error('Purchase error:', error);
-            showNotification('An unexpected error occurred.', 'error');
+            showNotification(t(i18n, 'unexpected_error'), 'error');
         } finally {
             buyButton.textContent = originalText;
             buyButton.disabled = false;
@@ -160,7 +161,7 @@ async function getApiToken() {
         return apiToken;
     } catch (error) {
         console.error("Token Error:", error);
-        alert("Authentication Error. Please refresh the page and try again.");
+        alert(t(i18n, 'auth_error'));
         return null;
     }
 }

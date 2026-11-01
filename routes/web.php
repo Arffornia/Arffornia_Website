@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
@@ -9,6 +10,9 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\ShopItemsController;
+
+// Language switcher (EN/FR), stores the choice in a cookie
+Route::post('/locale', [LocaleController::class, 'switch'])->name('locale.switch');
 
 // Home
 Route::get('/', [HomeController::class, 'homeView']);

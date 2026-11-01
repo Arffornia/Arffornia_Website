@@ -50,12 +50,13 @@ export function showNotification(message, type = 'msg', duration = 7000) {
     // Populate the notification's HTML structure
     notificationElement.innerHTML = `
         <a class="close-btn">&times;</a>
-        <img class="image" src="${imageUrl}" alt="Notification Icon"/>
+        <img class="image" src="${imageUrl}" alt=""/>
         <p class="title"></p>
         <p class="time">${timeString}</p>
     `;
     // The message can contain user-controlled text: never parse it as HTML.
     notificationElement.querySelector('.title').textContent = message;
+    notificationElement.querySelector('.image').alt = window.ArfforniaI18n?.widgets?.notification_icon ?? '';
 
     // Add the new notification to the top of the container
     notificationContainer.prepend(notificationElement);
