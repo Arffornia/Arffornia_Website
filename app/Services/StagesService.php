@@ -104,7 +104,7 @@ class StagesService
         $targetMilestone = Milestone::with('stage')->find($targetId);
 
         if (!$sourceMilestone || !$targetMilestone) {
-            return ['success' => false, 'message' => 'One or both milestones not found.'];
+            return ['success' => false, 'message' => __('api.stages.link_milestones_not_found')];
         }
 
         if ($sourceMilestone->stage->number > $targetMilestone->stage->number) {
@@ -117,10 +117,10 @@ class StagesService
         $link = $this->repository->createLink($sourceId, $targetId);
 
         if (!$link) {
-            return ['success' => false, 'message' => 'Link already exists.'];
+            return ['success' => false, 'message' => __('api.stages.link_exists')];
         }
 
-        return ['success' => true, 'link' => $link, 'message' => 'Link created successfully.'];
+        return ['success' => true, 'link' => $link, 'message' => __('api.stages.link_created')];
     }
 
     /**
@@ -166,10 +166,10 @@ class StagesService
     public function deleteStage(Stage $stage): array
     {
         if ($stage->milestones()->exists()) {
-            return ['success' => false, 'message' => 'Cannot delete stage: It still contains milestones.'];
+            return ['success' => false, 'message' => __('api.stages.stage_not_empty')];
         }
 
         $this->repository->deleteStage($stage);
-        return ['success' => true, 'message' => 'Stage deleted successfully.'];
+        return ['success' => true, 'message' => __('api.stages.stage_deleted')];
     }
 }

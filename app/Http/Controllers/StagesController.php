@@ -113,7 +113,7 @@ class StagesController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['message' => 'Invalid file format.', 'errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json(['message' => __('api.stages.import_invalid'), 'errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $data = $validator->validated();
@@ -259,10 +259,10 @@ class StagesController extends Controller
 
             report($e);
 
-            return response()->json(['message' => 'An error occurred during import.', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => __('api.stages.import_failed'), 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json(['message' => 'Progression data imported successfully. Please refresh the page.']);
+        return response()->json(['message' => __('api.stages.imported')]);
     }
 
     /**
@@ -275,7 +275,7 @@ class StagesController extends Controller
     {
         $user = $this->userService->getUserByUuid($playerUuid);
         if (!$user) {
-            abort(404, 'User not found');
+            abort(404, __('api.user.not_found'));
         }
 
         $user->load('activeProgression');
@@ -366,7 +366,7 @@ class StagesController extends Controller
     public function destroyGraph(\App\Models\ProgressionGraph $graph): JsonResponse
     {
         if ($graph->milestones()->exists()) {
-            return response()->json(['message' => 'Cannot delete graph: It still contains milestones.'], Response::HTTP_CONFLICT);
+            return response()->json(['message' => __('api.stages.graph_not_empty')], Response::HTTP_CONFLICT);
         }
         $graph->delete();
         return response()->json(null, Response::HTTP_NO_CONTENT);
@@ -528,7 +528,7 @@ class StagesController extends Controller
         );
 
         if (!$deleted) {
-            return response()->json(['message' => 'Link not found.'], Response::HTTP_NOT_FOUND);
+            return response()->json(['message' => __('api.stages.link_not_found')], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(null, Response::HTTP_NO_CONTENT);
@@ -716,7 +716,7 @@ class StagesController extends Controller
 
         if ($existingUnlock) {
             return response()->json([
-                'message' => 'An unlock for this item already exists for this milestone.',
+                'message' => __('api.stages.unlock_exists'),
                 'unlock' => $existingUnlock
             ], Response::HTTP_CONFLICT);
         }
@@ -750,7 +750,7 @@ class StagesController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to store unlock and recipe from game command.', ['exception' => $e->getMessage()]);
-            return response()->json(['message' => 'An error occurred while creating the unlock and its recipe.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => __('api.stages.unlock_create_failed')], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -796,11 +796,11 @@ class StagesController extends Controller
                 'milestone_id' => $milestone->id,
                 'error' => $e->getMessage()
             ]);
-            return response()->json(['message' => 'An internal error occurred.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => __('api.internal_error')], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return response()->json([
-            'message' => 'Milestone requirements have been successfully updated.',
+            'message' => __('api.stages.requirements_updated'),
             'total_items' => count($data['requirements'])
         ]);
     }
@@ -855,25 +855,30 @@ class StagesController extends Controller
                 }
 
                 $unlock->delete();
-                $movedItemType = 'Unlock';
+                $movedItemType = __('api.stages.item_type.unlock');
             } else {
                 $newRequirement = $requirement->replicate();
                 $newRequirement->milestone_id = $toMilestoneId;
                 $newRequirement->save();
 
                 $requirement->delete();
-                $movedItemType = 'Requirement';
+                $movedItemType = __('api.stages.item_type.requirement');
             }
 
             DB::commit();
 
             return response()->json([
-                'message' => "{$movedItemType} '{$itemId}' moved successfully from milestone {$fromMilestoneId} to {$toMilestoneId}."
+                'message' => __('api.stages.item_moved', [
+                    'type' => $movedItemType,
+                    'item' => $itemId,
+                    'from' => $fromMilestoneId,
+                    'to' => $toMilestoneId,
+                ])
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Failed to move milestone item: " . $e->getMessage());
-            return response()->json(['message' => 'Failed to move item. ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => __('api.stages.item_move_failed', ['error' => $e->getMessage()])], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

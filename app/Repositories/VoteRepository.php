@@ -48,7 +48,7 @@ class VoteRepository
      * @param Carbon|null $startDate
      * @return Collection
      */
-    public function getTopVoters(int $limit, Carbon $startDate = null): Collection
+    public function getTopVoters(int $limit, ?Carbon $startDate = null): Collection
     {
         $query = User::query()
             ->selectRaw('users.name, users.uuid, count(votes.id) as votes_count')
