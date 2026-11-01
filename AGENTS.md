@@ -30,7 +30,7 @@ progression, teams, shop, votes). Consumers: the NeoForge mod (`Arffornia_Mods`)
 ## Commands
 
 ```bash
-make check     # composer validate + phpunit + npm run build (what CI runs)
+make check     # composer validate + npm run build + phpunit (what CI runs)
 make test      # vendor/bin/phpunit (sqlite :memory:)
 make build     # npm run build
 make lint      # composer validate + i18n lint (scripts/lint-i18n.php)

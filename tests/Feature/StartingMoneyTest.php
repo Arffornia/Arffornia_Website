@@ -17,11 +17,11 @@ class StartingMoneyTest extends TestCase
         Stage::factory()->create();
     }
 
-    public function test_new_players_start_with_no_money_by_default(): void
+    public function test_new_players_start_with_500_by_default(): void
     {
         $user = app(UserRepository::class)->createUser('Steve', '069a79f444e94726a5befca90e38aaf5');
 
-        $this->assertSame(0, (int) $user->fresh()->money);
+        $this->assertSame(500, (int) $user->fresh()->money);
     }
 
     public function test_starting_money_is_configurable(): void
