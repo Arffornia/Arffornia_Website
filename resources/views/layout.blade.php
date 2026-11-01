@@ -67,7 +67,7 @@
         } from '{{ Vite::asset('resources/js/notification.js') }}';
 
         document.addEventListener('DOMContentLoaded', () => {
-            const message = `{!! addslashes(session('message') ?? session('error')) !!}`;
+            const message = @json(session('message') ?? session('error'));
             const type = "{{ session('message') ? 'success' : 'error' }}";
 
             showNotification(message, type);

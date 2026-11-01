@@ -1,0 +1,21 @@
+name: Bug report
+description: Something on the website or API is broken
+labels: ["type: bug", "area: website"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what you got.
+    validations:
+      required: true
+  - type: textarea
+    id: where
+    attributes:
+      label: Where
+      description: Page URL or API route, browser or client (launcher, mod, proxy).
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      render: text
