@@ -2,6 +2,8 @@
 
 return [
     'copyright' => '© Arffornia - All rights reserved',
+    // Required by the Minecraft Usage Guidelines; keep it visible on every page.
+    'minecraft_disclaimer' => 'NOT AN OFFICIAL MINECRAFT SERVICE. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.',
     'language' => 'Language',
     'switch_to' => 'Switch to :language',
     'languages' => [
