@@ -66,6 +66,11 @@
     <div class="copyright">
         <p>{{ __('common.copyright') }}</p>
         <p class="minecraft-disclaimer">{{ __('common.minecraft_disclaimer') }}</p>
+        <nav class="legal-links">
+            <a href="{{ route('legal.notice') }}">{{ __('legal.footer.notice') }}</a>
+            <a href="{{ route('legal.privacy') }}">{{ __('legal.footer.privacy') }}</a>
+            <a href="{{ route('legal.terms') }}">{{ __('legal.footer.terms') }}</a>
+        </nav>
     </div>
 </footer>
 

@@ -116,6 +116,28 @@ a {
     margin-top: 0.4em;
 }
 
+.copyright .legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4em 1.2em;
+    margin-top: 0.6em;
+}
+
+.copyright .legal-links a {
+    color: inherit;
+    opacity: 0.85;
+}
+
+.legal-page a {
+    color: #ff7300;
+}
+
+.legal-page h1,
+.legal-page h2 {
+    margin: 0;
+}
+
 /*
     Flash message
 */
