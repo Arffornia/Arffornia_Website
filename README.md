@@ -39,7 +39,7 @@ docker compose -f docker-compose-dev.yaml up --build -d
 
 | Command | What it does |
 |---|---|
-| `make check` | What CI runs: `composer validate`, PHPUnit, frontend build |
+| `make check` | What CI runs: `composer validate`, frontend build, PHPUnit |
 | `make test` | PHPUnit |
 | `make build` | Frontend build (`npm run build`) |
 | `make lint` | `composer validate` + i18n lint (hardcoded text in Blade) |

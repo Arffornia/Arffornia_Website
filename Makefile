@@ -5,7 +5,8 @@ install:
 	composer install
 	npm ci
 
-check: lint test build
+# build runs before test: feature tests render Blade views that need public/build/manifest.json.
+check: lint build test
 
 lint: lint-i18n
 	composer validate --no-check-publish
