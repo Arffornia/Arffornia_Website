@@ -134,11 +134,10 @@ class LocalizationTest extends TestCase
             ->assertSee('name="locale" value="fr"', false);
     }
 
-    public function test_api_routes_keep_english_messages(): void
+    public function test_api_routes_default_to_english_without_a_locale_hint(): void
     {
-        $this->withHeader('Accept-Language', 'fr')
-            ->withUnencryptedCookie('locale', 'fr')
-            ->getJson('/api/profile/nobody');
+        // The website's French default does not leak into the API (see SetApiLocale and ApiLocaleTest).
+        $this->getJson('/api/profile/nobody');
 
         $this->assertSame('en', app()->getLocale());
     }
