@@ -147,6 +147,6 @@ class LocalizationTest extends TestCase
         $response = $this->withUnencryptedCookie('locale', 'fr')->get('/reglement');
 
         $response->assertSee('<select name="locale" class="locale-switcher__select"', false);
-        $response->assertSee('<option value="fr" lang="fr" selected>Français</option>', false);
+        $response->assertSee('<option value="fr" lang="fr" title="Français" selected>FR</option>', false);
     }
 }
