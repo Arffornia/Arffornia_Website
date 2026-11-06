@@ -4,7 +4,7 @@
     @csrf
     <select name="locale" class="locale-switcher__select" aria-label="{{ __('common.language') }}">
         @foreach (\App\Http\Middleware\SetLocale::supported() as $supportedLocale)
-            <option value="{{ $supportedLocale }}" lang="{{ $supportedLocale }}" @selected(app()->getLocale() === $supportedLocale)>{{ __('common.languages.' . $supportedLocale) }}</option>
+            <option value="{{ $supportedLocale }}" lang="{{ $supportedLocale }}" title="{{ __('common.languages.' . $supportedLocale) }}" @selected(app()->getLocale() === $supportedLocale)>{{ strtoupper($supportedLocale) }}</option>
         @endforeach
     </select>
     <noscript><button type="submit" class="locale-switcher__submit">{{ __('common.apply') }}</button></noscript>

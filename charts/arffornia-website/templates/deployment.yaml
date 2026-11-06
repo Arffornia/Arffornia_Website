@@ -1,3 +1,8 @@
+{{- if .Values.migrateAndSeedDB }}
+{{- if .Values.migrateAndSeedDB.enabled }}
+{{- fail "migrateAndSeedDB was removed: it ran migrate:fresh (drops all tables). Use migrations.enabled for `migrate --force`, or dangerouslyResetDatabase.enabled to wipe and reseed." }}
+{{- end }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,6 +31,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "arffornia-website.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -33,7 +39,7 @@ spec:
 
       containers:
         - name: {{ .Chart.Name }}-backend
-          {{- with .Values.securityContext }}
+          {{- with (merge (deepCopy .Values.securityContext) .Values.backendSecurityContext) }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -58,9 +64,12 @@ spec:
 
               echo "Preparing application..."
 
-              {{- if .Values.migrateAndSeedDB.enabled }}
-              echo "Running database migrations and seeding..."
+              {{- if .Values.dangerouslyResetDatabase.enabled }}
+              echo "dangerouslyResetDatabase.enabled=true: DROPPING ALL TABLES and reseeding..."
               php artisan migrate:fresh --seed --force
+              {{- else if .Values.migrations.enabled }}
+              echo "Running pending database migrations..."
+              php artisan migrate --force
               {{- end }}
 
               {{- if .Values.syncServiceAccounts.enabled }}
@@ -74,18 +83,9 @@ spec:
               exec php-fpm
 
           ports:
-            - name: http
+            - name: fastcgi
               containerPort: {{ .Values.images.backend.port }}
               protocol: TCP
-
-          {{- if .Values.liveness.enabled }}
-          livenessProbe:
-            {{- toYaml .Values.liveness.spec | nindent 12 }}
-          {{- end }}
-          {{- if .Values.readiness.enabled }}
-          readinessProbe:
-            {{- toYaml .Values.readiness.spec | nindent 12 }}
-          {{- end }}
 
           {{- with .Values.resources }}
           resources:
@@ -103,35 +103,29 @@ spec:
           {{- end }}
 
         - name: {{ .Chart.Name }}-frontend
-          {{- with .Values.securityContext }}
+          {{- with (merge (deepCopy .Values.securityContext) .Values.frontendSecurityContext) }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.images.frontend.repository }}:{{ .Values.images.frontend.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.images.frontend.pullPolicy }}
 
-          {{- with .Values.env }}
-          env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-
-          {{- with .Values.envFrom }}
-          envFrom:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-
+          # nginx only needs its own settings: application env and secrets (env/envFrom) go to the backend only.
           env:
             - name: TARGET_HOST
               value: {{ .Values.images.backend.host | default "127.0.0.1" | quote }}
             - name: TARGET_PORT
               value: {{ .Values.images.backend.port | default 9000 | quote }}
             - name: LISTEN_PORT
-              value: {{ .Values.service.port | quote }}
+              value: {{ .Values.images.frontend.port | quote }}
+            {{- with .Values.frontendEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+
+          ports:
+            - name: http
+              containerPort: {{ .Values.images.frontend.port }}
+              protocol: TCP
 
           {{- if .Values.liveness.enabled }}
           livenessProbe:
