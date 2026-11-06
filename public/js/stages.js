@@ -23,6 +23,21 @@ const INITIAL_OFFSET_Y = -500;
 const { graphs, milestones, milestone_closure, isAdmin, csrfToken, baseUrl } =
     window.AppData;
 
+/**
+ * Translates a key from window.AppData.i18n (rendered from lang/{locale}/stages.php `js`).
+ * @param {string} key
+ * @param {object} [replace] Values for `:name` placeholders.
+ * @returns {string}
+ */
+function t(key, replace = {}) {
+    const dict = window.AppData.i18n || {};
+    let line = typeof dict[ key ] === "string" ? dict[ key ] : key;
+    for (const [ name, value ] of Object.entries(replace)) {
+        line = line.split(`:${name}`).join(String(value));
+    }
+    return line;
+}
+
 // Constants for grid calculations
 const GRID_CELL_SPACING = 80;
 const NODE_CONTENT_DIAMETER = 70;
@@ -243,7 +258,7 @@ function setupEventListeners() {
             closeItemModal();
         } catch (error) {
             console.error("Failed to save item:", error);
-            alert("Error: " + error.message);
+            alert(t("error", { message: error.message }));
         }
     });
 
@@ -254,7 +269,7 @@ function setupEventListeners() {
             openItemModal(itemType, itemId);
         }
         if (e.target.matches(".item-action-btn.delete")) {
-            if (!confirm("Are you sure you want to delete this item?")) return;
+            if (!confirm(t("confirm_delete_item"))) return;
 
             const itemId = e.target.dataset.itemId;
             const itemType = e.target.dataset.itemType;
@@ -275,7 +290,7 @@ function setupEventListeners() {
                 );
             } catch (error) {
                 console.error(error);
-                alert("Error deleting item.");
+                alert(t("delete_item_failed"));
             }
         }
 
@@ -313,12 +328,12 @@ function setupAdminEventListeners() {
     document.getElementById("addGraphBtn").addEventListener("click", () => {
         graphForm.reset();
         document.getElementById("graph-modal-id").value = "";
-        document.getElementById("graph-modal-title").textContent = "Add Graph";
+        document.getElementById("graph-modal-title").textContent = t("add_graph");
         graphModal.classList.remove("modal-hidden");
     });
 
     document.getElementById("editGraphBtn").addEventListener("click", () => {
-        if (!currentGraphId) return alert("Please select a graph from the sidebar first.");
+        if (!currentGraphId) return alert(t("select_graph_first"));
         const graph = window.AppData.graphs.find(g => g.id === currentGraphId);
         if (!graph) return;
 
@@ -326,13 +341,13 @@ function setupAdminEventListeners() {
         document.getElementById("graph-modal-name").value = graph.name;
         document.getElementById("graph-modal-icon").value = graph.icon_item_id;
         document.getElementById("graph-modal-categories").value = graph.categories ? graph.categories.join(', ') : '';
-        document.getElementById("graph-modal-title").textContent = "Edit Graph";
+        document.getElementById("graph-modal-title").textContent = t("edit_graph");
         graphModal.classList.remove("modal-hidden");
     });
 
     document.getElementById("deleteGraphBtn").addEventListener("click", async () => {
-        if (!currentGraphId) return alert("Please select a graph from the sidebar first.");
-        if (!confirm("Are you sure you want to delete this graph? It MUST not contain any milestones.")) return;
+        if (!currentGraphId) return alert(t("select_graph_first"));
+        if (!confirm(t("confirm_delete_graph"))) return;
 
         const token = await getApiToken();
         if (!token) return;
@@ -345,13 +360,13 @@ function setupAdminEventListeners() {
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.message || "Failed to delete graph.");
+                throw new Error(data.message || t("delete_graph_failed"));
             }
 
             const index = window.AppData.graphs.findIndex(g => g.id === currentGraphId);
             if (index > -1) window.AppData.graphs.splice(index, 1);
 
-            alert("Graph deleted successfully.");
+            alert(t("graph_deleted"));
             currentGraphId = null;
             localStorage.removeItem('lastGraphId');
             initSidebar();
@@ -458,7 +473,7 @@ async function handleDeleteLinkByClick(pathElement) {
 
     if (
         !confirm(
-            `Are you sure you want to delete the link from node ${sourceId} to ${targetId}?`,
+            t("confirm_delete_link", { source: sourceId, target: targetId }),
         )
     ) {
         return;
@@ -476,7 +491,7 @@ async function handleDeleteLinkByClick(pathElement) {
 
         if (!response.ok) {
             throw new Error(
-                `Failed to delete link. Server status: ${response.status}`,
+                t("delete_link_failed", { status: response.status }),
             );
         }
 
@@ -492,7 +507,7 @@ async function handleDeleteLinkByClick(pathElement) {
         console.log("Link deleted successfully!");
     } catch (error) {
         console.error("Delete Link Error:", error);
-        alert(`Error: ${error.message}`);
+        alert(t("error", { message: error.message }));
     }
 }
 
@@ -502,15 +517,15 @@ async function handleDeleteLinkByClick(pathElement) {
  */
 async function handleAddNode(event) {
     if (!currentGraphId) {
-        alert("Please select a graph from the sidebar first before adding a milestone.");
+        alert(t("select_graph_before_milestone"));
         return;
     }
 
-    const name = prompt("Enter new node name:", "New Milestone");
+    const name = prompt(t("prompt_node_name"), t("default_node_name"));
     if (!name) return;
-    const stageId = prompt("Enter Stage ID:", "1");
+    const stageId = prompt(t("prompt_stage_id"), "1");
     if (!stageId || isNaN(parseInt(stageId))) {
-        alert("Invalid Stage ID.");
+        alert(t("invalid_stage_id"));
         return;
     }
 
@@ -523,7 +538,7 @@ async function handleAddNode(event) {
 
     const newNodeData = {
         name,
-        description: "A new adventure begins...",
+        description: t("default_node_description"),
         stage_id: parseInt(stageId),
         graph_id: currentGraphId,
         icon_type: "default",
@@ -558,7 +573,7 @@ async function handleAddNode(event) {
         console.log("Node created successfully!");
     } catch (error) {
         console.error("Add Node Error:", error);
-        alert(`Error creating node: ${error.message}`);
+        alert(t("create_node_failed", { message: error.message }));
     }
 }
 
@@ -569,7 +584,7 @@ async function handleAddNode(event) {
 async function handleDeleteNode(nodeId) {
     if (
         !confirm(
-            `Are you sure you want to delete node ${nodeId}? This will also remove all its links. This cannot be undone.`,
+            t("confirm_delete_node", { id: nodeId }),
         )
     )
         return;
@@ -597,7 +612,7 @@ async function handleDeleteNode(nodeId) {
         console.log("Node deleted successfully!");
     } catch (error) {
         console.error("Delete Node Error:", error);
-        alert(`Error deleting node: ${error.message}`);
+        alert(t("delete_node_failed", { message: error.message }));
     }
 }
 
@@ -635,9 +650,9 @@ async function handleLinkNode(targetNodeEl) {
             });
             if (!response.ok) {
                 if (response.status === 409)
-                    throw new Error("Link already exists!");
+                    throw new Error(t("link_exists"));
                 throw new Error(
-                    `Failed to link nodes. Status: ${response.status}`,
+                    t("link_failed", { status: response.status }),
                 );
             }
 
@@ -650,7 +665,7 @@ async function handleLinkNode(targetNodeEl) {
             console.log(`Linked ${sourceId} to ${targetId}`);
         } catch (error) {
             console.error(`Link Error:`, error);
-            alert(`Error: ${error.message}`);
+            alert(t("error", { message: error.message }));
         } finally {
             resetSelection();
         }
@@ -668,9 +683,9 @@ function handleAddStage() {
  * Handles deleting a stage by prompting for its NUMBER.
  */
 async function handleDeleteStage() {
-    const stageNumber = prompt("Enter the NUMBER of the stage to delete:");
+    const stageNumber = prompt(t("prompt_stage_number"));
     if (!stageNumber || isNaN(parseInt(stageNumber))) {
-        alert("Invalid stage number provided.");
+        alert(t("invalid_stage_number"));
         return;
     }
 
@@ -680,13 +695,13 @@ async function handleDeleteStage() {
     );
 
     if (!stageToDelete) {
-        alert(`Stage with number ${stageNumber} not found.`);
+        alert(t("stage_not_found", { number: stageNumber }));
         return;
     }
 
     if (
         !confirm(
-            `Are you sure you want to delete Stage ${stageNumber} (ID: ${stageToDelete.id})? This will only work if no milestones are assigned to it.`,
+            t("confirm_delete_stage", { number: stageNumber, id: stageToDelete.id }),
         )
     ) {
         return;
@@ -707,7 +722,7 @@ async function handleDeleteStage() {
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(
-                errorData.message || `Server responded with ${response.status}`,
+                errorData.message || t("server_status", { status: response.status }),
             );
         }
 
@@ -717,10 +732,10 @@ async function handleDeleteStage() {
         if (index > -1) {
             window.AppData.stages.splice(index, 1);
         }
-        alert(`Stage ${stageNumber} deleted successfully.`);
+        alert(t("stage_deleted", { number: stageNumber }));
     } catch (error) {
         console.error("Delete Stage Error:", error);
-        alert(`Error deleting stage: ${error.message}`);
+        alert(t("delete_stage_failed", { message: error.message }));
     }
 }
 
@@ -734,7 +749,7 @@ function openStageModal() {
     const nextNumber =
         Math.max(...window.AppData.stages.map((s) => s.number), 0) + 1;
     document.getElementById("stage-modal-title").textContent =
-        `Create Stage #${nextNumber}`;
+        t("create_stage_title", { number: nextNumber });
     document.getElementById("stage-modal-id").value = ""; // Clear ID for creation
 }
 
@@ -776,7 +791,7 @@ async function handleGraphFormSubmit(e) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to save graph.");
+            throw new Error(errorData.message || t("save_graph_failed"));
         }
 
         const savedGraph = await response.json();
@@ -788,7 +803,7 @@ async function handleGraphFormSubmit(e) {
             window.AppData.graphs.push(savedGraph);
         }
 
-        alert("Graph saved successfully!");
+        alert(t("graph_saved"));
         closeGraphModal();
         initSidebar();
 
@@ -834,12 +849,12 @@ async function handleStageFormSubmit(e) {
         const newStage = await response.json();
         window.AppData.stages.push(newStage);
         alert(
-            `Stage "${newStage.name}" (Number: ${newStage.number}) created successfully!`,
+            t("stage_created", { name: newStage.name, number: newStage.number }),
         );
         closeStageModal();
     } catch (error) {
         console.error("Failed to save stage:", error);
-        alert("Error: " + error.message);
+        alert(t("error", { message: error.message }));
     }
 }
 
@@ -918,7 +933,7 @@ function showMilestonesInfo(milestone) {
 
             const iconContentElement =
                 milestoneInfo.querySelector("#iconContent");
-            iconContentElement.title = `Milestone ID: ${data.id}`;
+            iconContentElement.title = t("milestone_id", { id: data.id });
             const firstUnlockImgUrl = data.unlocks && data.unlocks.length > 0
                 ? data.unlocks[0].image_url
                 : null;
@@ -954,7 +969,7 @@ function showMilestonesInfo(milestone) {
         .catch((err) => {
             console.error("Fetch Error:", err);
             milestoneInfo.querySelector("#milestone-title").textContent =
-                "Error loading data";
+                t("load_error");
         })
         .finally(() => {
             loader.style.display = "none";
@@ -1064,8 +1079,8 @@ function createBannedRecipeInput(value = "") {
     div.style.marginBottom = "5px";
 
     div.innerHTML = `
-        <input type="text" class="banned-recipe-value" placeholder="e.g., minecraft:stick" value="${value}" required style="flex-grow: 1;">
-        <button type="button" class="remove-btn">Remove</button>
+        <input type="text" class="banned-recipe-value" placeholder="${t("example_stick")}" value="${value}" required style="flex-grow: 1;">
+        <button type="button" class="remove-btn">${t("remove")}</button>
     `;
 
     bannedRecipesContainer.appendChild(div);
@@ -1143,7 +1158,7 @@ async function getApiToken() {
         return apiToken;
     } catch (error) {
         console.error("Token Error:", error);
-        alert("Authentication Error. Please refresh the page and try again.");
+        alert(t("auth_error"));
         return null;
     }
 }
@@ -1192,7 +1207,7 @@ async function handleExport() {
         URL.revokeObjectURL(url);
     } catch (err) {
         console.error("Export failed", err);
-        alert("Failed to export data.");
+        alert(t("export_failed"));
     }
 }
 
@@ -1204,7 +1219,7 @@ async function handleFileImport(event) {
 
     if (
         !confirm(
-            "ATTENTION: This will replace ALL existing stages, milestones, and progression data. This action cannot be undone. Are you sure you want to continue?",
+            t("confirm_import"),
         )
     ) {
         event.target.value = "";
@@ -1220,7 +1235,7 @@ async function handleFileImport(event) {
 
             const token = await getApiToken();
             if (!token) {
-                alert("Authentication error. Could not get API token.");
+                alert(t("token_error"));
                 return;
             }
 
@@ -1233,14 +1248,14 @@ async function handleFileImport(event) {
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.message || "Import failed.");
+                throw new Error(result.message || t("import_failed_generic"));
             }
 
             alert(result.message);
             window.location.reload();
         } catch (error) {
             console.error("Import Error:", error);
-            alert(`Import failed: ${error.message}`);
+            alert(t("import_failed", { message: error.message }));
         } finally {
             event.target.value = "";
         }
@@ -1347,7 +1362,7 @@ async function handleSave() {
         console.log("Milestone updated successfully!");
     } catch (error) {
         console.error("Save Error:", error);
-        alert(`Failed to save changes: ${error.message}`);
+        alert(t("save_failed", { message: error.message }));
     }
 }
 
@@ -1435,7 +1450,7 @@ async function endDragNode(e) {
         console.log(`Node ${nodeId} moved to (${gridX}, ${gridY})`);
     } catch (error) {
         console.error("Failed to update node position:", error);
-        alert("Error saving new position. Please check the console.");
+        alert(t("position_failed"));
     } finally {
         isDraggingNode = false;
         draggedNode = null;
@@ -1460,7 +1475,7 @@ function updateItemsList(items, type, container) {
     if (isEditing) {
         container.insertAdjacentHTML(
             "afterbegin",
-            `<button class="item-action-btn" id="${addBtnId}">Add New</button>`,
+            `<button class="item-action-btn" id="${addBtnId}">${t("add_new")}</button>`,
         );
         document
             .getElementById(addBtnId)
@@ -1489,12 +1504,12 @@ function updateItemsList(items, type, container) {
                 const actionsDiv = document.createElement("div");
                 actionsDiv.className = "item-actions-inline";
                 let buttons = `
-                    <button class="item-action-btn edit" data-item-id="${item.id}" data-item-type="${type}">Edit</button>
-                    <button class="item-action-btn delete" data-item-id="${item.id}" data-item-type="${type}">Delete</button>
+                    <button class="item-action-btn edit" data-item-id="${item.id}" data-item-type="${type}">${t("edit")}</button>
+                    <button class="item-action-btn delete" data-item-id="${item.id}" data-item-type="${type}">${t("delete")}</button>
                 `;
 
                 if (type === "unlocks") {
-                    buttons += `<button class="recipe-edit-btn" data-unlock-id="${item.id}">Recipe</button>`;
+                    buttons += `<button class="recipe-edit-btn" data-unlock-id="${item.id}">${t("recipe")}</button>`;
                 }
 
                 actionsDiv.innerHTML = buttons;
@@ -1503,7 +1518,7 @@ function updateItemsList(items, type, container) {
             list.appendChild(li);
         });
     } else {
-        list.innerHTML = `<li>No ${type} defined for this milestone.</li>`;
+        list.innerHTML = `<li>${t(type === "unlocks" ? "no_unlocks" : "no_requirements")}</li>`;
     }
 }
 
@@ -1520,7 +1535,7 @@ function openItemModal(type, itemId = null) {
 
     if (itemId) {
         document.getElementById("modal-title").textContent =
-            `Edit ${type.slice(0, -1)}`;
+            t(type === "unlocks" ? "edit_unlock" : "edit_requirement");
         document.getElementById("modal-item-id").value = itemId;
 
         const itemData = window.currentMilestoneData[ type ].find(
@@ -1551,7 +1566,7 @@ function openItemModal(type, itemId = null) {
         }
     } else {
         document.getElementById("modal-title").textContent =
-            `Add New ${type.slice(0, -1)}`;
+            t(type === "unlocks" ? "add_unlock" : "add_requirement");
         document.getElementById("modal-item-id").value = "";
 
         if (type === "unlocks") {
@@ -1612,12 +1627,12 @@ function addIngredientField(ingredient = {}) {
 
     div.innerHTML = `
         <select class="ingredient-type">
-            <option value="item" ${type === "item" ? "selected" : ""}>Item</option>
-            <option value="tag" ${type === "tag" ? "selected" : ""}>Tag</option>
+            <option value="item" ${type === "item" ? "selected" : ""}>${t("type_item")}</option>
+            <option value="tag" ${type === "tag" ? "selected" : ""}>${t("type_tag")}</option>
         </select>
-        <input type="text" class="ingredient-value" placeholder="e.g., minecraft:diamond" value="${value}" required>
+        <input type="text" class="ingredient-value" placeholder="${t("example_diamond")}" value="${value}" required>
         <input type="number" class="ingredient-count" min="1" value="${safeIngredient.count || 1}">
-        <button type="button" class="remove-ingredient-btn">Remove</button>
+        <button type="button" class="remove-ingredient-btn">${t("remove")}</button>
     `;
 
     container.appendChild(div);
@@ -1680,7 +1695,7 @@ async function handleRecipeFormSubmit(e) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to save recipe");
+            throw new Error(errorData.message || t("save_recipe_failed"));
         }
 
         // Re-fetch milestone details to get updated recipe data
@@ -1688,10 +1703,10 @@ async function handleRecipeFormSubmit(e) {
             milestones.find((m) => m.id == window.currentMilestoneData.id),
         );
         closeRecipeModal();
-        alert("Recipe saved successfully!");
+        alert(t("recipe_saved"));
     } catch (error) {
         console.error("Save Recipe Error:", error);
-        alert(`Error: ${error.message}`);
+        alert(t("error", { message: error.message }));
     }
 }
 
@@ -1701,9 +1716,9 @@ function addResultField(result = {}) {
     div.className = "result-field";
 
     div.innerHTML = `
-        <input type="text" class="result-item" placeholder="e.g., minecraft:diamond" value="${result.item || ""}" required>
+        <input type="text" class="result-item" placeholder="${t("example_diamond")}" value="${result.item || ""}" required>
         <input type="number" class="result-count" min="1" value="${result.count || 1}">
-        <button type="button" class="remove-btn">Remove</button>
+        <button type="button" class="remove-btn">${t("remove")}</button>
     `;
 
     container.appendChild(div);

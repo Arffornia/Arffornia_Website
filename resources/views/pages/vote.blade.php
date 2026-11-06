@@ -13,7 +13,7 @@
             <div class="vote-sites-column">
                 <div class="sites-section">
                     <div class="info">
-                        <p class="title-midle">Voting Sites</p>
+                        <p class="title-midle">{{ __('vote.sites') }}</p>
                     </div>
                     <div class="content">
                         @auth
@@ -25,17 +25,17 @@
                                     </div>
                                     <div class="block-text">
                                         <p class="title-mini">{{ $site['name'] }}</p>
-                                        <p class="cooldown-text">Every {{ $site['cooldown_hours'] }} hours</p>
+                                        <p class="cooldown-text">{{ __('vote.cooldown', ['hours' => $site['cooldown_hours']]) }}</p>
                                     </div>
                                     <div class="actions">
                                         <a href="{{ str_replace('{player}', auth()->user()->name, $site['url']) }}"
-                                            target="_blank" class="action-btn" title="Open voting site">
+                                            target="_blank" class="action-btn" title="{{ __('vote.open_site') }}">
                                             <svg viewBox="0 0 24 24">
                                                 <path d="M10 6v2h2.59L5 15.59 6.41 17 14 9.41V12h2V6h-6z" />
                                             </svg>
                                         </a>
                                         <button class="action-btn verify-btn" data-site-key="{{ $key }}"
-                                            title="Verify my vote">
+                                            title="{{ __('vote.verify') }}">
                                             <svg viewBox="0 0 24 24">
                                                 <path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                                             </svg>
@@ -43,10 +43,10 @@
                                     </div>
                                 </div>
                             @empty
-                                <p style="color:white;">No voting sites are configured.</p>
+                                <p style="color:white;">{{ __('vote.no_sites') }}</p>
                             @endforelse
                         @else
-                            <p style="color:white;">You must be logged in to vote.</p>
+                            <p style="color:white;">{{ __('vote.login_required') }}</p>
                         @endauth
                     </div>
                 </div>
@@ -55,34 +55,34 @@
             {{-- Right Column: Leaderboards --}}
             <div class="leaderboards-column">
                 <div class="leaderboard">
-                    <h3>This Month's Leaderboard</h3>
+                    <h3>{{ __('vote.monthly_leaderboard') }}</h3>
                     @if ($monthlyTop->isNotEmpty())
                         <ol>
                             @foreach ($monthlyTop as $user)
                                 <li>
                                     <span class="player-name">{{ $loop->iteration }}. {{ $user->name }}</span>
-                                    <span class="vote-count">{{ $user->votes_count }} votes</span>
+                                    <span class="vote-count">{{ __('common.votes', ['count' => $user->votes_count]) }}</span>
                                 </li>
                             @endforeach
                         </ol>
                     @else
-                        <p>No votes recorded this month yet.</p>
+                        <p>{{ __('vote.no_votes_month') }}</p>
                     @endif
                 </div>
 
                 <div class="leaderboard">
-                    <h3>All-Time Leaderboard</h3>
+                    <h3>{{ __('vote.all_time_leaderboard') }}</h3>
                     @if ($allTimeTop->isNotEmpty())
                         <ol>
                             @foreach ($allTimeTop as $user)
                                 <li>
                                     <span class="player-name">{{ $loop->iteration }}. {{ $user->name }}</span>
-                                    <span class="vote-count">{{ $user->votes_count }} votes</span>
+                                    <span class="vote-count">{{ __('common.votes', ['count' => $user->votes_count]) }}</span>
                                 </li>
                             @endforeach
                         </ol>
                     @else
-                        <p>No votes recorded yet.</p>
+                        <p>{{ __('vote.no_votes') }}</p>
                     @endif
                 </div>
             </div>
@@ -91,5 +91,8 @@
 @endsection
 
 @section('script')
+    <script>
+        window.VoteI18n = @json(__('vote.js'));
+    </script>
     @vite(['resources/js/vote.js'])
 @endsection

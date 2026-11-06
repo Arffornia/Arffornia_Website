@@ -53,25 +53,25 @@
                         <span id="description" class="textDescription"></span>
                     </p>
 
-                    <p><span class="textTitle">Id: </span><span id="milestoneIdDisplay" class="textDescription"></span></p>
-                    <p><span class="textTitle">Stage: </span><span id="stageNumber" class="textDescription"></span></p>
-                    <p><span class="textTitle">Points: </span><span id="reward_progress_points"
+                    <p><span class="textTitle">{{ __('stages.id') }} </span><span id="milestoneIdDisplay" class="textDescription"></span></p>
+                    <p><span class="textTitle">{{ __('stages.stage') }} </span><span id="stageNumber" class="textDescription"></span></p>
+                    <p><span class="textTitle">{{ __('stages.points') }} </span><span id="reward_progress_points"
                             class="textDescription"></span></p>
                 </div>
 
                 <div id="newItemsContainer">
-                    <p class="textTitle">New items:</p>
+                    <p class="textTitle">{{ __('stages.new_items') }}</p>
                     <ul></ul>
                 </div>
                 <div id="requiredItemsContainer">
-                    <p class="textTitle">Required items:</p>
+                    <p class="textTitle">{{ __('stages.required_items') }}</p>
                     <ul></ul>
                 </div>
                 @if ($isAdmin ?? false)
                     <div class="admin-actions">
-                        <button id="editBtn">Edit Milestone</button>
-                        <button id="saveBtn" style="display: none;">Save</button>
-                        <button id="cancelBtn" style="display: none;">Cancel</button>
+                        <button id="editBtn">{{ __('stages.admin.edit_milestone') }}</button>
+                        <button id="saveBtn" style="display: none;">{{ __('common.save') }}</button>
+                        <button id="cancelBtn" style="display: none;">{{ __('common.cancel') }}</button>
                     </div>
                 @endif
             </div>
@@ -81,44 +81,44 @@
         @if ($isAdmin ?? false)
             <div class="admin-panel">
                 <div class="graph-controls">
-                    <p>Graphs:</p>
-                    <button id="addGraphBtn" class="admin-mode-btn">Add Graph</button>
-                    <button id="editGraphBtn" class="admin-mode-btn">Edit Current Graph</button>
-                    <button id="deleteGraphBtn" class="admin-mode-btn">Delete Current Graph</button>
+                    <p>{{ __('stages.admin.graphs') }}</p>
+                    <button id="addGraphBtn" class="admin-mode-btn">{{ __('stages.admin.add_graph') }}</button>
+                    <button id="editGraphBtn" class="admin-mode-btn">{{ __('stages.admin.edit_graph') }}</button>
+                    <button id="deleteGraphBtn" class="admin-mode-btn">{{ __('stages.admin.delete_graph') }}</button>
                 </div>
 
                 <div class="stage-controls">
-                    <p>Stages:</p>
-                    <button id="addStageBtn" class="admin-mode-btn">Add Stage</button>
-                    <button id="deleteStageBtn" class="admin-mode-btn">Delete Stage by Number</button>
+                    <p>{{ __('stages.admin.stages') }}</p>
+                    <button id="addStageBtn" class="admin-mode-btn">{{ __('stages.admin.add_stage') }}</button>
+                    <button id="deleteStageBtn" class="admin-mode-btn">{{ __('stages.admin.delete_stage') }}</button>
                 </div>
                 <div class="admin-controls">
-                    <p>Milestones:</p>
-                    <button class="admin-mode-btn active" data-mode="view">View</button>
-                    <button class="admin-mode-btn" data-mode="add">Add</button>
-                    <button class="admin-mode-btn" data-mode="delete">Delete</button>
-                    <button class="admin-mode-btn" data-mode="link">Link</button>
-                    <button class="admin-mode-btn" data-mode="unlink">Unlink</button>
-                    <button class="admin-mode-btn" data-mode="move">Move</button>
+                    <p>{{ __('stages.admin.milestones') }}</p>
+                    <button class="admin-mode-btn active" data-mode="view">{{ __('stages.admin.mode_view') }}</button>
+                    <button class="admin-mode-btn" data-mode="add">{{ __('stages.admin.mode_add') }}</button>
+                    <button class="admin-mode-btn" data-mode="delete">{{ __('stages.admin.mode_delete') }}</button>
+                    <button class="admin-mode-btn" data-mode="link">{{ __('stages.admin.mode_link') }}</button>
+                    <button class="admin-mode-btn" data-mode="unlink">{{ __('stages.admin.mode_unlink') }}</button>
+                    <button class="admin-mode-btn" data-mode="move">{{ __('stages.admin.mode_move') }}</button>
                 </div>
             </div>
 
             <div class="data-io-panel">
-                <button id="exportStagesBtn" class="data-io-btn">Export Data</button>
-                <button id="importStagesBtn" class="data-io-btn">Import Data</button>
+                <button id="exportStagesBtn" class="data-io-btn">{{ __('stages.admin.export') }}</button>
+                <button id="importStagesBtn" class="data-io-btn">{{ __('stages.admin.import') }}</button>
                 <input type="file" id="importFileInput" style="display: none;" accept=".json">
             </div>
         @endif
 
-        <button id="resetViewBtn" class="reset-view-btn" title="Recentrer la vue">
-            <img src="{{ asset('images/home_icon.png') }}" alt="Home" />
+        <button id="resetViewBtn" class="reset-view-btn" title="{{ __('stages.reset_view') }}">
+            <img src="{{ asset('images/home_icon.png') }}" alt="{{ __('common.home') }}" />
         </button>
 
         <div class="sidebar-tabs">
             <div class="sidebar-main">
                 <div id="category-container" class="sidebar-content"></div>
                 <div class="sidebar-search-container">
-                    <input type="text" id="graph-search" placeholder="Search graphs or categories..."
+                    <input type="text" id="graph-search" placeholder="{{ __('stages.search_placeholder') }}"
                         autocomplete="off">
                 </div>
             </div>
@@ -131,22 +131,22 @@
     <div id="graph-editor-modal" class="editor-modal modal-hidden">
         <div class="modal-content">
             <span class="modal-close-btn">×</span>
-            <h3 id="graph-modal-title">Edit Graph</h3>
+            <h3 id="graph-modal-title">{{ __('stages.admin.graph_modal_title') }}</h3>
             <form id="graph-editor-form">
                 <input type="hidden" id="graph-modal-id">
 
-                <label for="graph-modal-name">Graph Name</label>
+                <label for="graph-modal-name">{{ __('stages.admin.graph_name') }}</label>
                 <input type="text" id="graph-modal-name" required>
 
-                <label for="graph-modal-icon">Icon Item ID (e.g. minecraft:diamond)</label>
+                <label for="graph-modal-icon">{{ __('stages.admin.graph_icon') }}</label>
                 <input type="text" id="graph-modal-icon" required>
 
-                <label for="graph-modal-categories">Categories (comma separated)</label>
-                <input type="text" id="graph-modal-categories" placeholder="Magic, Techno">
+                <label for="graph-modal-categories">{{ __('stages.admin.graph_categories') }}</label>
+                <input type="text" id="graph-modal-categories" placeholder="{{ __('stages.admin.graph_categories_placeholder') }}">
 
                 <div class="modal-actions">
-                    <button type="submit">Save Graph</button>
-                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit">{{ __('stages.admin.save_graph') }}</button>
+                    <button type="button" class="cancel-btn">{{ __('common.cancel') }}</button>
                 </div>
             </form>
         </div>
@@ -156,41 +156,40 @@
     <div id="item-editor-modal" class="editor-modal modal-hidden">
         <div class="modal-content">
             <span class="modal-close-btn">×</span>
-            <h3 id="modal-title">Edit Item</h3>
+            <h3 id="modal-title">{{ __('stages.admin.item_modal_title') }}</h3>
             <form id="item-editor-form">
                 <input type="hidden" id="modal-item-id">
                 <input type="hidden" id="modal-item-type">
 
-                <label for="modal-item-id-input">Item ID (e.g., minecraft:iron_ingot)</label>
+                <label for="modal-item-id-input">{{ __('stages.admin.item_id') }}</label>
                 <input type="text" id="modal-item-id-input" required>
 
-                <label for="modal-display-name">Display Name</label>
+                <label for="modal-display-name">{{ __('stages.admin.display_name') }}</label>
                 <input type="text" id="modal-display-name">
 
-                <label for="modal-image-path">Image Path (in public/images/item_textures/)</label>
+                <label for="modal-image-path">{{ __('stages.admin.image_path') }}</label>
                 <input type="text" id="modal-image-path">
 
 
                 <div id="unlock-fields">
-                    <label>Recipes to Ban</label>
+                    <label>{{ __('stages.admin.recipes_to_ban') }}</label>
                     <div id="banned-recipes-container"></div>
-                    <button type="button" id="add-banned-recipe-btn" class="add-btn" style="margin-top: 10px;">Add
-                        Recipe</button>
+                    <button type="button" id="add-banned-recipe-btn" class="add-btn" style="margin-top: 10px;">{{ __('stages.admin.add_recipe') }}</button>
 
-                    <label for="modal-shop-price">Shop Price</label>
+                    <label for="modal-shop-price">{{ __('stages.admin.shop_price') }}</label>
                     <input type="number" id="modal-shop-price">
                 </div>
 
 
 
                 <div id="requirement-fields">
-                    <label for="modal-amount">Amount</label>
+                    <label for="modal-amount">{{ __('stages.admin.amount') }}</label>
                     <input type="number" id="modal-amount" min="1">
                 </div>
 
                 <div class="modal-actions">
-                    <button type="submit">Save</button>
-                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit">{{ __('common.save') }}</button>
+                    <button type="button" class="cancel-btn">{{ __('common.cancel') }}</button>
                 </div>
             </form>
         </div>
@@ -200,22 +199,22 @@
     <div id="stage-editor-modal" class="editor-modal modal-hidden">
         <div class="modal-content">
             <span class="modal-close-btn">×</span>
-            <h3 id="stage-modal-title">Create Stage</h3>
+            <h3 id="stage-modal-title">{{ __('stages.admin.stage_modal_title') }}</h3>
             <form id="stage-editor-form">
                 <input type="hidden" id="stage-modal-id">
 
-                <label for="stage-modal-name">Stage Name</label>
+                <label for="stage-modal-name">{{ __('stages.admin.stage_name') }}</label>
                 <input type="text" id="stage-modal-name" required>
 
-                <label for="stage-modal-description">Description</label>
+                <label for="stage-modal-description">{{ __('stages.admin.description') }}</label>
                 <textarea id="stage-modal-description" rows="4"></textarea>
 
-                <label for="stage-modal-points">Reward Points</label>
+                <label for="stage-modal-points">{{ __('stages.admin.reward_points') }}</label>
                 <input type="number" id="stage-modal-points" min="0" required>
 
                 <div class="modal-actions">
-                    <button type="submit">Save Stage</button>
-                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit">{{ __('stages.admin.save_stage') }}</button>
+                    <button type="button" class="cancel-btn">{{ __('common.cancel') }}</button>
                 </div>
             </form>
         </div>
@@ -225,33 +224,33 @@
     <div id="recipe-editor-modal" class="editor-modal modal-hidden">
         <div class="modal-content">
             <span class="modal-close-btn">×</span>
-            <h3 id="recipe-modal-title">Edit Recipe</h3>
+            <h3 id="recipe-modal-title">{{ __('stages.admin.recipe_modal_title') }}</h3>
             <form id="recipe-editor-form">
                 <input type="hidden" id="recipe-modal-unlock-id">
 
-                <h4>Ingredients</h4>
+                <h4>{{ __('stages.admin.ingredients') }}</h4>
                 <div id="recipe-ingredients-container">
                 </div>
-                <button type="button" id="add-ingredient-btn" class="add-btn">Add Ingredient</button>
+                <button type="button" id="add-ingredient-btn" class="add-btn">{{ __('stages.admin.add_ingredient') }}</button>
 
                 <hr style="margin: 20px 0;">
 
-                <h4>Results</h4>
+                <h4>{{ __('stages.admin.results') }}</h4>
                 <div id="recipe-results-container">
                 </div>
-                <button type="button" id="add-result-btn" class="add-btn">Add Result</button>
+                <button type="button" id="add-result-btn" class="add-btn">{{ __('stages.admin.add_result') }}</button>
 
                 <hr style="margin: 20px 0;">
 
-                <label for="recipe-energy">Energy consumption</label>
+                <label for="recipe-energy">{{ __('stages.admin.energy') }}</label>
                 <input type="number" id="recipe-energy" min="0">
 
-                <label for="recipe-time">Production time (ticks)</label>
+                <label for="recipe-time">{{ __('stages.admin.time') }}</label>
                 <input type="number" id="recipe-time" min="0">
 
                 <div class="modal-actions">
-                    <button type="submit">Save Recipe</button>
-                    <button type="button" class="cancel-btn">Cancel</button>
+                    <button type="submit">{{ __('stages.admin.save_recipe') }}</button>
+                    <button type="button" class="cancel-btn">{{ __('common.cancel') }}</button>
                 </div>
             </form>
         </div>
@@ -267,7 +266,8 @@
             milestone_closure: @json($milestone_closure),
             isAdmin: @json($isAdmin ?? false),
             csrfToken: "{{ csrf_token() }}",
-            baseUrl: "{{ url('/') }}"
+            baseUrl: "{{ url('/') }}",
+            i18n: @json(__('stages.js'))
         };
     </script>
     <script type="module" src="{{ asset('js/stages.js') }}"></script>

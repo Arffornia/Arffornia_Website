@@ -1,4 +1,7 @@
 import { showNotification } from './notification.js';
+import { t } from './i18n.js';
+
+const i18n = window.VoteI18n;
 
 document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', async (event) => {
@@ -35,12 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 showNotification(result.message, 'success');
             } else {
-                const errorMessage = result.message || result.error || 'An unknown error occurred.';
+                const errorMessage = result.message || result.error || t(i18n, 'unknown_error');
                 showNotification(errorMessage, 'error');
             }
         } catch (error) {
             console.error('Error verifying vote:', error);
-            showNotification('A network error occurred. Please try again.', 'error');
+            showNotification(t(i18n, 'network_error'), 'error');
         } finally {
             verifyButton.innerHTML = originalIcon;
             verifyButton.disabled = false;

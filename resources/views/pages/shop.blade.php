@@ -12,7 +12,7 @@
 
             <div class="shop">
                 <div class="shop-section">
-                    <p class="section-title">Arrivals:</p>
+                    <p class="section-title">{{ __('shop.arrivals') }}</p>
                     <div class="items-container">
                         @foreach ($newestItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
@@ -27,7 +27,7 @@
                 </div>
 
                 <div class="shop-section">
-                    <p class="section-title">This Week's Deals:</p>
+                    <p class="section-title">{{ __('shop.deals') }}</p>
                     <div class="items-container">
                         @foreach ($saleItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
@@ -45,7 +45,7 @@
                 </div>
 
                 <div class="shop-section">
-                    <p class="section-title">Best Sellers:</p>
+                    <p class="section-title">{{ __('shop.best_sellers') }}</p>
                     <div class="items-container">
                         @foreach ($bestSellerItems as $item)
                             <div class="shop-item" data-item-id="{{ $item->id }}" title="{{ $item->name }}">
@@ -81,7 +81,7 @@
 
 
                     <div id="item-details-content" style="display: none;">
-                        <img id="details-image" src="" alt="Item Image" />
+                        <img id="details-image" src="" alt="{{ __('shop.item_image') }}" />
 
                         <div class="details-header">
                             <h2 id="details-name"></h2>
@@ -91,10 +91,8 @@
                         <p id="details-description"></p>
 
                         <button type="button" id="buy-button" data-item-id=""
-                            @guest
-disabled
-            title="You must be logged in to purchase this item." @endguest>
-                            Purchase
+                            @guest disabled title="{{ __('shop.js.login_required') }}" @endguest>
+                            {{ __('shop.purchase') }}
                         </button>
                     </div>
                 </div>
@@ -110,7 +108,8 @@ disabled
             baseUrl: "{{ url('/') }}",
             isAuth: {{ auth()->check() ? 'true' : 'false' }},
             bestSellerItems: @json($bestSellerItems->pluck('id')),
-            initialItemId: {{ $initialItemId ?? 'null' }}
+            initialItemId: {{ $initialItemId ?? 'null' }},
+            i18n: @json(__('shop.js'))
         };
     </script>
     @vite(['resources/js/shop.js'])

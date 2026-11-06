@@ -78,9 +78,20 @@ return [
     |
     */
 
+    // Locale for the API, console and anything outside the `web` middleware group. Keep it `en`:
+    // the mod, proxy and launcher read English API messages.
     'locale' => env('APP_LOCALE', 'en'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+
+    /*
+    | Website locales (see App\Http\Middleware\SetLocale). A visitor's locale is, in order: the
+    | `locale` cookie set by the EN/FR switcher, the best match in Accept-Language, then
+    | `web_default_locale` (French: the player base is mostly French-speaking).
+    */
+    'supported_locales' => ['en', 'fr'],
+
+    'web_default_locale' => env('APP_WEB_DEFAULT_LOCALE', 'fr'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 

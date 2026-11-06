@@ -42,7 +42,7 @@ docker compose -f docker-compose-dev.yaml up --build -d
 | `make check` | What CI runs: `composer validate`, frontend build, PHPUnit |
 | `make test` | PHPUnit |
 | `make build` | Frontend build (`npm run build`) |
-| `make lint` | `composer validate` |
+| `make lint` | `composer validate` + i18n lint (hardcoded text in Blade) |
 | `make fmt` / `make pint-test` | Pint fix / check (not gating yet) |
 | `make phpstan` | Larastan level 5 (not part of `check` yet: existing errors) |
 
@@ -89,6 +89,7 @@ Configuration is environment-driven (see `.env.example`). Main variables (no val
 | `SVC_ACCOUNT_<KEY>_CLIENT_ID`, `_CLIENT_SECRET`, `_NAME`, `_ROLES` | Service accounts, synced by `php artisan app:sync-service-accounts` |
 | `VOTE_SMC_SERVER_ID` | serveurs-minecraft.org vote verification |
 | `SANCTUM_STATEFUL_DOMAINS`, `SESSION_*` | Session and Sanctum SPA auth |
+| `APP_WEB_DEFAULT_LOCALE` | Website language when the visitor has no cookie or matching `Accept-Language` (`fr` by default; API stays `en`) |
 
 In Kubernetes, non-secret values come from a ConfigMap and secrets from Vault (see the `infra` repository).
 The Helm chart values are documented in `charts/arffornia-website/values.yaml`.

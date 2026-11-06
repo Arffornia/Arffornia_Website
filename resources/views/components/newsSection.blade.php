@@ -1,5 +1,5 @@
 @props([
-    'title' => 'Les dernières News',
+    'title' => null,
     'blocks' => [],
     'limit' => 3,
     'seeMoreLink' => null,
@@ -12,10 +12,10 @@
 
 <div class="news-section">
     <div class="info">
-        <p class="title-midle">{{ $title }}</p>
+        <p class="title-midle">{{ $title ?? __('news.latest') }}</p>
 
         <a href="{{ $seeMoreLink }}" class="medium-btn weak-border">
-            Voir plus
+            {{ __('news.see_more') }}
         </a>
     </div>
 

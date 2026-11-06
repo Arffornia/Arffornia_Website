@@ -33,7 +33,7 @@ progression, teams, shop, votes). Consumers: the NeoForge mod (`Arffornia_Mods`)
 make check     # composer validate + npm run build + phpunit (what CI runs)
 make test      # vendor/bin/phpunit (sqlite :memory:)
 make build     # npm run build
-make lint      # composer validate
+make lint      # composer validate + i18n lint (scripts/lint-i18n.php)
 make fmt       # pint (pint-test: check only, not gating yet)
 make phpstan   # larastan level 5 (existing errors, not gating yet)
 php artisan serve
@@ -43,11 +43,28 @@ php artisan route:list --path=api
 ## Conventions
 
 - English for code, comments, docs, commits, issues and PRs.
-- Player-facing text must go through Laravel i18n (`lang/en`, `lang/fr`, see the multilingual issue #51); do not add new hardcoded strings.
+- Player-facing text goes through Laravel i18n; never hardcode it (see "i18n" below).
 - Conventional Commits (`fix(shop): ...`). Branches `fix/<slug>`, `security/<slug>`, `test/<slug>`, `ci/<slug>`, `docs/<slug>`.
 - One PR per issue, `Closes #n`. PR body: What / Why / How it was tested / Risk & revert.
 - Keep the layering: controllers stay thin, logic in services, queries in repositories.
 - Behaviour changes need an issue. Design choices are for the maintainer (label `needs-decision`).
+
+## i18n (English and French)
+
+- Convention: **PHP array files** `lang/{en,fr}/<group>.php`, one group per page or area (`nav`, `home`,
+  `rules`, `shop`, `vote`, `stages`, `messages`...), used as `__('group.key')`. No JSON lang files.
+  Framework files (`validation`, `auth`, `pagination`, `passwords`) are published from Laravel; the
+  French ones are adapted from Laravel-Lang (MIT).
+- Every key exists in both locales with the same `:placeholders` (`tests/Unit/TranslationParityTest.php`).
+- Locale: `App\Http\Middleware\SetLocale` on the `web` group: `locale` cookie (set by the EN/FR
+  switcher, `POST /locale`), then `Accept-Language`, then `APP_WEB_DEFAULT_LOCALE` (`fr`). No URL prefix.
+  API routes stay in `config('app.locale')` = `en`; do not change English strings that the mod, proxy or
+  launcher read.
+- JS: Blade renders the strings as JSON (`window.AppData.i18n = @json(__('shop.js'))`,
+  `window.ArfforniaI18n.widgets` in the layout); `resources/js/i18n.js` has a `t()` helper.
+- Database content (news, shop items, milestones) is not translated yet (see #100).
+- `make lint` runs `scripts/lint-i18n.php`, which flags bare text in Blade. Justified exceptions go in
+  `.i18n-lint-ignore`.
 
 ## Hard rules
 
@@ -75,7 +92,6 @@ php artisan route:list --path=api
 - `arffornia/minecraft-oauth` is required as `dev-main` (fork of an abandoned package).
 - Mojang's `/user/profiles/{uuid}/names` endpoint no longer exists; code using it is dead.
 - Launcher images are stored on the php container's local disk (not shared with nginx, not persistent).
-- Some page copy is still French and hardcoded; it should move to i18n.
 - phpstan currently reports many errors; do not add new ones.
 
 ## Related repos

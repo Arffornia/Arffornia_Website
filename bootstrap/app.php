@@ -27,6 +27,13 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
 
+        // Website locale (EN/FR). The `locale` cookie only holds "en" or "fr" (validated on read),
+        // so it is not encrypted.
+        $middleware->encryptCookies(except: ['locale']);
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
         $middleware->alias(aliases: [
             'anyRole' => \App\Http\Middleware\CheckAnyRole::class,
             'allRole' => \App\Http\Middleware\CheckAllRole::class,

@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const imageDataArray = await response.json();
 
             if (!imageDataArray || imageDataArray.length === 0) {
-                slideshowContainer.innerHTML = '<p>No images to display.</p>';
+                slideshowContainer.innerHTML = `<p>${window.ArfforniaI18n?.widgets?.slideshow_empty ?? 'slideshow_empty'}</p>`;
                 return;
             }
 
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Slideshow error:', error);
-            slideshowContainer.innerHTML = '<p>Error loading images.</p>';
+            slideshowContainer.innerHTML = `<p>${window.ArfforniaI18n?.widgets?.slideshow_error ?? 'slideshow_error'}</p>`;
         }
     }
 

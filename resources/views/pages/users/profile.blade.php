@@ -18,19 +18,19 @@
 
             <div class="overlay">
                 <div class="info">
-                    <p> <span class="sectionTitle">Pseudo :</span> {{ $user->name }}</p>
-                    <p> <span class="sectionTitle">Argent :</span> {{ $user->money }}</p>
-                    <p> <span class="sectionTitle">Équipe :</span> {{ $user->team->name ?? 'Aucune' }}</p>
-                    <p> <span class="sectionTitle">Stage actuel :</span> {{ $stage_number }}</p>
-                    <p> <span class="sectionTitle">Objectif actuel :</span> {{ $current_milestone_name }}</p>
-                    <p> <span class="sectionTitle">Progress points :</span> {{ $user->progress_point }} </p>
-                    <p> <span class="sectionTitle">Account created date :</span> {{ $user->created_at }}</p>
-                    <p> <span class="sectionTitle">User Roles :</span> {{ implode(', ', $user->getRoles()) }}</p>
+                    <p> <span class="sectionTitle">{{ __('profile.username') }}</span> {{ $user->name }}</p>
+                    <p> <span class="sectionTitle">{{ __('profile.money') }}</span> {{ $user->money }}</p>
+                    <p> <span class="sectionTitle">{{ __('profile.team') }}</span> {{ $user->team->name ?? __('common.none') }}</p>
+                    <p> <span class="sectionTitle">{{ __('profile.stage') }}</span> {{ $stage_number }}</p>
+                    <p> <span class="sectionTitle">{{ __('profile.objective') }}</span> {{ $current_milestone_name }}</p>
+                    <p> <span class="sectionTitle">{{ __('profile.progress_points') }}</span> {{ $user->progress_point }} </p>
+                    <p> <span class="sectionTitle">{{ __('profile.created_at') }}</span> {{ $user->created_at }}</p>
+                    <p> <span class="sectionTitle">{{ __('profile.roles') }}</span> {{ implode(', ', $user->getRoles()) }}</p>
 
                     <p class="lastConnexion">
-                        <span class="sectionTitle">Last connexion :</span>
+                        <span class="sectionTitle">{{ __('profile.last_connection') }}</span>
                         @if ($user->last_connexion == null)
-                            Never connected
+                            {{ __('profile.never_connected') }}
                         @else
                             {{ $user->last_connexion }}
                         @endif
@@ -40,7 +40,7 @@
                         <div class="logout">
                             <form action="/profile/logout" method="POST">
                                 @csrf
-                                <x-inputSubmit01 value="Logout"></x-inputButton01>
+                                <x-inputSubmit01 :value="__('profile.logout')"></x-inputButton01>
                             </form>
                         </div>
                     @endif

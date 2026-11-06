@@ -7,7 +7,7 @@
 @section('content')
     <div class="standart-page">
         <div class="news">
-            <img class="imgBG" src="{{ asset($news->imgUrl) }}" alt="">
+            <img class="imgBG" src="{{ asset($news->imgUrl) }}" alt="{{ $news->title }}">
 
             <div class="overlay">
                 <div class="info">
@@ -18,7 +18,7 @@
             </div>
         </div>
         <div class="content">
-            <p id="date">Publié le {{ $news->created_at->format('d/m/Y') }}.</p>
+            <p id="date">{{ __('news.published_on', ['date' => $news->created_at->format('d/m/Y')]) }}</p>
             <p id="text">{!! \App\Support\HtmlSanitizer::clean($news->content) !!} </p>
         </div>
 
