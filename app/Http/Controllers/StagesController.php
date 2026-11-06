@@ -38,17 +38,17 @@ class StagesController extends Controller
      *
      * @return  array
      */
+    private function stagesList()
+    {
+        return Stage::all()->map(fn ($stage) => ['id' => $stage->id, 'number' => $stage->number]);
+    }
+
     private function getStagesInfo()
     {
         $isAdmin = auth()->check() && auth()->user()->hasRole('admin');
 
         return [
-            'stages' => Stage::all()->map(function ($stage) {
-                return [
-                    'id' => $stage->id,
-                    'number' => $stage->number,
-                ];
-            }),
+            'stages' => $this->stagesList(),
             'milestones' => Milestone::with(['stage', 'unlocks'])->get()->map(function ($milestone) {
                 $firstUnlock = $milestone->unlocks->first();
                 return [
@@ -282,6 +282,8 @@ class StagesController extends Controller
         $progression = $user->activeProgression;
 
         return [
+            // The page template reads it too (pages.stages), not only the mod.
+            'stages' => $this->stagesList(),
             'graphs' => \App\Models\ProgressionGraph::all()->map(function ($graph) {
                 return [
                     'id' => $graph->id,
@@ -314,7 +316,8 @@ class StagesController extends Controller
             'playerProgress' => [
                 'completed_milestones' => $progression->completed_milestones ?? [],
                 'current_target_id' => $progression->current_milestone_id ?? null,
-                'max_stage_number' => $progression->maxStage->number
+                // A player who never joined the server has no progression yet.
+                'max_stage_number' => $progression?->maxStage?->number ?? 1
             ]
         ];
     }
