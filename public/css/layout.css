@@ -50,9 +50,10 @@ a {
     margin-left: auto;
 }
 
-/* EN/FR switcher (components/localeSwitcher.blade.php) */
+/* Language menu (components/localeSwitcher.blade.php) */
 .locale-switcher {
     display: flex;
+    align-items: center;
     gap: 4px;
     margin-left: auto;
     margin-right: 16px;
@@ -62,21 +63,31 @@ a {
     margin-left: 0;
 }
 
-.locale-switcher__btn {
+.locale-switcher__select {
+    appearance: none;
     font-family: inherit;
     font-weight: 650;
     font-size: 80%;
-    padding: 2px 6px;
+    padding: 4px 26px 4px 10px;
     border: 2px solid #000000;
     border-radius: 6px;
-    background: transparent;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23000'/%3E%3C/svg%3E") no-repeat right 9px center;
     color: #000000;
     cursor: pointer;
 }
 
-.locale-switcher__btn.is-active {
-    background: #000000;
-    color: #ffffff;
+.locale-switcher__select:hover,
+.locale-switcher__select:focus-visible {
+    background-color: rgba(0, 0, 0, 0.06);
+}
+
+.locale-switcher__submit {
+    font-family: inherit;
+    font-size: 80%;
+    border: 2px solid #000000;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
 }
 
 .profileImageContainer #profileImage {
