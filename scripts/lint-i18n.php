@@ -7,6 +7,11 @@
  *   - text nodes:          >Some words<
  *   - text-bearing attributes: title/alt/placeholder/aria-label/value="Some words"
  * Blade echoes ({{ }}, {!! !!}), directives and comments are stripped first.
+ * And, in app/Http/Controllers, app/Http/Middleware and app/Services (API JSON bodies, see ADR 0009
+ * "Player-visible text in data and APIs"):
+ *   - literal values of 'message' / 'error' keys:   ['message' => 'Some words']
+ *   - literal abort() messages:                     abort(404, 'Some words')
+ *   Log:: lines are skipped (logs are for developers, not players).
  * Known exceptions (brand names, OS names, symbols) go in .i18n-lint-ignore, one per line:
  *   - "text:<exact text>"   ignores that text everywhere
  *   - "file:<path>"         ignores a whole file (relative to the repo root)
@@ -77,10 +82,47 @@ foreach ($iterator as $file) {
     }
 }
 
+// API JSON messages: message/error values and abort() texts must go through __() (lang/{en,fr}/api.php).
+$phpDirs = ['app/Http/Controllers', 'app/Http/Middleware', 'app/Services'];
+$phpPatterns = [
+    '/[\'"](?:message|error)[\'"]\s*=>\s*([\'"])((?:(?!\1).)*\p{L}(?:(?!\1).)*)\1/u',
+    '/\babort\(\s*\d+\s*,\s*([\'"])((?:(?!\1).)*\p{L}(?:(?!\1).)*)\1/u',
+];
+foreach ($phpDirs as $dir) {
+    if (!is_dir($root . '/' . $dir)) {
+        continue;
+    }
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/' . $dir)) as $file) {
+        if (!$file->isFile() || !str_ends_with($file->getFilename(), '.php')) {
+            continue;
+        }
+        $relative = substr($file->getPathname(), strlen($root) + 1);
+        if (in_array($relative, $ignoredFiles, true)) {
+            continue;
+        }
+        foreach (file($file->getPathname()) as $index => $line) {
+            if (str_contains($line, 'Log::')) {
+                continue;
+            }
+            foreach ($phpPatterns as $pattern) {
+                if (!preg_match_all($pattern, $line, $matches)) {
+                    continue;
+                }
+                foreach ($matches[2] as $text) {
+                    if (in_array($text, $ignoredTexts, true)) {
+                        continue;
+                    }
+                    $problems[] = "$relative:" . ($index + 1) . ": hardcoded API message \"$text\" (use __('api.*') and lang/{en,fr}/api.php)";
+                }
+            }
+        }
+    }
+}
+
 if ($problems) {
     fwrite(STDERR, implode("\n", $problems) . "\n");
     fwrite(STDERR, count($problems) . " hardcoded string(s). See AGENTS.md (i18n) or add a justified entry to .i18n-lint-ignore.\n");
     exit(1);
 }
 
-echo "i18n lint: no hardcoded text in Blade views.\n";
+echo "i18n lint: no hardcoded text in Blade views or API messages.\n";

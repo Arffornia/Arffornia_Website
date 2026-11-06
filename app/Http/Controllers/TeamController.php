@@ -36,10 +36,10 @@ class TeamController extends Controller
         $success = $this->teamService->handlePlayerJoin($data['player_uuid'], $data['team_uuid'], $data['team_name']);
 
         if ($success) {
-            return response()->json(['message' => 'Player joined team successfully.'], Response::HTTP_OK);
+            return response()->json(['message' => __('api.team.joined')], Response::HTTP_OK);
         }
 
-        return response()->json(['message' => 'Failed to process player join.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return response()->json(['message' => __('api.team.join_failed')], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -58,10 +58,10 @@ class TeamController extends Controller
         $success = $this->teamService->handlePlayerLeave($validator->validated()['player_uuid']);
 
         if ($success) {
-            return response()->json(['message' => 'Player left team successfully.'], Response::HTTP_OK);
+            return response()->json(['message' => __('api.team.left')], Response::HTTP_OK);
         }
 
-        return response()->json(['message' => 'Failed to process player leave.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return response()->json(['message' => __('api.team.leave_failed')], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -80,9 +80,9 @@ class TeamController extends Controller
         $success = $this->teamService->handleTeamDisband($validator->validated()['team_uuid']);
 
         if ($success) {
-            return response()->json(['message' => 'Team disbanded successfully.'], Response::HTTP_OK);
+            return response()->json(['message' => __('api.team.disbanded')], Response::HTTP_OK);
         }
 
-        return response()->json(['message' => 'Failed to disband team.'], Response::HTTP_NOT_FOUND);
+        return response()->json(['message' => __('api.team.disband_failed')], Response::HTTP_NOT_FOUND);
     }
 }

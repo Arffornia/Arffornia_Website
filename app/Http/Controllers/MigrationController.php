@@ -82,9 +82,9 @@ class MigrationController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Batch recipe migration failed.', ['exception' => $e->getMessage()]);
-            return response()->json(['message' => 'An error occurred during the batch recipe submission.'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => __('api.recipe.batch_failed')], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json(['message' => "Successfully processed {$createdCount} recipes."]);
+        return response()->json(['message' => __('api.recipe.batch_processed', ['count' => $createdCount])]);
     }
 }

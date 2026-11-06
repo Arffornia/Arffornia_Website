@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Picks the website locale: explicit choice (cookie), then Accept-Language, then the configured default.
- * Registered on the `web` group only; API routes keep config('app.locale').
+ * Registered on the `web` group; API routes use SetApiLocale (same order, plus `?locale=`, default `en`).
  */
 class SetLocale
 {
@@ -23,6 +23,14 @@ class SetLocale
     }
 
     public static function resolve(Request $request): string
+    {
+        return self::negotiate($request, config('app.web_default_locale', 'fr'));
+    }
+
+    /**
+     * Cookie, then Accept-Language, then $default (or the fallback locale if $default is not supported).
+     */
+    public static function negotiate(Request $request, ?string $default): string
     {
         $supported = self::supported();
 
@@ -38,8 +46,6 @@ class SetLocale
                 return $primary;
             }
         }
-
-        $default = config('app.web_default_locale', 'fr');
 
         return in_array($default, $supported, true) ? $default : config('app.fallback_locale', 'en');
     }

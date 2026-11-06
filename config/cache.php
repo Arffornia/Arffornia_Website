@@ -102,6 +102,21 @@ return [
     |
     */
 
+    // Kept on the Laravel 12 formula on purpose: the Laravel 13 skeleton default
+    // ("<app>-cache-") would orphan every existing cache key on upgrade.
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache_'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Serializable Classes
+    |--------------------------------------------------------------------------
+    |
+    | Classes that may be unserialized from cached values. `false` (the
+    | Laravel 13 default) allows none, which blocks deserialization gadget
+    | chains if APP_KEY ever leaks. The app only caches scalars and arrays.
+    |
+    */
+
+    'serializable_classes' => false,
 
 ];
