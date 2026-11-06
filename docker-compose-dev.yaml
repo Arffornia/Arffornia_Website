@@ -12,7 +12,7 @@ services:
       && php-fpm"
 
   vite:
-    image: node:18-alpine
+    image: node:22-alpine
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html

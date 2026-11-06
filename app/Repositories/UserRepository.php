@@ -89,7 +89,7 @@ class UserRepository
         $user = User::create([
             'name' => $name,
             'uuid' => $uuid,
-            'money' => 100000, //! TODO Remove that (For testing purposes only!)
+            'money' => config('shop.starting_money'),
             'progress_point' => 0,
             'stage_id' => $startStageId,
             'day_streak' => 0,

@@ -13,15 +13,18 @@ COPY composer.json composer.lock ${HTML_ENDPOINT}
 # RUN mkdir -p ${HTML_ENDPOINT}database/{factories,seeds}
 
 # See composer install doc: https://getcomposer.org/doc/03-cli.md#install-i
+# Production image: no dev packages. The PHP version is pinned by
+# composer.json `config.platform.php`, and the runner stage re-checks the real
+# runtime with `composer check-platform-reqs`.
 RUN composer install \
+    --no-dev \
     --prefer-dist \
     --no-scripts \
     --no-autoloader \
-    --no-progress \
-    --ignore-platform-reqs
+    --no-progress
 
 # NPM dependencies
-FROM node:18-alpine3.20 AS npm-builder
+FROM node:22-alpine AS npm-builder
 
 ARG HTML_ENDPOINT
 
@@ -60,6 +63,6 @@ COPY --from=composer-builder ${HTML_ENDPOINT}/vendor/ ${HTML_ENDPOINT}/vendor/
 COPY --from=npm-builder ${HTML_ENDPOINT}/public/ ${HTML_ENDPOINT}/public/
 COPY --chown=www-data:www-data . ${HTML_ENDPOINT}
 
-RUN composer dump -o \
-    && composer check-platform-reqs \
+RUN composer dump-autoload -o --no-dev \
+    && composer check-platform-reqs --no-dev \
     && rm -rf /usr/local/bin/composer
