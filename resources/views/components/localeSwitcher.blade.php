@@ -7,5 +7,5 @@
             <option value="{{ $supportedLocale }}" lang="{{ $supportedLocale }}" @selected(app()->getLocale() === $supportedLocale)>{{ __('common.languages.' . $supportedLocale) }}</option>
         @endforeach
     </select>
-    <noscript><button type="submit" class="locale-switcher__submit">OK</button></noscript>
+    <noscript><button type="submit" class="locale-switcher__submit">{{ __('common.apply') }}</button></noscript>
 </form>
