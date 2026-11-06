@@ -1,10 +1,11 @@
-{{-- EN/FR switcher: POSTs the choice (CSRF protected), stored in the `locale` cookie --}}
-<form class="locale-switcher" action="{{ route('locale.switch') }}" method="POST" aria-label="{{ __('common.language') }}">
+{{-- Language menu: POSTs the choice (CSRF protected), stored in the `locale` cookie.
+     resources/js/app.js submits on change; the button is the no-JavaScript fallback. --}}
+<form class="locale-switcher" action="{{ route('locale.switch') }}" method="POST">
     @csrf
-    @foreach (\App\Http\Middleware\SetLocale::supported() as $supportedLocale)
-        <button type="submit" name="locale" value="{{ $supportedLocale }}" lang="{{ $supportedLocale }}"
-            title="{{ __('common.switch_to', ['language' => __('common.languages.' . $supportedLocale)]) }}"
-            @class(['locale-switcher__btn', 'is-active' => app()->getLocale() === $supportedLocale])
-            @if (app()->getLocale() === $supportedLocale) aria-current="true" @endif>{{ strtoupper($supportedLocale) }}</button>
-    @endforeach
+    <select name="locale" class="locale-switcher__select" aria-label="{{ __('common.language') }}">
+        @foreach (\App\Http\Middleware\SetLocale::supported() as $supportedLocale)
+            <option value="{{ $supportedLocale }}" lang="{{ $supportedLocale }}" @selected(app()->getLocale() === $supportedLocale)>{{ __('common.languages.' . $supportedLocale) }}</option>
+        @endforeach
+    </select>
+    <noscript><button type="submit" class="locale-switcher__submit">OK</button></noscript>
 </form>
