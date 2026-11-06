@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Collection;
 
 use Arffornia\MinecraftOauth\MinecraftOauth;
@@ -128,36 +129,66 @@ class UserService
     }
 
     /**
-     * Generate user loging redirect url by MS auth
+     * Session key holding the OAuth `state` value of the pending Microsoft login.
+     */
+    public const OAUTH_STATE_SESSION_KEY = 'ms_oauth_state';
+
+    /**
+     * Generate the Microsoft login redirect URL.
+     *
+     * A random `state` value is stored in the session and must come back unchanged
+     * on the callback (see isValidOAuthState).
      *
      * @return string
      */
     public function getMsAuthRedirectUrl()
     {
-        $clientId = config('app.azure.oauth.client.id');
-        $redirectUri = urlencode(config('app.azure.oauth.redirect_uri'));
+        $state = Str::random(40);
+        session()->put(self::OAUTH_STATE_SESSION_KEY, $state);
 
-        return "https://login.live.com/oauth20_authorize.srf?client_id=$clientId&response_type=code&redirect_uri=$redirectUri&scope=XboxLive.signin%20offline_access&state=NOT_NEEDED";
+        $query = http_build_query([
+            'client_id' => config('app.azure.oauth.client.id'),
+            'response_type' => 'code',
+            'redirect_uri' => config('app.azure.oauth.redirect_uri'),
+            'scope' => 'XboxLive.signin offline_access',
+            'state' => $state,
+        ], '', '&', PHP_QUERY_RFC3986);
+
+        return "https://login.live.com/oauth20_authorize.srf?$query";
     }
 
+    /**
+     * Check the `state` returned by Microsoft against the one stored in the session.
+     * The stored value is consumed, so a state can only be used once.
+     *
+     * @param mixed $state
+     * @return bool
+     */
+    public function isValidOAuthState($state): bool
+    {
+        $expected = session()->pull(self::OAUTH_STATE_SESSION_KEY);
+
+        return is_string($expected) && is_string($state) && hash_equals($expected, $state);
+    }
 
     /**
      * Get an User with MS OAuth UI Flow
      *
+     * @param string $code Authorization code returned by Microsoft
      * @return User
      *
      * @throws MinecraftOauthException
      */
-    public function getUserFromMsAuthCallback()
+    public function getUserFromMsAuthCallback(string $code)
     {
         $clientId = config('app.azure.oauth.client.id');
         $redirectUri = config('app.azure.oauth.redirect_uri');
         $clientSecret = urlencode(config('app.azure.oauth.client.secret'));
 
-        $profile = (new MinecraftOauth)->fetchProfileWithOAuthUI(
+        $profile = app(MinecraftOauth::class)->fetchProfileWithOAuthUI(
             $clientId,
             $clientSecret,
-            $_GET['code'],
+            $code,
             $redirectUri,
         );
 
@@ -180,7 +211,7 @@ class UserService
      */
     public function getUserWithAccessToken($access_token)
     {
-        $profile = (new MinecraftOauth)->fetchProfileWithAccessToken(
+        $profile = app(MinecraftOauth::class)->fetchProfileWithAccessToken(
             $access_token
         );
 
