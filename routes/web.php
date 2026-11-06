@@ -27,6 +27,11 @@ Route::get('/reglement', function () {
     return view('pages.reglement');
 });
 
+// Legal pages (text in lang/{en,fr}/legal.php). Bump the date when the text changes.
+Route::view('/legal', 'pages.legal', ['page' => 'notice', 'updated' => '2026-10-31'])->name('legal.notice');
+Route::view('/privacy', 'pages.legal', ['page' => 'privacy', 'updated' => '2026-10-31'])->name('legal.privacy');
+Route::view('/terms', 'pages.legal', ['page' => 'terms', 'updated' => '2026-10-31'])->name('legal.terms');
+
 // Stages
 Route::get('stages', [StagesController::class, 'loadStagesView']);
 Route::get('stages/{playerUuid}', [StagesController::class, 'loadPlayerStageView']);
