@@ -48,13 +48,13 @@ class E2ESeeder extends Seeder
         $news->forceFill([
             'title' => 'E2E news title',
             'content' => '<p>E2E news content</p>',
-            'imgUrl' => 'images/news/default.png',
+            'imgUrl' => 'images/screenshots1920x1080/old_spawn.png',
         ])->save();
 
         ShopItem::create([
             'name' => 'E2E Diamond pack',
             'description' => 'Some diamonds',
-            'img_url' => 'images/shop/diamond.png',
+            'img_url' => 'images/shop_items/meka_icon.png',
             'category_id' => 1,
             'real_price' => 100,
             'promo_price' => 0,
