@@ -65,6 +65,7 @@
 <footer>
     <div class="copyright">
         <p>{{ __('common.copyright') }}</p>
+        <p class="minecraft-disclaimer">{{ __('common.minecraft_disclaimer') }}</p>
     </div>
 </footer>
 
