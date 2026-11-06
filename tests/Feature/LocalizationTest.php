@@ -130,8 +130,8 @@ class LocalizationTest extends TestCase
     {
         $this->get('/')
             ->assertSee('action="' . route('locale.switch') . '"', false)
-            ->assertSee('name="locale" value="en"', false)
-            ->assertSee('name="locale" value="fr"', false);
+            ->assertSee('<option value="en" lang="en"', false)
+            ->assertSee('<option value="fr" lang="fr"', false);
     }
 
     public function test_api_routes_default_to_english_without_a_locale_hint(): void
@@ -140,5 +140,13 @@ class LocalizationTest extends TestCase
         $this->getJson('/api/profile/nobody');
 
         $this->assertSame('en', app()->getLocale());
+    }
+
+    public function test_language_menu_preselects_the_current_language(): void
+    {
+        $response = $this->withUnencryptedCookie('locale', 'fr')->get('/reglement');
+
+        $response->assertSee('<select name="locale" class="locale-switcher__select"', false);
+        $response->assertSee('<option value="fr" lang="fr" selected>Français</option>', false);
     }
 }
