@@ -19,7 +19,7 @@
         </div>
         <div class="content">
             <p id="date">Publié le {{ $news->created_at->format('d/m/Y') }}.</p>
-            <p id="text">{!! $news->content !!} </p>
+            <p id="text">{!! \App\Support\HtmlSanitizer::clean($news->content) !!} </p>
         </div>
 
 

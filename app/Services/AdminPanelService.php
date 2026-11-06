@@ -26,10 +26,9 @@ class AdminPanelService
      */
     public function uploadNewLauncherImage(bool $in_prod, $file, ?string $playerName)
     {
-        // Store the file in storage\app\public folder
-        $fileName = $file->getClientOriginalName();
-        $fileName = str_replace(' ', '_', $fileName);
-        $filePath = $file->storeAs('uploads/launcherImages', $fileName, 'public');
+        // Store the file in the storage/app/public folder under a generated name
+        // (random name + extension guessed from the content, never the client's file name)
+        $filePath = $file->store('uploads/launcherImages', 'public');
 
         // Save version file in db
         $this->createNewLauncherImage($in_prod, "storage/" . $filePath, $playerName);
