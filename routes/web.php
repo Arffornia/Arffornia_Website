@@ -32,6 +32,9 @@ Route::view('/legal', 'pages.legal', ['page' => 'notice', 'updated' => '2026-10-
 Route::view('/privacy', 'pages.legal', ['page' => 'privacy', 'updated' => '2026-10-31'])->name('legal.privacy');
 Route::view('/terms', 'pages.legal', ['page' => 'terms', 'updated' => '2026-10-31'])->name('legal.terms');
 
+// Player FAQ (text in lang/{en,fr}/faq.php)
+Route::view('/faq', 'pages.faq')->name('faq');
+
 // Stages
 Route::get('stages', [StagesController::class, 'loadStagesView']);
 Route::get('stages/{playerUuid}', [StagesController::class, 'loadPlayerStageView']);

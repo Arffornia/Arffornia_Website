@@ -70,6 +70,7 @@
             <a href="{{ route('legal.notice') }}">{{ __('legal.footer.notice') }}</a>
             <a href="{{ route('legal.privacy') }}">{{ __('legal.footer.privacy') }}</a>
             <a href="{{ route('legal.terms') }}">{{ __('legal.footer.terms') }}</a>
+            <a href="{{ route('faq') }}">{{ __('faq.footer') }}</a>
         </nav>
     </div>
 </footer>
