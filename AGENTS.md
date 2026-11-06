@@ -25,7 +25,7 @@ progression, teams, shop, votes). Consumers: the NeoForge mod (`Arffornia_Mods`)
 | `tests/Feature`, `tests/Unit` | PHPUnit 12 |
 | `prod.Dockerfile`, `nginx.Dockerfile`, `.docker/` | php-fpm and nginx images |
 | `charts/arffornia-website` | Helm chart (php-fpm + nginx in one pod) |
-| `.github/workflows` | CI, image build, Helm publish, Trivy |
+| `.github/workflows` | CI, image build (`latest` for prod), preview images (`main`, `pr-<n>-<sha7>` for staging and playtest slots), Helm publish, Trivy |
 
 ## Commands
 
