@@ -2,6 +2,7 @@
 
 return [
     'copyright' => '© Arffornia - All rights reserved',
+    'apply' => 'Apply',
     'language' => 'Language',
     'switch_to' => 'Switch to :language',
     'languages' => [
