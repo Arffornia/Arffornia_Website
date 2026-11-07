@@ -42,7 +42,7 @@ class ShopController extends Controller
      * @param int|null $initialItemId
      * @return View
      */
-    private function loadShop(int $initialItemId = null): View
+    private function loadShop(?int $initialItemId = null): View
     {
         return view(
             'pages.shop',
