@@ -7,6 +7,7 @@
 
 return [
     'forbidden' => 'Forbidden',
+    'not_found' => 'Not found.',
     'internal_error' => 'An internal error occurred.',
     'auth' => [
         'not_authenticated' => 'Not authenticated',

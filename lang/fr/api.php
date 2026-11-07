@@ -3,6 +3,7 @@
 // Messages renvoyés dans les réponses JSON de l'API (voir lang/en/api.php).
 
 return [
+    'not_found' => 'Introuvable.',
     'forbidden' => 'Accès refusé',
     'internal_error' => 'Une erreur interne est survenue.',
     'auth' => [

@@ -22,6 +22,22 @@ class ApiLocaleTest extends TestCase
             ->assertExactJson(['error' => 'player name not found.']);
     }
 
+    public function test_missing_record_gets_a_translated_not_found_message(): void
+    {
+        $this->withHeader('Accept-Language', 'fr')
+            ->getJson('/api/shop/item/999999')
+            ->assertNotFound()
+            ->assertHeader('Content-Language', 'fr')
+            ->assertExactJson(['message' => 'Introuvable.']);
+    }
+
+    public function test_missing_record_message_names_no_model_in_english(): void
+    {
+        $this->getJson('/api/shop/item/999999')
+            ->assertNotFound()
+            ->assertExactJson(['message' => 'Not found.']);
+    }
+
     public function test_follows_accept_language(): void
     {
         $this->withHeader('Accept-Language', 'fr-FR,fr;q=0.9,en;q=0.8')
