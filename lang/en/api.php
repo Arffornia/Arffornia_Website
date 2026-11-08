@@ -24,6 +24,7 @@ return [
         'create_failed' => 'Failed to create user.',
     ],
     'team' => [
+        'synced' => 'Player team synced.',
         'joined' => 'Player joined team successfully.',
         'join_failed' => 'Failed to process player join.',
         'left' => 'Player left team successfully.',

@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\User;
 use App\Repositories\TeamRepository;
 use App\Repositories\UserRepository;
+use Carbon\CarbonInterface;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TeamService
@@ -19,59 +21,63 @@ class TeamService
     }
 
     /**
-     * Handles the logic when a player joins a team.
-     *
-     * @param string $playerUuid
-     * @param string $teamUuid
-     * @param string $teamName
-     * @return bool
+     * Sets a player's team to what the game server observed at $observedAt. Idempotent: replaying
+     * the call, or receiving an older observation after a newer one, leaves the state unchanged.
+     * Returns false only when the player does not exist.
      */
-    public function handlePlayerJoin(string $playerUuid, string $teamUuid, string $teamName): bool
+    public function syncPlayerTeam(string $playerUuid, ?string $teamUuid, ?string $teamName, CarbonInterface $observedAt): bool
     {
-        $user = $this->userRepository->getUserByUuid($playerUuid);
-        if (!$user) {
-            Log::error("TeamService: User not found for UUID " . $playerUuid);
-            return false;
-        }
+        return DB::transaction(function () use ($playerUuid, $teamUuid, $teamName, $observedAt) {
+            $user = User::where('uuid', $playerUuid)->lockForUpdate()->first();
+            if (!$user) {
+                Log::error("TeamService: User not found for UUID " . $playerUuid);
+                return false;
+            }
 
-        $team = $this->teamRepository->findOrCreateTeam($teamUuid, $teamName);
+            if ($user->team_synced_at !== null && $observedAt->lessThanOrEqualTo($user->team_synced_at)) {
+                return true;
+            }
 
-        $user->team_id = $team->id;
-        $user->active_progression_id = $team->progression_id;
-        $user->save();
+            $previousTeamId = $user->team_id;
 
-        return true;
+            if ($teamUuid === null) {
+                $user->team_id = null;
+                $user->active_progression_id = $user->solo_progression_id;
+            } else {
+                $team = $this->teamRepository->findOrCreateTeam($teamUuid, $teamName ?? $teamUuid);
+                $user->team_id = $team->id;
+                $user->active_progression_id = $team->progression_id;
+            }
+
+            $user->team_synced_at = $observedAt;
+            $user->save();
+
+            if ($previousTeamId !== null && $previousTeamId !== $user->team_id) {
+                $this->softDeleteIfEmpty($previousTeamId);
+            }
+
+            return true;
+        });
     }
 
-    /**
-     * Handles the logic when a player leaves a team.
-     *
-     * @param string $playerUuid
-     * @return bool
-     */
+    public function handlePlayerJoin(string $playerUuid, string $teamUuid, string $teamName): bool
+    {
+        return $this->syncPlayerTeam($playerUuid, $teamUuid, $teamName, now());
+    }
+
     public function handlePlayerLeave(string $playerUuid): bool
     {
-        $user = $this->userRepository->getUserByUuid($playerUuid);
-        if (!$user || !$user->team_id) {
-            Log::warning("TeamService: Player " . $playerUuid . " tried to leave a team but wasn't in one.");
-            return false;
+        return $this->syncPlayerTeam($playerUuid, null, null, now());
+    }
+
+    private function softDeleteIfEmpty(string $teamId): void
+    {
+        if (User::where('team_id', $teamId)->exists()) {
+            return;
         }
 
-        $teamId = $user->team_id;
-
-        // The player switches back to their solo progression
-        $user->team_id = null;
-        $user->active_progression_id = $user->solo_progression_id;
-        $user->save();
-
-        // Check if the team is now empty
-        $remainingMembers = User::where('team_id', $teamId)->count();
-        if ($remainingMembers === 0) {
-            $this->teamRepository->softDelete($teamId);
-            Log::info("Team " . $teamId . " has been soft-deleted as it is now empty.");
-        }
-
-        return true;
+        $this->teamRepository->softDelete($teamId);
+        Log::info("Team " . $teamId . " has been soft-deleted as it is now empty.");
     }
 
     /**

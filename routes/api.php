@@ -88,6 +88,7 @@ Route::middleware(['auth:sanctum', 'anyRole:nuvotifier_service'])->group(functio
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
+    Route::put('/teams/player/sync', [TeamController::class, 'playerSync']);
     Route::post('/teams/player/join', [TeamController::class, 'playerJoin']);
     Route::post('/teams/player/leave', [TeamController::class, 'playerLeave']);
     Route::post('/teams/disband', [TeamController::class, 'disband']);
