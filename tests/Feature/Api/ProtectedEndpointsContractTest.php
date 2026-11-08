@@ -33,6 +33,7 @@ class ProtectedEndpointsContractTest extends ApiTestCase
             'migration/submit-batch-recipes' => ['POST', '/api/migration/submit-batch-recipes', $progression],
             'milestone-items/move' => ['POST', '/api/milestone-items/move', $progression],
             'player/ensure-exists' => ['POST', '/api/player/ensure-exists', ['admin', 'user_editor']],
+            'teams/player/sync' => ['PUT', '/api/teams/player/sync', ['admin', 'team_editor']],
             'teams/player/join' => ['POST', '/api/teams/player/join', ['admin', 'team_editor']],
             'teams/player/leave' => ['POST', '/api/teams/player/leave', ['admin', 'team_editor']],
             'teams/disband' => ['POST', '/api/teams/disband', ['admin', 'team_editor']],

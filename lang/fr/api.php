@@ -21,6 +21,7 @@ return [
         'create_failed' => "Impossible de créer l'utilisateur.",
     ],
     'team' => [
+        'synced' => "Équipe du joueur synchronisée.",
         'joined' => "Le joueur a rejoint l'équipe.",
         'join_failed' => "Impossible de traiter l'arrivée du joueur.",
         'left' => "Le joueur a quitté l'équipe.",

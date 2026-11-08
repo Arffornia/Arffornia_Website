@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\TeamService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -15,6 +16,33 @@ class TeamController extends Controller
     public function __construct(TeamService $teamService)
     {
         $this->teamService = $teamService;
+    }
+
+    /**
+     * Sets a player's team from the game server's view. Sent on every team change and on login.
+     */
+    public function playerSync(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'player_uuid' => 'required|string|size:32',
+            'team_uuid' => 'present|nullable|string|uuid',
+            'team_name' => 'required_with:team_uuid|nullable|string|max:255',
+            'observed_at' => 'required|integer|min:0',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $data = $validator->validated();
+        $observedAt = Carbon::createFromTimestampMs($data['observed_at']);
+        $success = $this->teamService->syncPlayerTeam($data['player_uuid'], $data['team_uuid'], $data['team_name'] ?? null, $observedAt);
+
+        if ($success) {
+            return response()->json(['message' => __('api.team.synced')], Response::HTTP_OK);
+        }
+
+        return response()->json(['message' => __('api.user.not_found')], Response::HTTP_NOT_FOUND);
     }
 
     /**

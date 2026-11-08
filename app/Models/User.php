@@ -101,7 +101,9 @@ class User extends Authenticatable
      */
     protected function casts(): array
     {
-        return [];
+        return [
+            'team_synced_at' => 'datetime',
+        ];
     }
 
     public function getVoteCount()
