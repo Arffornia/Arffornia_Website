@@ -6,7 +6,6 @@ return [
     'auth' => [
         'logged_out' => 'Tu as été déconnecté !',
         'welcome' => 'Bienvenue :name !',
-        'could_not_authenticate' => 'Impossible de te connecter. Réessaie.',
         'failed' => 'La connexion a échoué. Réessaie.',
     ],
     'shop' => [

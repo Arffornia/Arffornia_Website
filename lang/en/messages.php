@@ -7,7 +7,6 @@ return [
     'auth' => [
         'logged_out' => 'You have been logged out!',
         'welcome' => 'Welcome :name!',
-        'could_not_authenticate' => 'Could not authenticate you. Please try again.',
         'failed' => 'Authentication failed. Please try again.',
     ],
     'shop' => [

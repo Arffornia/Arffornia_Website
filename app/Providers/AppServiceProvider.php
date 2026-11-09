@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Arffornia\MinecraftOauth\MinecraftOauth;
+use GuzzleHttp\Client;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -15,7 +17,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Without timeouts a slow Microsoft or Xbox endpoint holds a PHP worker indefinitely.
+        $this->app->bind(MinecraftOauth::class, fn () => new MinecraftOauth(new Client([
+            'http_errors' => false,
+            'connect_timeout' => 5,
+            'timeout' => 10,
+        ])));
     }
 
     /**
