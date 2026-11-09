@@ -16,12 +16,10 @@
     --grid-cell-size: 78px;
 
     /* Sidebar colors */
-    --sidebar-bg-dark: #09070a;
-    --sidebar-bg-medium: #261d31;
-    --sidebar-accent: #b74512;
+    --sidebar-bg-dark: var(--arf-color-plum-950);
+    --sidebar-bg-medium: var(--arf-color-plum-850);
+    --sidebar-accent: var(--arf-color-brand-orange-deep);
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
 
 html {
     max-width: none;
@@ -53,7 +51,7 @@ footer {
     box-sizing: border-box;
     position: relative;
     overflow: hidden;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
 
     background-color: var(--color-background);
     background-image:
@@ -112,7 +110,7 @@ footer {
     height: 70px;
     border-radius: 50px;
     background-color: #fff;
-    border: solid 5px #ff7300;
+    border: solid 5px var(--arf-color-brand-orange);
     margin-top: auto;
     margin-bottom: auto;
     cursor: pointer;
@@ -145,7 +143,7 @@ footer {
 
 .info {
     color: #fff;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
     font-weight: 500;
     top: 12%;
     right: 2%;
@@ -263,7 +261,7 @@ footer {
 
 .info .admin-actions button {
     padding: 8px 12px;
-    background-color: #ff7300;
+    background-color: var(--arf-color-brand-orange);
     color: white;
     border: none;
     border-radius: 5px;
@@ -312,7 +310,7 @@ footer {
 Admin Panel & Controls
 */
 .admin-panel {
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
     font-weight: 500;
     position: fixed;
     bottom: 20px;
@@ -368,7 +366,7 @@ Admin Panel & Controls
 }
 
 .admin-mode-btn.active {
-    background-color: #ff7300;
+    background-color: var(--arf-color-brand-orange);
     font-weight: bold;
 }
 
@@ -438,14 +436,14 @@ Admin Panel & Controls
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.6);
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
 }
 
 .editor-modal .modal-content {
     background-color: #1e1e1e;
     margin: 10% auto;
     padding: 25px;
-    border: 1px solid #ff7300;
+    border: 1px solid var(--arf-color-brand-orange);
     border-radius: 10px;
     width: 80%;
     max-width: 500px;
@@ -497,7 +495,7 @@ Admin Panel & Controls
 }
 
 .editor-modal .modal-actions button[type="submit"] {
-    background-color: #ff7300;
+    background-color: var(--arf-color-brand-orange);
     color: white;
 }
 
@@ -517,10 +515,10 @@ Admin Panel & Controls
 }
 
 .item-actions-inline .recipe-edit-btn {
-    background-color: #27ae60;
+    background-color: var(--arf-color-state-success);
     margin-left: 5px;
     border-radius: 5px;
-    border-color: #27ae60;
+    border-color: var(--arf-color-state-success);
 }
 
 #recipe-editor-modal h4 {
@@ -726,9 +724,9 @@ Admin Panel & Controls
     padding: 12px 15px;
     border-radius: 10px;
     border: none;
-    background: #09070a;
+    background: var(--arf-color-plum-950);
     color: white;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
     font-size: 14px;
     box-sizing: border-box;
     transition:
@@ -743,14 +741,14 @@ Admin Panel & Controls
 .sidebar-search-container input:focus {
     outline: none;
     background: #2d2438;
-    box-shadow: 0 0 0 2px #b74512;
+    box-shadow: 0 0 0 2px var(--arf-color-brand-orange-deep);
 }
 
 .category-header {
     padding: 12px 15px;
     font-weight: 700;
     font-size: 13px;
-    background: #09070a;
+    background: var(--arf-color-plum-950);
     cursor: pointer;
     border-radius: 10px;
     user-select: none;
@@ -802,12 +800,12 @@ Admin Panel & Controls
 }
 
 .graph-tab:hover {
-    background: #b74512;
+    background: var(--arf-color-brand-orange-deep);
     transform: translateX(3px);
 }
 
 .graph-tab.active {
-    background: #b74512;
+    background: var(--arf-color-brand-orange-deep);
 }
 
 .graph-tab img {

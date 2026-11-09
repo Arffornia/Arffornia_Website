@@ -1,3 +1,11 @@
+@font-face {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("../fonts/Montserrat-latin.woff2") format("woff2");
+}
+
 * {
     margin: 0px;
 }
@@ -21,7 +29,7 @@ a {
     padding-top: 7px;
     display: flex;
     align-items: center;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
     font-weight: 650;
     padding-left: 16%;
     padding-right: 16%;
@@ -106,7 +114,7 @@ a {
     padding-top: 15px;
     padding-left: 16%;
     padding-right: 16%;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
 }
 
 /*
@@ -115,7 +123,7 @@ a {
 
 .copyright {
     font-size: 80%;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
     text-align: center;
     padding: 3%;
     padding-bottom: 1%;
@@ -141,7 +149,7 @@ a {
 }
 
 .legal-page a {
-    color: #ff7300;
+    color: var(--arf-color-brand-orange);
 }
 
 .legal-page h1,
@@ -160,7 +168,7 @@ a {
     transform: translateX(-50%);
     border-radius: 8px;
     z-index: 9999;
-    background-color: #27ae60;
+    background-color: var(--arf-color-state-success);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transition: top 0.5s ease-in-out;
 }
@@ -174,7 +182,7 @@ a {
 }
 
 .dynamic-flash-message .text {
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
     text-align: center;
     color: #fff;
     font-size: 1rem;

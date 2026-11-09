@@ -1,5 +1,5 @@
 # Thin wrappers over the native tools. `make check` is what CI runs.
-.PHONY: check lint lint-i18n test build fmt pint-test phpstan install
+.PHONY: check lint lint-i18n test build fmt pint-test phpstan install tokens tokens-check
 
 install:
 	composer install
@@ -31,3 +31,11 @@ pint-test:
 # Not part of `check` yet: existing errors need a baseline first.
 phpstan:
 	vendor/bin/phpstan analyse --memory-limit=1G
+
+TOKENS_URL := https://raw.githubusercontent.com/Arffornia/Arffornia_Assets/main/ui/tokens/dist/tokens.css
+
+tokens:
+	curl -fsSL $(TOKENS_URL) -o public/css/tokens.css
+
+tokens-check:
+	curl -fsSL $(TOKENS_URL) | diff -u public/css/tokens.css -

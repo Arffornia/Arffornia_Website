@@ -45,3 +45,11 @@ jobs:
 
       - name: make check
         run: make check
+
+  tokens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: tokens.css matches Arffornia_Assets main
+        run: make tokens-check

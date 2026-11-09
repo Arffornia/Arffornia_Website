@@ -22,7 +22,7 @@
 
 .skinContainer {
     backdrop-filter: blur(4px);
-    border: solid 5px #ff7300;
+    border: solid 5px var(--arf-color-brand-orange);
     border-radius: 30px;
     display: block;
     background-color: rgba(0, 0, 0, 0.637);

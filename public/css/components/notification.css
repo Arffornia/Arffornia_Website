@@ -11,7 +11,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
 }
 
 /*
@@ -20,8 +20,8 @@
 .notification-content {
     width: 300px;
     height: 90px;
-    background-color: #261d31;
-    border: 2px solid #ff7300;
+    background-color: var(--arf-color-plum-850);
+    border: 2px solid var(--arf-color-brand-orange);
     border-radius: 2em 20px 2.5em 0.2in;
     display: flex;
     position: relative;
@@ -55,17 +55,17 @@
     right: 0;
     color: #fff;
     font-weight: 700;
-    border: 2px solid #ff7300;
+    border: 2px solid var(--arf-color-brand-orange);
     border-radius: 50%;
     text-align: center;
     line-height: 17px;
     cursor: pointer;
-    background-color: #261d31;
+    background-color: var(--arf-color-plum-850);
 }
 
 /* A minimal addition for better user experience on a website */
 .notification-content .close-btn:hover {
-    background-color: #ff7300;
+    background-color: var(--arf-color-brand-orange);
 }
 
 .notification-content .time {

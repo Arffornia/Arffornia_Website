@@ -10,7 +10,7 @@
     border-radius: 5px;
     padding: 2px 10px;
     transition: 0.3s all ease;
-    background-color: #ff7300;
+    background-color: var(--arf-color-brand-orange);
     display: block;
     outline: none;
     border: none;
@@ -20,7 +20,7 @@
 
 .mediumPlayBtn:hover {
     font-size: 140%;
-    box-shadow: 0px 15px 20px #ff730097;
+    box-shadow: 0px 15px 20px color-mix(in srgb, var(--arf-color-brand-orange) 59%, transparent);
     transform: translateY(-3px);
 }
 
@@ -79,7 +79,7 @@
     font-size: 2.3rem;
     font-weight: 600;
     color: black;
-    border-left: 4px solid #ff7300;
+    border-left: 4px solid var(--arf-color-brand-orange);
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
     padding-left: 10px;
@@ -165,7 +165,7 @@
 }
 
 .player {
-    border: solid 5px #ff7300;
+    border: solid 5px var(--arf-color-brand-orange);
     border-radius: 30px;
     display: block;
     background-color: #160020d1;
@@ -304,7 +304,7 @@
 
 .podium .score {
     font-weight: 500;
-    color: #ff7300;
+    color: var(--arf-color-brand-orange);
 }
 
 .newsContent .seeMoreBtnContainer {
