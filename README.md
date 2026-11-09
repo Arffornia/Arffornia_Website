@@ -85,12 +85,15 @@ Shop purchases, votes and the daily login streak queue rows in `pending_rewards`
 `App\Rewards\RewardCatalog`; a new type (pets, cosmetics) is one class there plus its handler in the mod.
 
 The game server lists a player's rewards, then claims each one with a random `Idempotency-Key` before delivering
-it. Repeating a claim with the same key answers `200` with `status: replayed`; another key gets `409`.
+it (claim, then deliver: at most once). Repeating a claim with the same key answers `200` with `status: replayed`,
+so the game server reuses a key until the claim succeeds; another key gets `409`. The game server enforces its own
+allow-lists for permission prefixes and rank groups.
 
 Rewards stored before typed contents were converted by `php artisan rewards:convert-legacy` (run by a migration;
 `--dry-run` reports only). Known `give`, `lp user ... permission set` and `lp user ... parent add` commands become
 entries, `say`/`tellraw` are dropped, and anything else puts the reward `on_hold` with a `hold_reason` (or leaves a
-shop item without `contents`, so it cannot be bought). The legacy `commands` column is still written for game
+shop item without `contents`, so it cannot be bought). Each held reward is logged; release one with
+`php artisan rewards:release <id> '<contents JSON>'`. The legacy `commands` column is still written for game
 servers on a mod version that reads it over JDBC; it goes away once they are updated.
 
 Streak and vote rewards are set in `config/rewards.php` (`REWARDS_STREAK_TIMEZONE`, default `Europe/Paris`).

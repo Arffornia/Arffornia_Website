@@ -2,7 +2,7 @@
 
 namespace App\Rewards\Types;
 
-/** Rolls of a loot table the game server owns (`<namespace>:lucky_box/<path>`); the website never picks the loot. */
+/** Rolls of a loot table the game server owns: box `ns:path` is table `ns:lucky_box/path`. The website never picks the loot. */
 final class LuckyBoxReward implements RewardType
 {
     public const MAX_COUNT = 64;

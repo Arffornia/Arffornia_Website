@@ -11,7 +11,12 @@ return new class extends Migration
     {
         // The enum's CHECK constraint survives ->change() on Postgres; the allowed statuses now live in PendingReward.
         if (DB::getDriverName() === 'pgsql') {
-            DB::statement('ALTER TABLE pending_rewards DROP CONSTRAINT IF EXISTS pending_rewards_status_check');
+            $checks = DB::select(
+                "SELECT conname FROM pg_constraint WHERE conrelid = 'pending_rewards'::regclass AND contype = 'c' AND pg_get_constraintdef(oid) LIKE '%status%'"
+            );
+            foreach ($checks as $check) {
+                DB::statement('ALTER TABLE pending_rewards DROP CONSTRAINT "' . str_replace('"', '""', $check->conname) . '"');
+            }
         }
 
         Schema::table('pending_rewards', function (Blueprint $table) {
@@ -47,6 +52,7 @@ return new class extends Migration
         });
 
         DB::table('pending_rewards')->where('status', 'on_hold')->update(['status' => 'failed']);
+        DB::table('pending_rewards')->where('status', 'pending')->where('source', 'streak')->update(['status' => 'failed']);
 
         Schema::table('pending_rewards', function (Blueprint $table) {
             $table->dropIndex(['user_id', 'status']);

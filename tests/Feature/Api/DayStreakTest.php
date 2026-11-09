@@ -36,6 +36,7 @@ class DayStreakTest extends ApiTestCase
 
         $reward = PendingReward::findOrFail($response->json('reward_id'));
         $this->assertSame('streak', $reward->source);
+        $this->assertSame([], $reward->commands);
         $this->assertSame([['type' => 'lucky_box', 'box' => 'arffornia:streak', 'count' => 1]], $reward->contents);
     }
 

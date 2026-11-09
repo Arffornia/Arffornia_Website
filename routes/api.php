@@ -90,7 +90,7 @@ Route::middleware(['auth:sanctum', 'anyRole:nuvotifier_service'])->group(functio
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,reward_service'])->group(function () {
     Route::get('/rewards/pending', [RewardController::class, 'pending']);
-    Route::post('/rewards/{reward}/claim', [RewardController::class, 'claim'])->whereNumber('reward');
+    Route::post('/rewards/{reward}/claim', [RewardController::class, 'claim'])->where('reward', '[0-9]{1,18}');
     Route::post('/rewards/day-streak', [RewardController::class, 'dayStreak']);
 });
 
