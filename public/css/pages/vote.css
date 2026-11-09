@@ -1,5 +1,5 @@
 * {
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
 }
 
 body {
@@ -61,7 +61,7 @@ header .contentContainer a {
     font-weight: 650;
     margin: 0;
     color: white;
-    border-left: 4px solid #ff7300;
+    border-left: 4px solid var(--arf-color-brand-orange);
     border-radius: 3px;
 }
 
@@ -125,7 +125,7 @@ header .contentContainer a {
     align-items: center;
     width: 50px;
     height: 50px;
-    background-color: #ff7300;
+    background-color: var(--arf-color-brand-orange);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -133,9 +133,9 @@ header .contentContainer a {
 }
 
 .site-card .action-btn:hover {
-    background-color: #e66900;
+    background-color: var(--arf-color-brand-orange-strong);
     transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(255, 115, 0, 0.3);
+    box-shadow: 0 8px 15px color-mix(in srgb, var(--arf-color-brand-orange) 30%, transparent);
 }
 
 .site-card .action-btn svg {
@@ -162,7 +162,7 @@ header .contentContainer a {
 }
 
 .leaderboard h3 {
-    border-bottom: 2px solid #ff7300;
+    border-bottom: 2px solid var(--arf-color-brand-orange);
     padding-bottom: 10px;
     margin-top: 0;
     margin-bottom: 15px;

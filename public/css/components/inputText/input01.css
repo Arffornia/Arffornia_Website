@@ -22,7 +22,7 @@
 }
 
 .inputText01Container:hover {
-    border-color: #ff7300;
+    border-color: var(--arf-color-brand-orange);
 }
 
 .inputText01Container:focus{
@@ -45,7 +45,7 @@
     border-radius: 5px;
     padding: 2px 10px;
     transition: 0.3s all ease;
-    background-color: #ff7300;
+    background-color: var(--arf-color-brand-orange);
     display: block;
     outline: none;
     border: none;
@@ -57,7 +57,7 @@
 
 .inputButton01Container:hover {
     font-size: 140%;
-    box-shadow: 0px 15px 20px #ff730097;
+    box-shadow: 0px 15px 20px color-mix(in srgb, var(--arf-color-brand-orange) 59%, transparent);
     transform: translateY(-3px);
 }
 
@@ -78,7 +78,7 @@
 }
 
 .inputCheckBox01Container:hover {
-    border-color: #ff7300;
+    border-color: var(--arf-color-brand-orange);
 }
 
 .inputCheckBox01Container:focus{
@@ -107,7 +107,7 @@
 }
 
 .inputFile01Container:hover {
-    border-color: #ff7300;
+    border-color: var(--arf-color-brand-orange);
 }
 
 .inputFile01Container:focus {

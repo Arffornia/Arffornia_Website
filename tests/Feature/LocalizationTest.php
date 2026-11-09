@@ -53,7 +53,7 @@ class LocalizationTest extends TestCase
         $response = $this->withUnencryptedCookie('locale', $locale)->get($page);
 
         $response->assertOk();
-        $response->assertSee('<html lang="' . $locale . '">', false);
+        $response->assertSee('<html lang="' . $locale . '"', false);
         $this->assertSame([], $this->missingKeys, 'Missing translation keys');
         // A raw key in the output (e.g. "home.slogan.intro") means a missing translation.
         $this->assertDoesNotMatchRegularExpression(
@@ -78,19 +78,19 @@ class LocalizationTest extends TestCase
     public function test_default_locale_is_french_without_preference(): void
     {
         // Symfony test requests send "Accept-Language: en-us" by default: clear it.
-        $this->withHeader('Accept-Language', '')->get('/reglement')->assertOk()->assertSee('<html lang="fr">', false)->assertSee('Règlement');
+        $this->withHeader('Accept-Language', '')->get('/reglement')->assertOk()->assertSee('<html lang="fr"', false)->assertSee('Règlement');
     }
 
     public function test_accept_language_is_used_when_no_choice_was_made(): void
     {
         $this->withHeader('Accept-Language', 'en-US,en;q=0.9')
             ->get('/reglement')
-            ->assertSee('<html lang="en">', false)
+            ->assertSee('<html lang="en"', false)
             ->assertSee('Server rules');
 
         $this->withHeader('Accept-Language', 'de-DE,fr;q=0.8')
             ->get('/reglement')
-            ->assertSee('<html lang="fr">', false);
+            ->assertSee('<html lang="fr"', false);
     }
 
     public function test_cookie_choice_wins_over_accept_language(): void
@@ -98,7 +98,7 @@ class LocalizationTest extends TestCase
         $this->withHeader('Accept-Language', 'en')
             ->withUnencryptedCookie('locale', 'fr')
             ->get('/reglement')
-            ->assertSee('<html lang="fr">', false);
+            ->assertSee('<html lang="fr"', false);
     }
 
     public function test_unsupported_cookie_value_is_ignored(): void
@@ -107,7 +107,7 @@ class LocalizationTest extends TestCase
             ->withUnencryptedCookie('locale', '../../etc')
             ->get('/reglement')
             ->assertOk()
-            ->assertSee('<html lang="en">', false);
+            ->assertSee('<html lang="en"', false);
     }
 
     public function test_switcher_stores_the_choice_in_a_cookie(): void

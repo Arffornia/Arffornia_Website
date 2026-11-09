@@ -67,7 +67,7 @@
 .versions .item, .images .item {
     padding: 10px;
     width: 100%;
-    border: solid 5px #ff7300;
+    border: solid 5px var(--arf-color-brand-orange);
     border-radius: 15px;
 }
 

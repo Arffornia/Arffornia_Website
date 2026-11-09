@@ -36,7 +36,7 @@ header .contentContainer a {
 .shop {
     flex: 1;
     padding-top: 70px;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
 }
 
 .details-panel-container {
@@ -54,13 +54,13 @@ header .contentContainer a {
     min-width: 350px;
     background: linear-gradient(135deg, rgba(15, 15, 15, 0.8) 0%, rgba(10, 10, 10, 0.6) 100%);
     backdrop-filter: blur(10px);
-    border: 3px solid #ff7300;
+    border: 3px solid var(--arf-color-brand-orange);
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     padding: 30px 30px;
     color: #fff;
     overflow-y: auto;
-    font-family: Montserrat, sans-serif;
+    font-family: var(--arf-font-body);
     transition: none;
 }
 
@@ -87,7 +87,7 @@ header .contentContainer a {
     margin: 0;
     padding-left: 10px;
     margin-bottom: 15px;
-    border-left: 4px solid #ff7300;
+    border-left: 4px solid var(--arf-color-brand-orange);
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
 }
@@ -110,7 +110,7 @@ header .contentContainer a {
         rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
     backdrop-filter: blur(4px);
     border-radius: 15px;
-    border: 2px solid #ff7300;
+    border: 2px solid var(--arf-color-brand-orange);
     padding: 15px;
     text-align: center;
     align-items: center;
@@ -134,7 +134,7 @@ header .contentContainer a {
 .item-price {
     font-size: 115%;
     font-weight: 700;
-    color: #f39c12;
+    color: var(--arf-color-state-warning);
     margin: 0;
 }
 
@@ -167,7 +167,7 @@ header .contentContainer a {
     justify-content: space-between;
     align-items: baseline;
     width: 100%;
-    border-bottom: 2px solid #ff7300;
+    border-bottom: 2px solid var(--arf-color-brand-orange);
     padding-bottom: 10px;
     margin-bottom: 15px;
 }
@@ -205,7 +205,7 @@ header .contentContainer a {
 #details-price {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #f39c12;
+    color: var(--arf-color-state-warning);
     white-space: nowrap;
     margin-left: 15px;
 }
@@ -221,7 +221,7 @@ header .contentContainer a {
     font-size: 1.2rem;
     font-weight: bold;
     color: white;
-    background-color: #ff7300;
+    background-color: var(--arf-color-brand-orange);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -233,7 +233,7 @@ header .contentContainer a {
 
 #buy-button:hover,
 .login-prompt-btn:hover {
-    background-color: #d96400;
+    background-color: var(--arf-color-brand-orange-strong);
     transform: scale(1.03);
 }
 
