@@ -7,6 +7,7 @@ use App\Models\Stage;
 use App\Models\Milestone;
 use App\Models\Progression;
 use App\Models\MilestoneClosure;
+use App\Models\Team;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -40,12 +41,17 @@ class ProgressionService
 
     /**
      * Adds a milestone to a given progression and checks for a stage-up. Used by machines, which
-     * belong to the progression they were placed for rather than to a player.
+     * belong to the progression they were placed for rather than to a player. Returns false, writing
+     * nothing, when the progression is retired (its team was soft-deleted).
      */
     public function addMilestoneToProgression(Progression $progression, int $milestoneId): bool
     {
         return DB::transaction(function () use ($progression, $milestoneId) {
             $progression = Progression::whereKey($progression->id)->lockForUpdate()->firstOrFail();
+            $teams = Team::withTrashed()->where('progression_id', $progression->id)->lockForUpdate()->get();
+            if ($teams->isNotEmpty() && $teams->every(fn (Team $team) => $team->trashed())) {
+                return false;
+            }
 
             $completed = $progression->completed_milestones ?? [];
 

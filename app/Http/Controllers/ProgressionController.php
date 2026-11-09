@@ -73,11 +73,9 @@ class ProgressionController extends Controller
             if (!is_numeric($milestoneId) || !Milestone::find($milestoneId)) {
                 return response()->json(['message' => __('api.progression.invalid_milestone_id')], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-            if ($this->teamRepository->isProgressionRetired($progression->id)) {
+            if (!$this->progressionService->addMilestoneToProgression($progression, (int) $milestoneId)) {
                 return response()->json(['message' => __('api.progression.retired')], Response::HTTP_CONFLICT);
             }
-
-            $this->progressionService->addMilestoneToProgression($progression, (int) $milestoneId);
             return response()->json(['message' => __('api.progression.milestone_added')]);
         }
 
