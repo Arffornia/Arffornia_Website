@@ -140,10 +140,10 @@ class PublicEndpointsContractTest extends ApiTestCase
     {
         $player = $this->player();
 
-        // The mod reads id, completed_milestones and current_milestone_id (ProgressionData DTO)
+        // The mod reads id, completed_milestones, current_milestone_id and retired (ProgressionData DTO)
         $this->getJson("/api/progression/{$player->active_progression_id}")
             ->assertOk()
-            ->assertJsonStructure(['id', 'completed_milestones', 'current_milestone_id'])
+            ->assertJsonStructure(['id', 'completed_milestones', 'current_milestone_id', 'retired'])
             ->assertJsonPath('id', $player->active_progression_id);
     }
 

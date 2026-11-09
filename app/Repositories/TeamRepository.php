@@ -77,4 +77,13 @@ class TeamRepository
         }
         return false;
     }
+
+    /**
+     * A team progression is retired once its team is soft-deleted. Solo progressions never are.
+     */
+    public function isProgressionRetired(int $progressionId): bool
+    {
+        return Team::onlyTrashed()->where('progression_id', $progressionId)->exists()
+            && !Team::where('progression_id', $progressionId)->exists();
+    }
 }
