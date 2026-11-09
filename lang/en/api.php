@@ -69,4 +69,9 @@ return [
         'user_not_found' => 'User not found, vote ignored.',
         'recorded' => 'Vote recorded successfully.',
     ],
+    'reward' => [
+        'not_found' => 'Reward not found.',
+        'already_claimed' => 'Reward already claimed.',
+        'not_claimable' => 'Reward cannot be claimed.',
+    ],
 ];

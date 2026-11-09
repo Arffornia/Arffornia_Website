@@ -94,7 +94,7 @@ php artisan route:list --path=api
 - OPcache is built into PHP 8.5; do not add it to `docker-php-ext-install`.
 - Production images are built with `composer install --no-dev`: faker, ignition, phpunit are absent, so
   seeders that use factories do not run in prod.
-- The mod reads `pending_rewards` over JDBC: schema changes there are cross-repo changes.
+- Rewards reach the mod through `/api/rewards/*` as typed `contents` (`App\Rewards\RewardCatalog`); never store or run console commands. Mod versions before the rewards API still read `pending_rewards.commands` over JDBC.
 - `arffornia/minecraft-oauth` is required as `dev-main` (fork of an abandoned package).
 - Mojang's `/user/profiles/{uuid}/names` endpoint no longer exists; code using it is dead.
 - `public/css/tokens.css` is a copy of `Arffornia_Assets/ui/tokens/dist/tokens.css` (spec 018): never edit it, refresh it with `make tokens`; CI (`make tokens-check`) fails when it drifts from Assets main. Use `var(--arf-*)` for brand colours and fonts.

@@ -5,6 +5,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\RewardController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\LauncherController;
@@ -85,6 +86,12 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
 
 Route::middleware(['auth:sanctum', 'anyRole:nuvotifier_service'])->group(function () {
     Route::post('/vote/nuvotifier', [VoteController::class, 'handleNuvotifierVote']);
+});
+
+Route::middleware(['auth:sanctum', 'anyRole:admin,reward_service'])->group(function () {
+    Route::get('/rewards/pending', [RewardController::class, 'pending']);
+    Route::post('/rewards/{reward}/claim', [RewardController::class, 'claim'])->where('reward', '[0-9]{1,18}');
+    Route::post('/rewards/day-streak', [RewardController::class, 'dayStreak']);
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {

@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\PendingReward;
 use App\Models\User;
 use App\Repositories\VoteRepository;
+use App\Rewards\LegacyCommandConverter;
+use App\Rewards\RewardCatalog;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -109,7 +111,13 @@ class VoteService
      */
     private function grantReward(User $user): void
     {
-        $rewardCommand = "give {$user->name} minecraft:diamond 1"; // Customize reward
-        PendingReward::create(['user_id' => $user->id, 'commands' => [$rewardCommand], 'status' => 'pending']);
+        $contents = RewardCatalog::validate(config('rewards.vote'));
+        PendingReward::create([
+            'user_id' => $user->id,
+            'contents' => $contents,
+            'commands' => LegacyCommandConverter::toLegacyCommands($contents),
+            'status' => PendingReward::STATUS_PENDING,
+            'source' => PendingReward::SOURCE_VOTE,
+        ]);
     }
 }

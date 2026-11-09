@@ -66,4 +66,9 @@ return [
         'user_not_found' => 'Utilisateur introuvable, vote ignoré.',
         'recorded' => 'Vote enregistré.',
     ],
+    'reward' => [
+        'not_found' => 'Récompense introuvable.',
+        'already_claimed' => 'Récompense déjà récupérée.',
+        'not_claimable' => 'Cette récompense ne peut pas être récupérée.',
+    ],
 ];
