@@ -29,12 +29,23 @@ class ProgressionService
      */
     public function addMilestone(User $user, int $milestoneId): bool
     {
-        return DB::transaction(function () use ($user, $milestoneId) {
-            $progression = $user->activeProgression;
-            if (!$progression) {
-                Log::error("ProgressionService: Could not find active progression for user {$user->uuid}");
-                return false;
-            }
+        $progression = $user->activeProgression;
+        if (!$progression) {
+            Log::error("ProgressionService: Could not find active progression for user {$user->uuid}");
+            return false;
+        }
+
+        return $this->addMilestoneToProgression($progression, $milestoneId);
+    }
+
+    /**
+     * Adds a milestone to a given progression and checks for a stage-up. Used by machines, which
+     * belong to the progression they were placed for rather than to a player.
+     */
+    public function addMilestoneToProgression(Progression $progression, int $milestoneId): bool
+    {
+        return DB::transaction(function () use ($progression, $milestoneId) {
+            $progression = Progression::whereKey($progression->id)->lockForUpdate()->firstOrFail();
 
             $completed = $progression->completed_milestones ?? [];
 

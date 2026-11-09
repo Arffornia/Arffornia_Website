@@ -38,6 +38,8 @@ return [
         'milestone_removed' => 'Milestone removed successfully.',
         'target_updated' => 'Target milestone updated successfully.',
         'target_update_failed' => 'Failed to update target milestone.',
+        'not_found' => 'Progression not found.',
+        'retired' => 'This progression belongs to a team that no longer exists.',
     ],
     'stages' => [
         'import_invalid' => 'Invalid file format.',

@@ -8,6 +8,7 @@ use App\Services\UserService;
 use App\Models\Progression;
 use Illuminate\Http\JsonResponse;
 use App\Services\ProgressionService;
+use App\Repositories\TeamRepository;
 use Illuminate\Support\Facades\Validator;
 use Log;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,11 +18,13 @@ class ProgressionController extends Controller
 {
     protected ProgressionService $progressionService;
     protected UserService $userService;
+    protected TeamRepository $teamRepository;
 
-    public function __construct(ProgressionService $progressionService, UserService $userService)
+    public function __construct(ProgressionService $progressionService, UserService $userService, TeamRepository $teamRepository)
     {
         $this->progressionService = $progressionService;
         $this->userService = $userService;
+        $this->teamRepository = $teamRepository;
     }
 
     private function getUserFromRequest(Request $request)
@@ -48,17 +51,41 @@ class ProgressionController extends Controller
     public function getProgressionById(Progression $progression): JsonResponse
     {
         $progression->load('currentTargetedMilestone');
-        return response()->json($progression);
+        return response()->json(array_merge($progression->toArray(), [
+            'retired' => $this->teamRepository->isProgressionRetired($progression->id),
+        ]));
     }
 
+    /**
+     * Completes a milestone in a player's active progression (`player_uuid`) or, for machines that
+     * belong to the progression they were placed for, in a given progression (`progression_id`).
+     */
     public function addMilestone(Request $request): JsonResponse
     {
+        $milestoneId = $request->input('milestone_id');
+
+        if ($request->has('progression_id')) {
+            $progressionId = $request->input('progression_id');
+            $progression = is_int($progressionId) || ctype_digit((string) $progressionId) ? Progression::find($progressionId) : null;
+            if (!$progression) {
+                return response()->json(['message' => __('api.progression.not_found')], Response::HTTP_NOT_FOUND);
+            }
+            if (!is_numeric($milestoneId) || !Milestone::find($milestoneId)) {
+                return response()->json(['message' => __('api.progression.invalid_milestone_id')], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            if ($this->teamRepository->isProgressionRetired($progression->id)) {
+                return response()->json(['message' => __('api.progression.retired')], Response::HTTP_CONFLICT);
+            }
+
+            $this->progressionService->addMilestoneToProgression($progression, (int) $milestoneId);
+            return response()->json(['message' => __('api.progression.milestone_added')]);
+        }
+
         $user = $this->getUserFromRequest($request);
         if (!$user) {
             return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
         }
 
-        $milestoneId = $request->input('milestone_id');
         if (!is_numeric($milestoneId) || !Milestone::find($milestoneId)) {
             return response()->json(['message' => __('api.progression.invalid_milestone_id')], Response::HTTP_UNPROCESSABLE_ENTITY);
         }

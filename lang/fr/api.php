@@ -35,6 +35,8 @@ return [
         'milestone_removed' => 'Jalon retiré.',
         'target_updated' => 'Jalon ciblé mis à jour.',
         'target_update_failed' => 'Impossible de mettre à jour le jalon ciblé.',
+        'not_found' => 'Progression introuvable.',
+        'retired' => "Cette progression appartient à une équipe qui n'existe plus.",
     ],
     'stages' => [
         'import_invalid' => 'Format de fichier invalide.',
