@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
+use GuzzleHttp\Exception\GuzzleException;
 
 
 
@@ -201,17 +202,16 @@ class UserController extends Controller
 
         try {
             $user = $this->userService->getUserFromMsAuthCallback($code);
-
-            if ($user) {
-                return redirect('/')->with('message', __('messages.auth.welcome', ['name' => $user->name]));
-            }
-
-            return redirect('/')->with('error', __('messages.auth.could_not_authenticate'));
-        } catch (MinecraftOauthException $e) {
-            Log::error('Minecraft OAuth Exception: ' . $e->getMessage());
+        } catch (MinecraftOauthException | GuzzleException $e) {
+            Log::warning('Microsoft OAuth code exchange failed.', [
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+            ]);
 
             return redirect('/')->with('error', __('messages.auth.failed'));
         }
+
+        return redirect('/')->with('message', __('messages.auth.welcome', ['name' => $user->name]));
     }
 
     /**

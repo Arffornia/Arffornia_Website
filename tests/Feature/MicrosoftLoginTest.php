@@ -8,9 +8,12 @@ use App\Services\UserService;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\MinecraftProfile;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Request as PsrRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class MicrosoftLoginTest extends TestCase
@@ -28,8 +31,7 @@ class MicrosoftLoginTest extends TestCase
             'app.azure.oauth.client.secret' => 'client-secret',
             'app.azure.oauth.redirect_uri' => 'https://example.test/login/connect',
         ]);
-        // Name-sync lookup done after login
-        Http::fake(['api.mojang.com/*' => Http::response([], 404)]);
+        Http::preventStrayRequests();
     }
 
     private function fakeOauth(): Mockery\MockInterface
@@ -104,6 +106,30 @@ class MicrosoftLoginTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_callback_without_state_query_param_is_rejected(): void
+    {
+        $this->fakeOauth()->shouldNotReceive('fetchProfileWithOAuthUI');
+
+        $this->withSession([self::STATE_KEY => 'expected-state'])
+            ->get('/login/connect?code=the-code')
+            ->assertRedirect('/')
+            ->assertSessionHas('error');
+
+        $this->assertGuest();
+    }
+
+    public function test_callback_with_array_state_is_rejected(): void
+    {
+        $this->fakeOauth()->shouldNotReceive('fetchProfileWithOAuthUI');
+
+        $this->withSession([self::STATE_KEY => 'expected-state'])
+            ->get('/login/connect?code=the-code&state[]=expected-state')
+            ->assertRedirect('/')
+            ->assertSessionHas('error');
+
+        $this->assertGuest();
+    }
+
     public function test_callback_without_state_in_session_is_rejected(): void
     {
         $this->fakeOauth()->shouldNotReceive('fetchProfileWithOAuthUI');
@@ -135,12 +161,23 @@ class MicrosoftLoginTest extends TestCase
             ->get('/login/connect?state=expected-state')
             ->assertRedirect('/')
             ->assertSessionHas('error');
+
+        $this->assertGuest();
     }
 
-    public function test_oauth_library_failure_redirects_with_a_message(): void
+    public static function exchangeFailures(): array
+    {
+        return [
+            'library error' => [fn () => new MinecraftOauthException('nope')],
+            'network error' => [fn () => new ConnectException('timeout', new PsrRequest('POST', 'https://login.live.com/oauth20_token.srf'))],
+        ];
+    }
+
+    #[DataProvider('exchangeFailures')]
+    public function test_failed_code_exchange_redirects_with_a_message(\Closure $makeException): void
     {
         $this->fakeOauth()->shouldReceive('fetchProfileWithOAuthUI')
-            ->andThrow(new MinecraftOauthException('nope'));
+            ->andThrow($makeException());
 
         $this->withSession([self::STATE_KEY => 'expected-state'])
             ->get('/login/connect?code=the-code&state=expected-state')
@@ -148,5 +185,16 @@ class MicrosoftLoginTest extends TestCase
             ->assertSessionHas('error', 'Authentication failed. Please try again.');
 
         $this->assertGuest();
+    }
+
+    public function test_login_renames_a_returning_player_from_the_microsoft_profile(): void
+    {
+        User::factory()->create(['uuid' => '069a79f444e94726a5befca90e38aaf5', 'name' => 'OldName']);
+        $this->fakeOauth()->shouldReceive('fetchProfileWithOAuthUI')->andReturn($this->profile());
+
+        $this->withSession([self::STATE_KEY => 'expected-state'])
+            ->get('/login/connect?code=the-code&state=expected-state');
+
+        $this->assertSame('Notch', User::where('uuid', '069a79f444e94726a5befca90e38aaf5')->sole()->name);
     }
 }

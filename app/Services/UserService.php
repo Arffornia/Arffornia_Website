@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use Arffornia\MinecraftOauth\Exceptions\MinecraftOauthException;
+use GuzzleHttp\Exception\GuzzleException;
 
 class UserService
 {
@@ -178,6 +179,7 @@ class UserService
      * @return User
      *
      * @throws MinecraftOauthException
+     * @throws GuzzleException
      */
     public function getUserFromMsAuthCallback(string $code)
     {
@@ -185,10 +187,11 @@ class UserService
         $redirectUri = config('app.azure.oauth.redirect_uri');
         $clientSecret = urlencode(config('app.azure.oauth.client.secret'));
 
+        // The library writes the code into a form body without encoding it.
         $profile = app(MinecraftOauth::class)->fetchProfileWithOAuthUI(
             $clientId,
             $clientSecret,
-            $code,
+            urlencode($code),
             $redirectUri,
         );
 
@@ -229,11 +232,8 @@ class UserService
             $user =  $this->repository->createUser($profile->username(), $cleanUuid);
         }
 
-        // Check of the player has change his Minecraft pseudo
-        $tempPseudo = $this->getPlayerNameFromUuid($cleanUuid);
-
-        if ($tempPseudo != null && $user->name != $tempPseudo) {
-            $user->name = $tempPseudo;
+        if ($user->name !== $profile->username()) {
+            $user->name = $profile->username();
             $user->save();
         }
 
