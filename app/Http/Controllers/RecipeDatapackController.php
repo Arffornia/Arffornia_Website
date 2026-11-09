@@ -15,8 +15,8 @@ class RecipeDatapackController extends Controller
     /** The recipe datapack as a zip; the ETag is the sha256 of the body so the mod can verify and skip unchanged packs. */
     public function show(Request $request): Response
     {
-        $zip = $this->datapacks->build();
-        $etag = '"' . hash('sha256', $zip) . '"';
+        [$zip, $sha] = $this->datapacks->current();
+        $etag = '"' . $sha . '"';
 
         if (in_array($etag, $request->getETags(), true)) {
             return response('', Response::HTTP_NOT_MODIFIED)->setEtag(trim($etag, '"'));

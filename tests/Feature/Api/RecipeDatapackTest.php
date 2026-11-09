@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Models\MilestoneUnlock;
 use App\Models\Recipe;
+use App\Services\RecipeDatapackService;
 use ZipArchive;
 
 /**
@@ -74,17 +75,27 @@ class RecipeDatapackTest extends ApiTestCase
         ], $entries['data/arffornia/recipe/mekanism_steel_casing_recipe.json']);
     }
 
-    public function test_datapack_is_byte_identical_for_identical_data(): void
+    public function test_datapack_bytes_do_not_depend_on_time_or_row_order(): void
     {
+        $service = app(RecipeDatapackService::class);
         foreach (['a', 'b', 'c'] as $suffix) {
-            Recipe::factory()->create(['milestone_unlock_id' => $this->unlock(["mekanism:item_$suffix"])->id]);
+            Recipe::factory()->create(['type' => "arffornia:recipe_$suffix", 'milestone_unlock_id' => $this->unlock(["mekanism:item_$suffix"])->id]);
         }
+        $first = $service->build();
+        sleep(2);
+        $second = $service->build();
 
-        $first = $this->get('/api/progression/datapack');
-        sleep(1);
-        $second = $this->get('/api/progression/datapack');
+        $this->assertSame(hash('sha256', $first), hash('sha256', $second));
 
-        $this->assertSame(hash('sha256', $first->getContent()), hash('sha256', $second->getContent()));
+        Recipe::query()->delete();
+        MilestoneUnlock::query()->delete();
+        foreach (['c', 'b', 'a'] as $suffix) {
+            Recipe::factory()->create(['type' => "arffornia:recipe_$suffix", 'milestone_unlock_id' => $this->unlock(["mekanism:item_$suffix"])->id]);
+        }
+        $reversed = $service->files();
+
+        $this->assertSame(['data/arffornia/recipe/recipe_a.json', 'data/arffornia/recipe/recipe_b.json', 'data/arffornia/recipe/recipe_c.json',
+            'data/mekanism/recipe/item_a.json', 'data/mekanism/recipe/item_b.json', 'data/mekanism/recipe/item_c.json'], array_keys($reversed));
     }
 
     public function test_etag_is_the_sha256_of_the_body_and_answers_not_modified(): void
@@ -98,13 +109,40 @@ class RecipeDatapackTest extends ApiTestCase
         $this->get('/api/progression/datapack', ['If-None-Match' => $etag])->assertStatus(304);
     }
 
-    public function test_datapack_skips_ids_that_could_escape_the_pack(): void
+    public function test_datapack_skips_ids_the_mod_would_reject(): void
     {
-        $this->unlock(['minecraft:../../evil', 'Not An Id', 'minecraft:stick']);
+        $this->unlock(['minecraft:../../evil', '..:stick', 'a..b:stick', 'minecraft:/x', 'minecraft:./x', 'minecraft:a//b', '.:x', 'Not An Id', 'minecraft:stick']);
 
         $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
 
         $this->assertEqualsCanonicalizing(['pack.mcmeta', 'data/minecraft/recipe/stick.json'], array_keys($entries));
+    }
+
+    public function test_recipe_with_an_invalid_ingredient_is_skipped_rather_than_published_cheaper(): void
+    {
+        $unlock = $this->unlock([]);
+        Recipe::factory()->create([
+            'type' => 'arffornia:broken',
+            'milestone_unlock_id' => $unlock->id,
+            'ingredients' => [['item' => 'minecraft:iron_ingot', 'count' => 1], ['item' => 'Minecraft:Diamond', 'count' => 1]],
+        ]);
+
+        $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
+
+        $this->assertArrayNotHasKey('data/arffornia/recipe/broken.json', $entries);
+    }
+
+    public function test_recipe_with_a_result_larger_than_a_stack_is_skipped(): void
+    {
+        Recipe::factory()->create([
+            'type' => 'arffornia:too_many',
+            'milestone_unlock_id' => $this->unlock([])->id,
+            'result' => [['item' => 'minecraft:stone', 'count' => 100]],
+        ]);
+
+        $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
+
+        $this->assertArrayNotHasKey('data/arffornia/recipe/too_many.json', $entries);
     }
 
     public function test_datapack_is_public(): void

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\MilestoneUnlock;
 use App\Models\Recipe;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use ZipArchive;
@@ -19,7 +20,11 @@ class RecipeDatapackService
 
     public const CRAFTER = 'arffornia:crafter';
 
-    private const RESOURCE_ID = '/^([a-z0-9_.-]+):([a-z0-9_.\/-]+)$/';
+    private const NAMESPACE = '[a-z0-9_.-]+';
+
+    private const PATH_SEGMENT = '[a-z0-9_.-]+';
+
+    private const MAX_STACK = 99;
 
     private const FIXED_MTIME = 315532800;
 
@@ -58,6 +63,25 @@ class RecipeDatapackService
         return $files;
     }
 
+    /**
+     * The zip and its sha256, cached until a recipe or an unlock changes.
+     *
+     * @return array{0: string, 1: string}
+     */
+    public function current(): array
+    {
+        $key = 'recipe-datapack:' . sha1(json_encode([
+            Recipe::count(), Recipe::max('updated_at'), Recipe::max('id'),
+            MilestoneUnlock::count(), MilestoneUnlock::max('updated_at'), MilestoneUnlock::max('id'),
+        ]));
+
+        return Cache::remember($key, now()->addHour(), function () {
+            $zip = $this->build();
+
+            return [$zip, hash('sha256', $zip)];
+        });
+    }
+
     /** @return string the zip bytes */
     public function build(): string
     {
@@ -85,13 +109,26 @@ class RecipeDatapackService
         }
     }
 
+    /** A `namespace:path` id the mod accepts: no `..` anywhere, no empty or `.` segment. */
+    public static function isResourceId(string $id): bool
+    {
+        $pattern = '/^' . self::NAMESPACE . ':' . self::PATH_SEGMENT . '(\\/' . self::PATH_SEGMENT . ')*$/';
+        if (! preg_match($pattern, $id) || str_contains($id, '..')) {
+            return false;
+        }
+        [$namespace, $path] = explode(':', $id, 2);
+
+        return $namespace !== '.' && ! in_array('.', explode('/', $path), true);
+    }
+
     private function recipePath(string $recipeId): ?string
     {
-        if (! preg_match(self::RESOURCE_ID, $recipeId, $m) || str_contains($m[2], '..')) {
+        if (! self::isResourceId($recipeId)) {
             return null;
         }
+        [$namespace, $path] = explode(':', $recipeId, 2);
 
-        return "data/{$m[1]}/recipe/{$m[2]}.json";
+        return "data/{$namespace}/recipe/{$path}.json";
     }
 
     /** @return array<string, mixed>|null */
@@ -99,13 +136,13 @@ class RecipeDatapackService
     {
         $ingredients = [];
         foreach ($recipe->ingredients ?? [] as $ingredient) {
-            if (! is_array($ingredient)) {
+            if ($ingredient === null) {
                 continue;
             }
-            $key = ! empty($ingredient['tag']) ? 'tag' : 'item';
-            $value = $ingredient[$key] ?? null;
-            if (! is_string($value) || ! preg_match(self::RESOURCE_ID, $value)) {
-                continue;
+            $key = is_array($ingredient) && ! empty($ingredient['tag']) ? 'tag' : 'item';
+            $value = is_array($ingredient) ? ($ingredient[$key] ?? null) : null;
+            if (! is_string($value) || ! self::isResourceId($value)) {
+                return null;
             }
             $id = $key . '|' . $value;
             $ingredients[$id] ??= ['ingredient' => [$key => $value], 'count' => 0];
@@ -114,9 +151,12 @@ class RecipeDatapackService
 
         $results = [];
         foreach ($recipe->result ?? [] as $result) {
-            if (is_array($result) && is_string($result['item'] ?? null) && preg_match(self::RESOURCE_ID, $result['item'])) {
-                $results[] = ['id' => $result['item'], 'count' => max(1, (int) ($result['count'] ?? 1))];
+            $count = is_array($result) ? (int) ($result['count'] ?? 1) : 0;
+            if (! is_array($result) || ! is_string($result['item'] ?? null) || ! self::isResourceId($result['item'])
+                || $count < 1 || $count > self::MAX_STACK) {
+                return null;
             }
+            $results[] = ['id' => $result['item'], 'count' => $count];
         }
 
         $milestoneId = $recipe->milestoneUnlock?->milestone_id;

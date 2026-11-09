@@ -26,7 +26,7 @@ Route::get('stages/player/get/{playerUuid}', [StagesController::class, 'playerSt
 Route::get('milestone/get/{milestone}', [StagesController::class, 'getMilestoneById']);
 
 Route::get('progression/config', [StagesController::class, 'getProgressionConfigForMod']);
-Route::get('progression/datapack', [RecipeDatapackController::class, 'show'])->middleware('throttle:30,1');
+Route::get('progression/datapack', [RecipeDatapackController::class, 'show'])->middleware('throttle:recipe-datapack');
 Route::get('progression/{progression}', [ProgressionController::class, 'getProgressionById']);
 
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);
