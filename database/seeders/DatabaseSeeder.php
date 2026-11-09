@@ -224,6 +224,12 @@ class DatabaseSeeder extends Seeder
                 'give {player} minecraft:gold_ingot 32',
                 'give {player} minecraft:diamond 8',
                 'give {player} minecraft:quartz 64'
+            ],
+            'contents' => [
+                ['type' => 'item', 'item' => 'minecraft:iron_ingot', 'count' => 64],
+                ['type' => 'item', 'item' => 'minecraft:gold_ingot', 'count' => 32],
+                ['type' => 'item', 'item' => 'minecraft:diamond', 'count' => 8],
+                ['type' => 'item', 'item' => 'minecraft:quartz', 'count' => 64],
             ]
         ]);
 
@@ -239,6 +245,11 @@ class DatabaseSeeder extends Seeder
                 'give {player} minecraft:redstone_block 32',
                 'give {player} minecraft:netherite_ingot 2',
                 'xp add {player} 500 levels'
+            ],
+            'contents' => [
+                ['type' => 'item', 'item' => 'minecraft:iron_block', 'count' => 16],
+                ['type' => 'item', 'item' => 'minecraft:redstone_block', 'count' => 32],
+                ['type' => 'item', 'item' => 'minecraft:netherite_ingot', 'count' => 2],
             ]
         ]);
 
@@ -252,6 +263,9 @@ class DatabaseSeeder extends Seeder
             'commands' => [
                 'lp user {player} permission set cosmetic.pet.kitten true',
                 'say {player} a adopté un adorable chaton !'
+            ],
+            'contents' => [
+                ['type' => 'permission', 'node' => 'cosmetic.pet.kitten', 'value' => true],
             ]
         ]);
 
@@ -265,6 +279,9 @@ class DatabaseSeeder extends Seeder
             'commands' => [
                 'lp user {player} permission set cosmetic.pet.dragon true',
                 'say {player} est maintenant accompagné d\'un puissant dragon !'
+            ],
+            'contents' => [
+                ['type' => 'permission', 'node' => 'cosmetic.pet.dragon', 'value' => true],
             ]
         ]);
 
@@ -278,6 +295,9 @@ class DatabaseSeeder extends Seeder
             'commands' => [
                 'lp user {player} permission set cosmetic.pet.dinosaur true',
                 'say Attention ! {player} a ramené un dinosaure à la vie !'
+            ],
+            'contents' => [
+                ['type' => 'permission', 'node' => 'cosmetic.pet.dinosaur', 'value' => true],
             ]
         ]);
 

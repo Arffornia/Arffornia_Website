@@ -33,6 +33,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereRealPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereUpdatedAt($value)
  * @property array<array-key, mixed>|null $commands
+ * @property list<array<string, mixed>>|null $contents
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereCommands($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ShopItem whereIsUnique($value)
  * @mixin \Eloquent
@@ -51,7 +52,8 @@ class ShopItem extends Model
         'real_price',
         'promo_price',
         'is_unique',
-        'commands'
+        'commands',
+        'contents',
     ];
 
     public function userSales()
@@ -61,5 +63,6 @@ class ShopItem extends Model
 
     protected $casts = [
         'commands' => 'array',
+        'contents' => 'array',
     ];
 }
