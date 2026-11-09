@@ -38,6 +38,9 @@ class ProtectedEndpointsContractTest extends ApiTestCase
             'teams/player/leave' => ['POST', '/api/teams/player/leave', ['admin', 'team_editor']],
             'teams/disband' => ['POST', '/api/teams/disband', ['admin', 'team_editor']],
             'vote/nuvotifier' => ['POST', '/api/vote/nuvotifier', ['nuvotifier_service']],
+            'rewards/pending' => ['GET', '/api/rewards/pending', ['admin', 'reward_service']],
+            'rewards/{id}/claim' => ['POST', '/api/rewards/1/claim', ['admin', 'reward_service']],
+            'rewards/day-streak' => ['POST', '/api/rewards/day-streak', ['admin', 'reward_service']],
         ];
     }
 
@@ -50,7 +53,7 @@ class ProtectedEndpointsContractTest extends ApiTestCase
     #[DataProvider('protectedRoutes')]
     public function test_route_rejects_tokens_without_an_allowed_role(string $method, string $uri, array $roles): void
     {
-        $allRoles = ['admin', 'progression_editor', 'user_editor', 'team_editor', 'nuvotifier_service', 'user'];
+        $allRoles = ['admin', 'progression_editor', 'user_editor', 'team_editor', 'nuvotifier_service', 'reward_service', 'user'];
         $denied = array_values(array_diff($allRoles, $roles));
 
         foreach ($denied as $role) {
@@ -213,7 +216,9 @@ class ProtectedEndpointsContractTest extends ApiTestCase
         $vote = Vote::where('user_id', $player->id)->sole();
         $this->assertSame('serveurs-minecraft.org', $vote->site);
         $this->assertSame('203.0.113.7', $vote->ip_address);
-        $this->assertSame(1, PendingReward::where('user_id', $player->id)->where('status', 'pending')->count());
+        $reward = PendingReward::where('user_id', $player->id)->where('status', 'pending')->sole();
+        $this->assertSame('vote', $reward->source);
+        $this->assertSame([['type' => 'item', 'item' => 'minecraft:diamond', 'count' => 1]], $reward->contents);
     }
 
     public function test_nuvotifier_vote_for_unknown_player_is_ignored_with_200(): void

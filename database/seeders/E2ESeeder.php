@@ -60,6 +60,7 @@ class E2ESeeder extends Seeder
             'promo_price' => 0,
             'is_unique' => false,
             'commands' => ['give {player} minecraft:diamond 1'],
+            'contents' => [['type' => 'item', 'item' => 'minecraft:diamond', 'count' => 1]],
         ]);
     }
 }

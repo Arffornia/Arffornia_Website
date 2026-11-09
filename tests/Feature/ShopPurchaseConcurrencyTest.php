@@ -46,6 +46,7 @@ class ShopPurchaseConcurrencyTest extends TestCase
             'promo_price' => 0,
             'is_unique' => false,
             'commands' => ['give {player} minecraft:diamond 1'],
+            'contents' => [['type' => 'item', 'item' => 'minecraft:diamond', 'count' => 1]],
         ]);
 
         // Close the parent's connection so children open their own.

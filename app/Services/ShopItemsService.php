@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\PendingReward;
+use App\Rewards\LegacyCommandConverter;
+use App\Rewards\RewardCatalog;
+use Illuminate\Validation\ValidationException;
 use App\Models\ShopItem;
 use App\Models\User;
 use App\Models\UserSale;
@@ -101,8 +104,9 @@ class ShopItemsService
      */
     public function purchaseItem(User $user, ShopItem $item): array
     {
-        // Ensure the item has commands to execute
-        if (empty($item->commands)) {
+        try {
+            $contents = RewardCatalog::validate($item->contents);
+        } catch (ValidationException) {
             return ['success' => false, 'message' => __('messages.shop.not_deliverable')];
         }
 
@@ -111,7 +115,7 @@ class ShopItemsService
         try {
             // Balance and ownership are checked and updated while holding a lock on the
             // buyer's row, so concurrent purchases by the same user are serialized.
-            $failure = DB::transaction(function () use ($user, $item, $price) {
+            $failure = DB::transaction(function () use ($user, $item, $price, $contents) {
                 /** @var User $buyer */
                 $buyer = User::whereKey($user->id)->lockForUpdate()->firstOrFail();
 
@@ -143,8 +147,10 @@ class ShopItemsService
                 PendingReward::create([
                     'user_id' => $buyer->id,
                     'shop_item_id' => $item->id,
-                    'commands' => $item->commands,
-                    'status' => 'pending',
+                    'contents' => $contents,
+                    'commands' => $item->commands ?? LegacyCommandConverter::toLegacyCommands($contents),
+                    'status' => PendingReward::STATUS_PENDING,
+                    'source' => PendingReward::SOURCE_SHOP,
                 ]);
 
                 return null;

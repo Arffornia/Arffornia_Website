@@ -62,6 +62,9 @@ All routes are prefixed with `/api`. The source of truth is `routes/api.php` (`p
 | POST | `auth/token/ms` | Microsoft access token | none known |
 | POST | `vote/nuvotifier` | role `nuvotifier_service` | proxy |
 | POST | `player/ensure-exists` | role `admin` or `user_editor` | mod |
+| GET | `rewards/pending?player_uuid=` | role `admin` or `reward_service` | mod |
+| POST | `rewards/{id}/claim` (header `Idempotency-Key`, body `player_uuid`) | role `admin` or `reward_service` | mod |
+| POST | `rewards/day-streak` (body `player_uuid`) | role `admin` or `reward_service` | mod |
 | POST | `teams/player/join`, `teams/player/leave`, `teams/disband` | role `admin` or `team_editor` | mod |
 | GET/POST | `progression/*`, `milestones/{id}/add-unlock-from-game`, `milestones/{id}/set-requirements`, `milestone-items/move`, `migration/*` | role `admin` or `progression_editor` | mod |
 | POST/PUT/DELETE | `stages*`, `graphs*`, `milestones*`, `milestone-closures`, `unlocks*`, `requirements*`, `launcherImages/{id}/toggle-prod` | role `admin` | admin panel, stages editor |
@@ -74,8 +77,23 @@ curl -X POST http://localhost:8000/api/auth/token/svc \
   -d '{"client_id": "svc_example", "client_secret": "<secret>"}'
 ```
 
-The mod also reads and updates the `pending_rewards` table directly over JDBC, so that table's schema is
-a contract with `Arffornia_Mods`.
+### Rewards
+
+Shop purchases, votes and the daily login streak queue rows in `pending_rewards`. Each row carries typed
+`contents`, never commands: `item` (`item`, `count`), `permission` (LuckPerms `node`, `value`), `rank` (LuckPerms
+`group`), `lucky_box` (`box`, `count`; a loot table the game server owns). The types are listed in
+`App\Rewards\RewardCatalog`; a new type (pets, cosmetics) is one class there plus its handler in the mod.
+
+The game server lists a player's rewards, then claims each one with a random `Idempotency-Key` before delivering
+it. Repeating a claim with the same key answers `200` with `status: replayed`; another key gets `409`.
+
+Rewards stored before typed contents were converted by `php artisan rewards:convert-legacy` (run by a migration;
+`--dry-run` reports only). Known `give`, `lp user ... permission set` and `lp user ... parent add` commands become
+entries, `say`/`tellraw` are dropped, and anything else puts the reward `on_hold` with a `hold_reason` (or leaves a
+shop item without `contents`, so it cannot be bought). The legacy `commands` column is still written for game
+servers on a mod version that reads it over JDBC; it goes away once they are updated.
+
+Streak and vote rewards are set in `config/rewards.php` (`REWARDS_STREAK_TIMEZONE`, default `Europe/Paris`).
 
 ## Configuration
 
@@ -87,6 +105,7 @@ Configuration is environment-driven (see `.env.example`). Main variables (no val
 | `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Database |
 | `AZURE_OAUTH_CLIENT_ID`, `AZURE_OAUTH_CLIENT_SECRET`, `AZURE_OAUTH_REDIRECT_URI` | Microsoft login |
 | `SVC_ACCOUNT_<KEY>_CLIENT_ID`, `_CLIENT_SECRET`, `_NAME`, `_ROLES` | Service accounts, synced by `php artisan app:sync-service-accounts` |
+| `REWARDS_STREAK_TIMEZONE` | Time zone in which a "day" of the login streak starts (`Europe/Paris` by default) |
 | `VOTE_SMC_SERVER_ID` | serveurs-minecraft.org vote verification |
 | `SANCTUM_STATEFUL_DOMAINS`, `SESSION_*` | Session and Sanctum SPA auth. `SESSION_SERIALIZATION` is `json` (default since the Laravel 13 upgrade) or `php`; changing it logs every user out once |
 | `APP_WEB_DEFAULT_LOCALE` | Website language when the visitor has no cookie or matching `Accept-Language` (`fr` by default) |
