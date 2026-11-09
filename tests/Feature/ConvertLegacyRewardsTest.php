@@ -86,4 +86,40 @@ class ConvertLegacyRewardsTest extends TestCase
 
         $this->assertSame(PendingReward::STATUS_PENDING, $reward->fresh()->status);
     }
+
+    public function test_a_scalar_commands_value_is_reported_unsupported_instead_of_crashing(): void
+    {
+        $reward = $this->legacyReward([]);
+        \Illuminate\Support\Facades\DB::table('pending_rewards')->where('id', $reward->id)->update(['commands' => json_encode('op {player}')]);
+
+        $this->artisan('rewards:convert-legacy')->assertSuccessful();
+
+        $this->assertSame(PendingReward::STATUS_ON_HOLD, $reward->fresh()->status);
+    }
+
+    public function test_a_held_reward_can_be_released_with_valid_contents(): void
+    {
+        $reward = $this->legacyReward(['xp add {player} 5 levels']);
+        $this->artisan('rewards:convert-legacy');
+
+        $this->artisan('rewards:release', ['id' => $reward->id, 'contents' => '[{"type":"item","item":"minecraft:experience_bottle","count":16}]'])
+            ->assertSuccessful();
+
+        $reward->refresh();
+        $this->assertSame(PendingReward::STATUS_PENDING, $reward->status);
+        $this->assertNull($reward->hold_reason);
+        $this->assertSame([['type' => 'item', 'item' => 'minecraft:experience_bottle', 'count' => 16]], $reward->contents);
+    }
+
+    public function test_release_refuses_invalid_contents_and_pending_rewards(): void
+    {
+        $held = $this->legacyReward(['xp add {player} 5 levels']);
+        $this->artisan('rewards:convert-legacy');
+        $pending = PendingReward::create(['user_id' => $this->player->id, 'contents' => [['type' => 'item', 'item' => 'minecraft:dirt', 'count' => 1]], 'status' => 'pending']);
+
+        $this->artisan('rewards:release', ['id' => $held->id, 'contents' => '[{"type":"command","command":"op x"}]'])->assertFailed();
+        $this->artisan('rewards:release', ['id' => $pending->id, 'contents' => '[{"type":"item","item":"minecraft:dirt","count":1}]'])->assertFailed();
+
+        $this->assertSame(PendingReward::STATUS_ON_HOLD, $held->fresh()->status);
+    }
 }

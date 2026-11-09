@@ -9,6 +9,7 @@ use App\Rewards\RewardCatalog;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class RewardService
 {
@@ -91,6 +92,7 @@ class RewardService
             $reward = PendingReward::create([
                 'user_id' => $user->id,
                 'contents' => $this->streakContents($streak),
+                'commands' => [],
                 'status' => PendingReward::STATUS_PENDING,
                 'source' => PendingReward::SOURCE_STREAK,
             ]);
@@ -107,6 +109,10 @@ class RewardService
             ->sortBy('min_days')
             ->last();
 
-        return RewardCatalog::validate($tier['contents'] ?? []);
+        if ($tier === null) {
+            throw new RuntimeException("rewards.streak.tiers has no tier for a streak of {$streak} days; the first tier must start at 1.");
+        }
+
+        return RewardCatalog::validate($tier['contents']);
     }
 }

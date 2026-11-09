@@ -21,7 +21,7 @@ class ConvertLegacyRewards extends Command
         $report = [];
 
         ShopItem::whereNull('contents')->whereNotNull('commands')->lazyById()->each(function (ShopItem $item) use ($converter, $dryRun, &$report) {
-            $result = $converter->convert($item->commands ?? [], null);
+            $result = $converter->convert($this->commandList($item->getRawOriginal('commands')), null);
             $convertible = $result['unsupported'] === [] && $result['entries'] !== [];
 
             if ($convertible && !$dryRun) {
@@ -38,7 +38,7 @@ class ConvertLegacyRewards extends Command
             ->whereNull('contents')
             ->lazyById()
             ->each(function (PendingReward $reward) use ($converter, $dryRun, &$report) {
-                $result = $converter->convert($reward->commands ?? [], $reward->user?->name);
+                $result = $converter->convert($this->commandList($reward->getRawOriginal('commands')), $reward->user?->name);
 
                 if ($result['unsupported'] === [] && $result['entries'] !== []) {
                     $changes = ['contents' => $result['entries']];
@@ -52,7 +52,15 @@ class ConvertLegacyRewards extends Command
                 }
 
                 if (!$dryRun) {
-                    $reward->forceFill($changes)->save();
+                    $updated = PendingReward::whereKey($reward->id)
+                        ->where('status', PendingReward::STATUS_PENDING)
+                        ->whereNull('contents')
+                        ->update(array_map(fn ($v) => is_array($v) ? json_encode($v) : $v, $changes));
+                    if ($updated === 0) {
+                        $outcome = 'skipped (changed meanwhile)';
+                    } elseif ($outcome === 'on hold') {
+                        Log::warning('Legacy pending reward put on hold.', ['pending_reward_id' => $reward->id, 'reason' => $changes['hold_reason']]);
+                    }
                 }
                 $report[] = ['pending_reward', $reward->id, $outcome, $this->summary($result)];
             });
@@ -68,6 +76,14 @@ class ConvertLegacyRewards extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /** @return list<mixed> */
+    private function commandList(?string $raw): array
+    {
+        $decoded = $raw === null ? [] : json_decode($raw, true);
+
+        return is_array($decoded) ? array_values($decoded) : [$raw];
     }
 
     /** @param array{entries: list<array>, dropped: list<string>, unsupported: list<string>} $result */
