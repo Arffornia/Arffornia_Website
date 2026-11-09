@@ -64,7 +64,8 @@ class RecipeDatapackService
     }
 
     /**
-     * The zip and its sha256, cached until a recipe or an unlock changes.
+     * The zip and its sha256, cached until a recipe or an unlock changes. The short TTL bounds two edits
+     * landing in the same second, which the key cannot tell apart.
      *
      * @return array{0: string, 1: string}
      */
@@ -75,7 +76,7 @@ class RecipeDatapackService
             MilestoneUnlock::count(), MilestoneUnlock::max('updated_at'), MilestoneUnlock::max('id'),
         ]));
 
-        return Cache::remember($key, now()->addHour(), function () {
+        return Cache::remember($key, now()->addMinutes(5), function () {
             $zip = $this->build();
 
             return [$zip, hash('sha256', $zip)];

@@ -109,6 +109,28 @@ class RecipeDatapackTest extends ApiTestCase
         $this->get('/api/progression/datapack', ['If-None-Match' => $etag])->assertStatus(304);
     }
 
+    public function test_etag_changes_when_a_recipe_or_an_unlock_changes(): void
+    {
+        $unlock = $this->unlock(['mekanism:item']);
+        $recipe = Recipe::factory()->create(['milestone_unlock_id' => $unlock->id]);
+        $initial = $this->get('/api/progression/datapack')->headers->get('ETag');
+
+        $this->travel(2)->seconds();
+        $recipe->update(['ingredients' => [['item' => 'minecraft:gold_ingot', 'count' => 3]]]);
+        $afterRecipeEdit = $this->get('/api/progression/datapack')->headers->get('ETag');
+
+        $this->travel(2)->seconds();
+        $this->unlock(['mekanism:other'])->delete();
+        $extra = $this->unlock(['minecraft:stick']);
+        $afterUnlockChange = $this->get('/api/progression/datapack')->headers->get('ETag');
+        $extra->delete();
+        $afterUnlockDelete = $this->get('/api/progression/datapack')->headers->get('ETag');
+
+        $this->assertNotSame($initial, $afterRecipeEdit);
+        $this->assertNotSame($afterRecipeEdit, $afterUnlockChange);
+        $this->assertNotSame($afterUnlockChange, $afterUnlockDelete);
+    }
+
     public function test_datapack_skips_ids_the_mod_would_reject(): void
     {
         $this->unlock(['minecraft:../../evil', '..:stick', 'a..b:stick', 'minecraft:/x', 'minecraft:./x', 'minecraft:a//b', '.:x', 'Not An Id', 'minecraft:stick']);
