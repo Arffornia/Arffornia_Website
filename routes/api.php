@@ -5,6 +5,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\RecipeController;
+use App\Http\Controllers\RecipeDatapackController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\LauncherController;
@@ -25,6 +26,7 @@ Route::get('stages/player/get/{playerUuid}', [StagesController::class, 'playerSt
 Route::get('milestone/get/{milestone}', [StagesController::class, 'getMilestoneById']);
 
 Route::get('progression/config', [StagesController::class, 'getProgressionConfigForMod']);
+Route::get('progression/datapack', [RecipeDatapackController::class, 'show'])->middleware('throttle:recipe-datapack');
 Route::get('progression/{progression}', [ProgressionController::class, 'getProgressionById']);
 
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);

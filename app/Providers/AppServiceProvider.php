@@ -60,5 +60,9 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(config('ratelimit.vote_verify'))
                 ->by('vote-verify|' . ($request->user()?->getAuthIdentifier() ?: $request->ip()));
         });
+
+        RateLimiter::for('recipe-datapack', function (Request $request) {
+            return Limit::perMinute(config('ratelimit.recipe_datapack'))->by('recipe-datapack|' . $request->ip());
+        });
     }
 }

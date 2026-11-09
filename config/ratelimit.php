@@ -23,4 +23,7 @@ return [
 
     // POST /vote/verify (per user)
     'vote_verify' => (int) env('RATE_LIMIT_VOTE_VERIFY', 6),
+
+    // GET /api/progression/datapack (anonymous, per IP; game servers poll it)
+    'recipe_datapack' => (int) env('RATE_LIMIT_RECIPE_DATAPACK', 30),
 ];

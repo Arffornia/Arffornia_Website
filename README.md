@@ -54,7 +54,7 @@ All routes are prefixed with `/api`. The source of truth is `routes/api.php` (`p
 |---|---|---|---|
 | GET | `best_player_point/{size}`, `best_player_vote/{size}`, `best_player_vote/all-time/{size}` | public | launcher |
 | GET | `profile/{playerName}`, `profile/uuid/{playerUuid}` | public | launcher, mod |
-| GET | `stages`, `stages/player/get/{uuid}`, `milestone/get/{id}`, `progression/config`, `progression/{id}`, `recipes`, `recipes/type/{type}` | public | mod, site JS |
+| GET | `stages`, `stages/player/get/{uuid}`, `milestone/get/{id}`, `progression/config`, `progression/datapack` (recipe datapack zip for the mod, ETag = sha256), `progression/{id}`, `recipes`, `recipes/type/{type}` | public | mod, site JS |
 | GET | `launcherImages` | public | launcher |
 | GET | `shop/bestSallers/{size}`, `shop/newest/{size}`, `shop/sales/{size}`, `shop/item/{item}` | public | launcher, site JS |
 | POST | `auth/token/svc` | `client_id` + `client_secret` | mod, proxy |
