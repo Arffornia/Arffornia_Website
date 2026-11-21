@@ -34,6 +34,7 @@ COPY package.json package-lock.json vite.config.js ${HTML_ENDPOINT}
 
 # Frontend
 COPY resources ${HTML_ENDPOINT}resources/
+COPY packages ${HTML_ENDPOINT}packages/
 COPY public ${HTML_ENDPOINT}public/
 
 RUN npm ci && npm run build

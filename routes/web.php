@@ -8,6 +8,7 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StagesController;
+use App\Http\Controllers\ProgressionViewController;
 use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\ShopItemsController;
 
@@ -38,6 +39,10 @@ Route::view('/faq', 'pages.faq')->name('faq');
 // Stages
 Route::get('stages', [StagesController::class, 'loadStagesView']);
 Route::get('stages/{playerUuid}', [StagesController::class, 'loadPlayerStageView']);
+
+// Progression graph viewer (spec 018 item 3), 404 unless config('progression.viewer') is enabled
+Route::get('progression', [ProgressionViewController::class, 'catalogView'])->name('progression');
+Route::get('progression/{playerName}', [ProgressionViewController::class, 'playerView'])->name('progression.player');
 
 // News
 Route::get('news', [NewsController::class, 'allNewsView']);
