@@ -13,6 +13,9 @@ use App\Http\Controllers\LauncherController;
 use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\ShopItemsController;
 use App\Http\Controllers\ProgressionController;
+use App\Http\Controllers\ProgressionModelController;
+use App\Http\Controllers\ProgressionStateController;
+use App\Http\Controllers\PlaytimeController;
 
 Route::get('best_player_point/{size}', [UserController::class, 'bestPlayerByPointJson']);
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
@@ -28,7 +31,13 @@ Route::get('milestone/get/{milestone}', [StagesController::class, 'getMilestoneB
 
 Route::get('progression/config', [StagesController::class, 'getProgressionConfigForMod']);
 Route::get('progression/datapack', [RecipeDatapackController::class, 'show'])->middleware('throttle:recipe-datapack');
-Route::get('progression/{progression}', [ProgressionController::class, 'getProgressionById']);
+Route::get('progression/model', [ProgressionModelController::class, 'show']);
+Route::get('progression/{progression}', [ProgressionController::class, 'getProgressionById'])->whereNumber('progression');
+
+// Progression model and state (spec 017)
+Route::get('progressions/{progression}/state', [ProgressionStateController::class, 'show'])->whereNumber('progression');
+Route::get('players/{playerUuid}/progression/state', [ProgressionStateController::class, 'showForPlayer']);
+Route::put('progressions/{progression}/visibility', [ProgressionStateController::class, 'visibility'])->whereNumber('progression')->middleware('auth:sanctum');
 
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);
 
@@ -82,6 +91,13 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     // Recipe Management
     Route::post('unlocks/{unlock}/recipe', [RecipeController::class, 'storeOrUpdate']);
 
+    // Progression draft and publish (spec 017); one working draft for now, addressed as "current"
+    Route::get('progression/drafts/current', [ProgressionModelController::class, 'draft']);
+    Route::put('progression/drafts/current', [ProgressionModelController::class, 'replaceDraft']);
+    Route::post('progression/drafts/current/validate', [ProgressionModelController::class, 'validateDraft']);
+    Route::post('progression/drafts/current/publish', [ProgressionModelController::class, 'publish']);
+    Route::get('stats/progression', [ProgressionStateController::class, 'stats']);
+
     // Launcher images Management
     Route::put('launcherImages/{image}/toggle-prod', [AdminPanelManager::class, 'toggleProdStatus']);
 });
@@ -118,6 +134,9 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(f
     Route::post('milestones/{milestone}/set-requirements', [StagesController::class, 'setRequirementsFromGame']);
 
     Route::post('/milestone-items/move', [StagesController::class, 'moveMilestoneItem']);
+
+    Route::post('progressions/{progression}/events', [ProgressionStateController::class, 'events'])->whereNumber('progression');
+    Route::post('players/playtime', [PlaytimeController::class, 'store']);
 });
 
 

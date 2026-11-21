@@ -95,6 +95,7 @@ php artisan route:list --path=api
 - Production images are built with `composer install --no-dev`: faker, ignition, phpunit are absent, so
   seeders that use factories do not run in prod.
 - Rewards reach the mod through `/api/rewards/*` as typed `contents` (`App\Rewards\RewardCatalog`); never store or run console commands. Mod versions before the rewards API still read `pending_rewards.commands` over JDBC.
+- Progression (spec 017, `app/Progression`): the editable tables (`stages`, `progression_graphs`, `milestones`...) are the working draft; `POST /api/progression/drafts/current/publish` freezes it as a numbered snapshot (`model_snapshots`). Player state lives in `progression_milestones`/`progression_deliveries`/`progression_events`, by milestone **key**, never row id. `completed_milestones` and `max_stage_id` are still written for clients on the old routes. `resources/schemas/progression-model.schema.json` is a copy of the one in Arffornia/docs: refresh it, never edit it here.
 - `arffornia/minecraft-oauth` is required as `dev-main` (fork of an abandoned package).
 - Mojang's `/user/profiles/{uuid}/names` endpoint no longer exists; code using it is dead.
 - `public/css/tokens.css` is a copy of `Arffornia_Assets/ui/tokens/dist/tokens.css` (spec 018): never edit it, refresh it with `make tokens`; CI (`make tokens-check`) fails when it drifts from Assets main. Use `var(--arf-*)` for brand colours and fonts.

@@ -30,7 +30,9 @@ class Stage extends Model
     use HasFactory;
 
     public $timestamps = false;
-    protected $fillable = ['id', 'number', 'name', 'description', 'reward_progress_points'];
+    protected $fillable = ['id', 'number', 'name', 'description', 'reward_progress_points', 'threshold', 'module', 'name_fr', 'description_fr'];
+
+    protected $casts = ['threshold' => 'float', 'module' => 'array'];
 
     /**
      * Get the milestones for the stage.

@@ -40,6 +40,11 @@ return [
         'target_update_failed' => 'Failed to update target milestone.',
         'not_found' => 'Progression not found.',
         'retired' => 'This progression belongs to a team that no longer exists.',
+        'no_model' => 'No progression model is published yet.',
+        'draft_invalid' => 'The document does not follow the progression model schema.',
+        'draft_saved' => 'Draft saved.',
+        'publish_blocked' => 'The draft has errors; nothing was published.',
+        'published' => 'Progression model published.',
     ],
     'stages' => [
         'import_invalid' => 'Invalid file format.',

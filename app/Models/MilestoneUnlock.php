@@ -37,7 +37,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class MilestoneUnlock extends Model
 {
     use HasFactory;
-    protected $fillable = ['milestone_id', 'item_id', 'display_name', 'recipes_to_ban', 'shop_price', 'image_path'];
+    protected $fillable = ['milestone_id', 'item_id', 'display_name', 'recipes_to_ban', 'shop_price', 'image_path', 'gate_mode'];
 
     /**
      * The attributes that should be cast.
@@ -109,6 +109,7 @@ class MilestoneUnlock extends Model
     /**
      * Get the recipe associated with the milestone unlock.
      */
+    /** @return HasOne<Recipe, $this> */
     public function recipe(): HasOne
     {
         return $this->hasOne(Recipe::class);

@@ -8,6 +8,7 @@ use App\Models\Milestone;
 use App\Models\Progression;
 use App\Models\MilestoneClosure;
 use App\Models\Team;
+use App\Progression\ProgressionStateService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -20,6 +21,10 @@ class ProgressionService
      * The ratio of milestones in a stage that must be completed to unlock the next stage.
      */
     private const UNLOCK_THRESHOLD = 0.60;
+
+    public function __construct(private readonly ProgressionStateService $states)
+    {
+    }
 
     /**
      * Adds a milestone to a user's active progression and checks for a stage-up.
@@ -36,7 +41,7 @@ class ProgressionService
             return false;
         }
 
-        return $this->addMilestoneToProgression($progression, $milestoneId);
+        return $this->addMilestoneToProgression($progression, $milestoneId, $user->uuid);
     }
 
     /**
@@ -44,9 +49,9 @@ class ProgressionService
      * belong to the progression they were placed for rather than to a player. Returns false, writing
      * nothing, when the progression is retired (its team was soft-deleted).
      */
-    public function addMilestoneToProgression(Progression $progression, int $milestoneId): bool
+    public function addMilestoneToProgression(Progression $progression, int $milestoneId, ?string $actor = null): bool
     {
-        return DB::transaction(function () use ($progression, $milestoneId) {
+        return DB::transaction(function () use ($progression, $milestoneId, $actor) {
             $progression = Progression::whereKey($progression->id)->lockForUpdate()->firstOrFail();
             $teams = Team::withTrashed()->where('progression_id', $progression->id)->lockForUpdate()->get();
             if ($teams->isNotEmpty() && $teams->every(fn (Team $team) => $team->trashed())) {
@@ -60,9 +65,12 @@ class ProgressionService
                 $progression->completed_milestones = array_unique($completed);
                 $progression->save();
 
-                // After adding, check if the player can advance to the next stage.
-                $this->checkForStageUp($progression);
+                // Before the first snapshot is published, the old single-step rule still applies.
+                if ($this->states->snapshot() === null) {
+                    $this->checkForStageUp($progression);
+                }
             }
+            $this->states->recordLegacyCompletion($progression, $milestoneId, $actor);
 
             return true;
         });
@@ -91,6 +99,7 @@ class ProgressionService
             $progression->completed_milestones = array_values(array_diff($completed, [$milestoneId]));
             $progression->save();
         }
+        $this->states->removeLegacyCompletion($progression, $milestoneId);
 
         return true;
     }
@@ -125,7 +134,9 @@ class ProgressionService
         $completedMilestoneIds = $progression->completed_milestones ?? [];
         $completedCount = $milestonesInCurrentStage->whereIn('id', $completedMilestoneIds)->count();
 
-        // Calculate the completion ratio
+        if ($milestonesInCurrentStage->isEmpty()) {
+            return;
+        }
         $completionRatio = $completedCount / $milestonesInCurrentStage->count();
 
         // If the ratio meets or exceeds the threshold, promote the player
