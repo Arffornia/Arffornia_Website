@@ -52,7 +52,28 @@ class Milestone extends Model
         'x',
         'y',
         'graph_id',
+        'key',
+        'validation',
+        'effort',
+        'power',
+        'source',
+        'name_fr',
+        'description_fr',
     ];
+
+    protected $casts = [
+        'validation' => 'array',
+        'power' => 'array',
+    ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Milestone $milestone) {
+            if ($milestone->key === null && $milestone->name !== null) {
+                $milestone->key = \App\Progression\Keys::forNewMilestone($milestone);
+            }
+        });
+    }
 
     /**
      * Get the items unlocked by this milestone.

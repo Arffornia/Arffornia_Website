@@ -86,7 +86,7 @@ class UserService
      * Get user by uuid
      *
      * @param  string  $uuid
-     * @return User
+     * @return User|null
      */
     public function getUserByUuid(string $uuid)
     {

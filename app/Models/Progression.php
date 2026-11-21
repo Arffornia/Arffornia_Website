@@ -28,8 +28,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Progression extends Model
 {
     use HasFactory;
-    protected $fillable = ['max_stage_id', 'current_milestone_id', 'completed_milestones'];
-    protected $casts = ['completed_milestones' => 'array'];
+    protected $fillable = ['max_stage_id', 'current_milestone_id', 'completed_milestones', 'open_stage', 'is_public'];
+    protected $casts = ['completed_milestones' => 'array', 'is_public' => 'boolean'];
 
     public function maxStage()
     {
