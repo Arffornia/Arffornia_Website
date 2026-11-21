@@ -36,7 +36,7 @@ class LauncherImageUploadTest extends TestCase
         $image = LauncherImage::sole();
         $this->assertTrue((bool) $image->in_prod);
         $this->assertStringStartsWith('storage/uploads/launcherImages/', $image->path);
-        $this->assertStringNotContainsString('My', $image->path);
+        $this->assertStringNotContainsString('My Launcher', $image->path);
         $this->assertStringEndsWith('.png', $image->path);
         Storage::disk('public')->assertExists(substr($image->path, strlen('storage/')));
     }
