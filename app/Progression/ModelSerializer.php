@@ -16,6 +16,9 @@ class ModelSerializer
     /** @var list<Finding> */
     private array $findings = [];
 
+    /** @var array<int, string> milestone row id => key used in the last document, provisional ones included */
+    public array $keysById = [];
+
     /** @return array{0: array<string, mixed>, 1: list<Finding>} */
     public function draft(): array
     {
@@ -26,7 +29,9 @@ class ModelSerializer
         $graphs = ProgressionGraph::orderBy('id')->get();
         $milestones = Milestone::with(['requirements', 'unlocks.recipe'])->orderBy('id')->get();
 
+        $this->provisionalKeys($graphs, $milestones);
         $graphKeys = $graphs->pluck('key', 'id')->all();
+        $this->keysById = $milestones->pluck('key', 'id')->all();
         $documentGraphs = $graphs->map(fn (ProgressionGraph $graph) => $this->graph($graph, $milestones->where('graph_id', $graph->id)))->values()->all();
         if ($milestones->contains(fn (Milestone $m) => $m->graph_id === null || !isset($graphKeys[$m->graph_id]))) {
             $documentGraphs[] = ['key' => Keys::FALLBACK_GRAPH, 'name' => ['en' => 'Arffornia'], 'mod_id' => null, 'branch' => 'neutral'];
@@ -77,6 +82,34 @@ class ModelSerializer
         ];
 
         return [$document, $this->findings];
+    }
+
+    /**
+     * Rows created before keys existed get, in memory only, the key ModelService::ensureKeys would give
+     * them, so reading or validating the draft never writes.
+     */
+    private function provisionalKeys($graphs, $milestones): void
+    {
+        $usedGraphs = array_flip(array_filter($graphs->pluck('key')->all()));
+        foreach ($graphs as $graph) {
+            if ($graph->key === null) {
+                $key = Keys::slug($graph->name);
+                while (isset($usedGraphs[$key])) {
+                    $key .= '_2';
+                }
+                $usedGraphs[$key] = true;
+                $graph->key = $key;
+            }
+        }
+        $graphKeys = $graphs->pluck('key', 'id')->all();
+        $used = array_flip(array_filter($milestones->pluck('key')->all()));
+        foreach ($milestones as $milestone) {
+            if ($milestone->key === null) {
+                $base = ($graphKeys[$milestone->graph_id] ?? Keys::FALLBACK_GRAPH) . '/' . Keys::slug($milestone->name);
+                $milestone->key = Keys::uniqueMilestoneKey($base, fn (string $key) => isset($used[$key]));
+                $used[$milestone->key] = true;
+            }
+        }
     }
 
     private function graph(ProgressionGraph $graph, $milestones): array

@@ -8,6 +8,7 @@ use App\Services\UserService;
 use App\Models\Progression;
 use Illuminate\Http\JsonResponse;
 use App\Services\ProgressionService;
+use App\Progression\ProgressionVisibility;
 use App\Repositories\TeamRepository;
 use Illuminate\Support\Facades\Validator;
 use Log;
@@ -20,7 +21,7 @@ class ProgressionController extends Controller
     protected UserService $userService;
     protected TeamRepository $teamRepository;
 
-    public function __construct(ProgressionService $progressionService, UserService $userService, TeamRepository $teamRepository)
+    public function __construct(ProgressionService $progressionService, UserService $userService, TeamRepository $teamRepository, private readonly ProgressionVisibility $visibility)
     {
         $this->progressionService = $progressionService;
         $this->userService = $userService;
@@ -42,14 +43,13 @@ class ProgressionController extends Controller
         return $this->userService->getUserByUuid($uuid);
     }
 
-    /**
-     * Get a progression by its ID.
-     *
-     * @param Progression $progression
-     * @return JsonResponse
-     */
-    public function getProgressionById(Progression $progression): JsonResponse
+    /** A progression by id; a private one answers as a missing one (spec 019). */
+    public function getProgressionById(string $progression): JsonResponse
     {
+        $progression = Progression::find($progression);
+        if ($progression === null || !$this->visibility->canSee($progression)) {
+            return response()->json(['message' => __('api.progression.not_found')], Response::HTTP_NOT_FOUND);
+        }
         $progression->load('currentTargetedMilestone');
         return response()->json(array_merge($progression->toArray(), [
             'retired' => $this->teamRepository->isProgressionRetired($progression->id),

@@ -8,6 +8,7 @@ use App\Models\Stage;
 use App\Repositories\TeamRepository;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Progression state of spec 017: done milestones and deliveries stored by key, stages opened by the
@@ -39,6 +40,9 @@ class ProgressionStateService
         if ($snapshot === null) {
             return null;
         }
+        if (!self::evaluatedWith($progression, $snapshot)) {
+            $progression = $this->evaluateLocked($progression->id, $snapshot) ?? $progression;
+        }
 
         $completed = DB::table('progression_milestones')->where('progression_id', $progression->id)
             ->orderBy('completed_at')->orderBy('id')->get(['milestone_key', 'completed_at']);
@@ -50,11 +54,6 @@ class ProgressionStateService
         foreach ($snapshot->stages as $number => $stage) {
             $keys = $snapshot->milestonesByStage[$number] ?? [];
             $doneCount = count(array_filter($keys, fn (string $key) => isset($done[$key])));
-            $module = array_map(fn (array $item) => [
-                'item' => $item['item'],
-                'count' => $item['count'],
-                'delivered' => min($item['count'], $delivered[$number][$item['item']] ?? 0),
-            ], $stage['module']);
             $stages[] = [
                 'number' => $number,
                 'open' => $number <= $open,
@@ -62,7 +61,11 @@ class ProgressionStateService
                 'total' => count($keys),
                 'ratio' => $keys === [] ? 1.0 : round($doneCount / count($keys), 4),
                 'threshold' => (float) $stage['threshold'],
-                'module' => $module,
+                'module' => array_map(fn (array $item) => [
+                    'item' => $item['item'],
+                    'count' => $item['count'],
+                    'delivered' => min($item['count'], $delivered[$number][$item['item']] ?? 0),
+                ], $stage['module']),
                 'module_done' => $this->moduleDone($stage['module'], $delivered[$number] ?? []),
             ];
         }
@@ -91,7 +94,8 @@ class ProgressionStateService
 
     /**
      * Applies events from the game. Each event id is applied once per progression, a milestone is
-     * completed once whatever the event id, so replays and reordering change nothing.
+     * completed once whatever the event id, so replays and reordering change nothing. A batch costs a
+     * fixed number of queries plus two per delivery.
      *
      * @param  list<array<string, mixed>>  $events
      * @return array{retired: bool, results: list<array<string, string>>}
@@ -104,9 +108,67 @@ class ProgressionStateService
                 return ['retired' => true, 'results' => []];
             }
 
+            $seen = array_flip(DB::table('progression_events')->where('progression_id', $progression->id)
+                ->whereIn('event_id', array_column($events, 'id'))->pluck('event_id')->all());
+            $done = array_flip(DB::table('progression_milestones')->where('progression_id', $progression->id)->pluck('milestone_key')->all());
+            $open = $this->openStage($progression, $snapshot);
+            $now = Carbon::now();
             $results = [];
+            $eventRows = [];
+            $completions = [];
+
             foreach ($events as $event) {
-                $results[] = ['id' => $event['id'], ...$this->applyOne($progression, $event, $snapshot)];
+                $id = $event['id'];
+                if (isset($seen[$id])) {
+                    $results[] = ['id' => $id, 'status' => 'duplicate'];
+                    continue;
+                }
+                $seen[$id] = true;
+                $at = isset($event['occurred_at']) ? Carbon::createFromTimestampMs($event['occurred_at']) : $now;
+                $actor = $event['actor'] ?? null;
+
+                if ($event['type'] === self::EVENT_MILESTONE) {
+                    $key = $event['milestone'];
+                    if (!isset($snapshot->milestones[$key])) {
+                        $results[] = ['id' => $id, 'status' => 'rejected', 'reason' => 'unknown_milestone'];
+                        continue;
+                    }
+                    // A new id for a done milestone is recorded as a no-op, so replaying that id stays a duplicate.
+                    $noop = isset($done[$key]);
+                    $eventRows[] = $this->eventRow($progression->id, self::EVENT_MILESTONE, $id, $key, null, $noop ? ['noop' => true] : null, $actor, $at, $snapshot->version);
+                    if ($noop) {
+                        $results[] = ['id' => $id, 'status' => 'duplicate'];
+                        continue;
+                    }
+                    $done[$key] = true;
+                    $completions[] = ['progression_id' => $progression->id, 'milestone_key' => $key, 'completed_at' => $at, 'completed_by' => $actor];
+                    $results[] = ['id' => $id, 'status' => 'applied'];
+                    continue;
+                }
+
+                $stage = $snapshot->stages[$event['stage']] ?? null;
+                if ($stage === null || !in_array($event['item'], array_column($stage['module'], 'item'), true)) {
+                    $results[] = ['id' => $id, 'status' => 'rejected', 'reason' => 'not_in_module'];
+                    continue;
+                }
+                // Only the module of the highest open stage counts: it is the one that opens the next stage.
+                if ((int) $event['stage'] !== $open) {
+                    $results[] = ['id' => $id, 'status' => 'rejected', 'reason' => 'stage_not_current'];
+                    continue;
+                }
+                $row = ['progression_id' => $progression->id, 'stage_number' => $open, 'item' => $event['item']];
+                DB::table('progression_deliveries')->insertOrIgnore([...$row, 'count' => 0]);
+                DB::table('progression_deliveries')->where($row)->increment('count', $event['count']);
+                $eventRows[] = $this->eventRow($progression->id, self::EVENT_MODULE, $id, null, $open, ['item' => $event['item'], 'count' => $event['count']], $actor, $at, $snapshot->version);
+                $results[] = ['id' => $id, 'status' => 'applied'];
+                // A delivery may open the stage, and the next module is then the one that counts.
+                $this->flushCompletions($progression, $completions);
+                $open = $this->evaluate($progression, $snapshot);
+            }
+
+            $this->flushCompletions($progression, $completions);
+            if ($eventRows !== []) {
+                DB::table('progression_events')->insert($eventRows);
             }
             $this->evaluate($progression, $snapshot);
 
@@ -114,14 +176,26 @@ class ProgressionStateService
         });
     }
 
+    /** @param list<array<string, mixed>> $completions emptied once written */
+    private function flushCompletions(Progression $progression, array &$completions): void
+    {
+        if ($completions === []) {
+            return;
+        }
+        DB::table('progression_milestones')->insertOrIgnore($completions);
+        $this->mirrorLegacyList($progression, array_column($completions, 'milestone_key'));
+        $completions = [];
+    }
+
     /** Old `/progression/add` path: same storage, so the new state and the old list never disagree. */
     public function recordLegacyCompletion(Progression $progression, int $milestoneId, ?string $actor): void
     {
-        $key = Milestone::whereKey($milestoneId)->value('key');
-        if ($key !== null && $this->complete($progression->id, $key, Carbon::now(), $actor)) {
-            $this->event($progression->id, self::EVENT_MILESTONE, null, $key, null, null, $actor, Carbon::now());
-        }
         $snapshot = $this->snapshots->current();
+        $key = Milestone::whereKey($milestoneId)->value('key');
+        $now = Carbon::now();
+        if ($key !== null && $this->complete($progression->id, $key, $now, $actor)) {
+            DB::table('progression_events')->insert($this->eventRow($progression->id, self::EVENT_MILESTONE, null, $key, null, null, $actor, $now, $snapshot?->version));
+        }
         if ($snapshot !== null) {
             $this->evaluate($progression, $snapshot);
         }
@@ -135,23 +209,30 @@ class ProgressionStateService
         }
     }
 
-    /** After a publish: a lower threshold or a removed milestone may open stages. */
-    public function reevaluateAll(): void
+    /**
+     * After a publish: a lower threshold or a removed milestone may open stages. Each progression is
+     * handled on its own; one that fails is logged and catches up on its next state read or event.
+     */
+    public function reevaluateAll(): int
     {
         $snapshot = $this->snapshots->current();
         if ($snapshot === null) {
-            return;
+            return 0;
         }
-        Progression::query()->orderBy('id')->chunkById(200, function ($progressions) use ($snapshot) {
-            foreach ($progressions as $progression) {
-                DB::transaction(function () use ($progression, $snapshot) {
-                    $locked = Progression::whereKey($progression->id)->lockForUpdate()->first();
-                    if ($locked !== null) {
-                        $this->evaluate($locked, $snapshot);
+        $failed = 0;
+        Progression::query()->where(fn ($q) => $q->whereNull('evaluated_version')->orWhere('evaluated_version', '!=', $snapshot->version))
+            ->select('id')->orderBy('id')->chunkById(200, function ($progressions) use ($snapshot, &$failed) {
+                foreach ($progressions as $progression) {
+                    try {
+                        $this->evaluateLocked($progression->id, $snapshot);
+                    } catch (\Throwable $e) {
+                        $failed++;
+                        Log::error('Progression re-evaluation failed; it will catch up lazily.', ['progression_id' => $progression->id, 'snapshot' => $snapshot->version, 'error' => $e->getMessage()]);
                     }
-                });
-            }
-        });
+                }
+            });
+
+        return $failed;
     }
 
     public function openStage(Progression $progression, Snapshot $snapshot): int
@@ -164,40 +245,16 @@ class ProgressionStateService
         return $legacy !== null ? (int) $legacy : $snapshot->firstStage();
     }
 
-    /** @return array<string, string> status and, when rejected, a reason */
-    private function applyOne(Progression $progression, array $event, Snapshot $snapshot): array
+    private function evaluateLocked(int $progressionId, Snapshot $snapshot): ?Progression
     {
-        if (DB::table('progression_events')->where('progression_id', $progression->id)->where('event_id', $event['id'])->exists()) {
-            return ['status' => 'duplicate'];
-        }
-        $at = isset($event['occurred_at']) ? Carbon::createFromTimestampMs($event['occurred_at']) : Carbon::now();
-        $actor = $event['actor'] ?? null;
-
-        if ($event['type'] === self::EVENT_MILESTONE) {
-            $key = $event['milestone'];
-            if (!isset($snapshot->milestones[$key])) {
-                return ['status' => 'rejected', 'reason' => 'unknown_milestone'];
+        return DB::transaction(function () use ($progressionId, $snapshot) {
+            $locked = Progression::whereKey($progressionId)->lockForUpdate()->first();
+            if ($locked !== null) {
+                $this->evaluate($locked, $snapshot);
             }
-            if (!$this->complete($progression->id, $key, $at, $actor)) {
-                return ['status' => 'duplicate'];
-            }
-            $this->event($progression->id, self::EVENT_MILESTONE, $event['id'], $key, null, null, $actor, $at);
-            $this->mirrorLegacyList($progression, $key);
 
-            return ['status' => 'applied'];
-        }
-
-        $stage = $snapshot->stages[$event['stage']] ?? null;
-        $wanted = $stage === null ? [] : array_column($stage['module'], 'item');
-        if (!in_array($event['item'], $wanted, true)) {
-            return ['status' => 'rejected', 'reason' => 'not_in_module'];
-        }
-        $row = ['progression_id' => $progression->id, 'stage_number' => $event['stage'], 'item' => $event['item']];
-        DB::table('progression_deliveries')->insertOrIgnore([...$row, 'count' => 0]);
-        DB::table('progression_deliveries')->where($row)->increment('count', $event['count']);
-        $this->event($progression->id, self::EVENT_MODULE, $event['id'], null, $event['stage'], ['item' => $event['item'], 'count' => $event['count']], $actor, $at);
-
-        return ['status' => 'applied'];
+            return $locked;
+        });
     }
 
     private function complete(int $progressionId, string $key, Carbon $at, ?string $actor): bool
@@ -210,9 +267,9 @@ class ProgressionStateService
         ]) === 1;
     }
 
-    private function event(int $progressionId, string $type, ?string $eventId, ?string $key, ?int $stage, ?array $payload, ?string $actor, Carbon $at): void
+    private function eventRow(int $progressionId, string $type, ?string $eventId, ?string $key, ?int $stage, ?array $payload, ?string $actor, Carbon $at, ?int $version): array
     {
-        DB::table('progression_events')->insert([
+        return [
             'progression_id' => $progressionId,
             'type' => $type,
             'event_id' => $eventId,
@@ -220,44 +277,56 @@ class ProgressionStateService
             'stage_number' => $stage,
             'payload' => $payload === null ? null : json_encode($payload),
             'actor' => $actor,
-            'snapshot_version' => $this->snapshots->current()?->version,
+            'snapshot_version' => $version,
             'occurred_at' => $at,
             'created_at' => Carbon::now(),
-        ]);
+        ];
     }
 
     /** Clients still on the old routes read `completed_milestones` (row ids) until they move. */
-    private function mirrorLegacyList(Progression $progression, string $key): void
+    private function mirrorLegacyList(Progression $progression, array $keys): void
     {
-        $id = Milestone::where('key', $key)->value('id');
         $completed = $progression->completed_milestones ?? [];
-        if ($id !== null && !in_array($id, $completed)) {
-            $completed[] = $id;
-            $progression->completed_milestones = $completed;
+        $added = array_diff(Milestone::whereIn('key', $keys)->pluck('id')->all(), $completed);
+        if ($added !== []) {
+            $progression->completed_milestones = array_values([...$completed, ...$added]);
             $progression->save();
         }
     }
 
-    private function evaluate(Progression $progression, Snapshot $snapshot): void
+    /** @return int the open stage after evaluation */
+    private function evaluate(Progression $progression, Snapshot $snapshot): int
     {
         $open = $this->openStage($progression, $snapshot);
         $initial = $progression->open_stage;
         $done = array_flip(DB::table('progression_milestones')->where('progression_id', $progression->id)->pluck('milestone_key')->all());
         $delivered = $this->deliveries($progression->id);
 
+        $opened = [];
         while (($next = $snapshot->nextStage($open)) !== null && $this->passed($snapshot, $open, $done, $delivered[$open] ?? [])) {
             $open = $next;
-            $this->event($progression->id, self::EVENT_STAGE, null, null, $open, null, null, Carbon::now());
+            $opened[] = $this->eventRow($progression->id, self::EVENT_STAGE, null, null, $open, null, null, Carbon::now(), $snapshot->version);
+        }
+        if ($opened !== []) {
+            DB::table('progression_events')->insert($opened);
         }
 
-        if ($initial === null || (int) $initial !== $open) {
+        if ($initial === null || (int) $initial !== $open || !self::evaluatedWith($progression, $snapshot)) {
             $progression->open_stage = $open;
+            $progression->evaluated_version = $snapshot->version;
             $stageId = Stage::where('number', $open)->value('id');
             if ($stageId !== null) {
                 $progression->max_stage_id = $stageId;
             }
             $progression->save();
         }
+
+        return $open;
+    }
+
+    private static function evaluatedWith(Progression $progression, Snapshot $snapshot): bool
+    {
+        return $progression->evaluated_version !== null && (int) $progression->evaluated_version === $snapshot->version;
     }
 
     private function passed(Snapshot $snapshot, int $number, array $done, array $delivered): bool

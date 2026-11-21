@@ -28,8 +28,14 @@ class ProgressionModelController extends Controller
             return response()->json(['message' => __('api.progression.no_model')], Response::HTTP_NOT_FOUND);
         }
 
-        $headers = ['Cache-Control' => 'public, max-age=60', 'X-Model-Version' => (string) $snapshot->version];
-        if (in_array('"' . $snapshot->etag . '"', $request->getETags(), true)) {
+        // A numbered version never changes; the bare URL moves on each publish. The document's own
+        // `status` is the one it was frozen with; X-Model-Status says whether it is still the current one.
+        $headers = [
+            'Cache-Control' => $request->has('version') ? 'public, max-age=31536000, immutable' : 'public, max-age=60',
+            'X-Model-Version' => (string) $snapshot->version,
+            'X-Model-Status' => $snapshot->status,
+        ];
+        if (self::etagMatches($request->getETags(), $snapshot->etag)) {
             return response('', Response::HTTP_NOT_MODIFIED, $headers)->setEtag($snapshot->etag);
         }
 
@@ -86,5 +92,17 @@ class ProgressionModelController extends Controller
             'etag' => $result['snapshot']->etag,
             'findings' => $result['findings'],
         ], Response::HTTP_CREATED);
+    }
+
+    /** If-None-Match: `*`, strong or weak (`W/"..."`) tags all match by value. */
+    private static function etagMatches(array $tags, string $etag): bool
+    {
+        foreach ($tags as $tag) {
+            if ($tag === '*' || trim(preg_replace('/^W\//', '', $tag), '"') === $etag) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

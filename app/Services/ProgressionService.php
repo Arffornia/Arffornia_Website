@@ -93,15 +93,18 @@ class ProgressionService
             return false;
         }
 
-        $completed = $progression->completed_milestones ?? [];
+        return DB::transaction(function () use ($progression, $milestoneId) {
+            $progression = Progression::whereKey($progression->id)->lockForUpdate()->firstOrFail();
+            $completed = $progression->completed_milestones ?? [];
 
-        if (in_array($milestoneId, $completed)) {
-            $progression->completed_milestones = array_values(array_diff($completed, [$milestoneId]));
-            $progression->save();
-        }
-        $this->states->removeLegacyCompletion($progression, $milestoneId);
+            if (in_array($milestoneId, $completed)) {
+                $progression->completed_milestones = array_values(array_diff($completed, [$milestoneId]));
+                $progression->save();
+            }
+            $this->states->removeLegacyCompletion($progression, $milestoneId);
 
-        return true;
+            return true;
+        });
     }
 
     /**
