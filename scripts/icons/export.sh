@@ -43,7 +43,8 @@ done
 java_bin=${JAVA_BIN:-$(command -v java)}
 
 echo "Exporting icons from $pack to $out"
-rm -f "$out/manifest.json"
+# A previous export may hold icons of removed items; publish.sh syncs deletions from this folder.
+rm -rf "$out"/[0-9]* "$out/manifest.json"
 LD_LIBRARY_PATH="$libs" DISPLAY="${DISPLAY:-:0}" nix shell nixpkgs#portablemc -c \
   portablemc --main-dir "$cache/mc" start neoforge::21.1.172 \
   --mc-dir "$work/client" --jvm "$java_bin" \
