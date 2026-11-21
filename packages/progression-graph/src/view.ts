@@ -25,6 +25,7 @@ const SVG = 'http://www.w3.org/2000/svg';
 const STAGE_HEAD = 44;
 const MIN_ZOOM = 0.08;
 const MAX_ZOOM = 2.5;
+let instances = 0;
 
 type Attrs = Record<string, string | number>;
 
@@ -109,6 +110,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
   const iconOf = options.icon ?? (() => null);
   const N = layout.node;
   const tileX = (N.width - N.tile) / 2;
+  const markerPrefix = `arf-pg-${++instances}-arrow`;
 
   const byKey = new Map(snapshot.milestones.map((m) => [m.key, m]));
   const graphByKey = new Map(snapshot.graphs.map((g) => [g.key, g]));
@@ -141,7 +143,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
   const canvas = svg('svg', { class: 'arf-pg__canvas', role: 'img', 'aria-label': tr.t('title') }, stage);
   const defs = svg('defs', {}, canvas);
   for (const kind of ['base', 'done', 'in', 'out', 'back']) {
-    const m = svg('marker', { id: `arf-pg-arrow-${kind}`, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, defs);
+    const m = svg('marker', { id: `${markerPrefix}-${kind}`, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, defs);
     svg('path', { d: 'M0 1 L9 5 L0 9 z', class: `arf-pg__arrow arf-pg__arrow--${kind}` }, m);
   }
   const world = svg('g', { class: 'arf-pg__world' }, canvas);
@@ -358,7 +360,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
       e.el.classList.toggle('is-out', !!selected && e.from === selected);
       e.el.classList.toggle('is-faded', !!selected && e.to !== selected && e.from !== selected);
       const kind = e.el.classList.contains('arf-pg__edge--back') ? 'back' : selected && e.to === selected ? 'in' : selected && e.from === selected ? 'out' : done ? 'done' : 'base';
-      e.el.setAttribute('marker-end', `url(#arf-pg-arrow-${kind})`);
+      e.el.setAttribute('marker-end', `url(#${markerPrefix}-${kind})`);
     }
     root.classList.toggle('has-selection', !!selected);
   }
