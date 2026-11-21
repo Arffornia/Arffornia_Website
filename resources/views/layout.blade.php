@@ -40,6 +40,9 @@
             <a href="/shop">{{ __('nav.shop') }}</a>
             <a href="/reglement">{{ __('nav.rules') }}</a>
             <a href="/stages">{{ __('nav.stages') }}</a>
+            @if (in_array(config('progression.viewer'), ['fixture', 'api'], true))
+                <a href="{{ route('progression') }}">{{ __('nav.progression') }}</a>
+            @endif
 
             @if (auth()->check() && auth()->user()->hasRole('admin'))
                 <a href="{{ route('adminPanel') }}">{{ __('nav.admin_panel') }}</a>
