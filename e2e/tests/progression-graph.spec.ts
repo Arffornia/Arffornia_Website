@@ -1,7 +1,12 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 // Progression graph viewer (spec 018 item 3) on the committed fixture: the 31 Jul 2026 tree and a demo state.
 // Screenshots are attached to the report for a visual review; the assertions check behaviour only.
+
+async function onlyMekanism(page: Page) {
+  await page.locator('.arf-pg__chip', { hasText: /^(All|Tout)$/ }).click();
+  await page.locator('.arf-pg__chip[data-graph="mekanism"]').click();
+}
 
 test.beforeEach(async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
@@ -28,8 +33,8 @@ test('clicking a milestone opens its detail panel and colours its links', async 
   const panel = page.locator('.arf-pg__panel');
   await expect(panel).toBeVisible();
   await expect(panel.locator('h3')).toHaveText('Mekanism: Advanced Tank');
-  await expect(page.locator('.arf-pg__edge.is-in')).toHaveCount(1);
-  await expect(page.locator('.arf-pg__edge.is-out')).toHaveCount(1);
+  await expect(page.locator('.arf-pg__edge.is-in[data-from="mekanism/mekanism_basic_tank"][data-to="mekanism/mekanism_advanced_tank"]')).toHaveCount(1);
+  await expect(page.locator('.arf-pg__edge.is-out[data-from="mekanism/mekanism_advanced_tank"]')).toHaveCount(1);
   await testInfo.attach('selected', { body: await page.screenshot(), contentType: 'image/png' });
 });
 
@@ -42,23 +47,70 @@ test('a graph chip hides that graph', async ({ page }) => {
   await expect(page.locator('.arf-pg__node[data-key^="mekanism/"]')).toHaveCount(0);
 });
 
-test('search focuses the first matching milestone', async ({ page }) => {
+test('Ctrl+K opens the search palette and Enter opens the best milestone', async ({ page }) => {
   await page.goto('/progression');
   await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
 
-  await page.locator('.arf-pg__search').fill('digital miner');
-  await page.locator('.arf-pg__search').press('Enter');
+  await page.keyboard.press('Control+k');
+  await page.keyboard.type('digital miner');
+  await page.keyboard.press('Enter');
 
   await expect(page.locator('.arf-pg__panel h3')).toHaveText('Mekanism: Do the mining for me !');
 });
 
-test('the theme switch toggles between dark and light', async ({ page }, testInfo) => {
+test('the palette ranks a milestone above the items it unlocks', async ({ page }) => {
+  await page.goto('/progression');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+
+  await page.locator('.arf-pg__search').click();
+  await page.keyboard.type('adv tank');
+
+  await expect(page.locator('.arf-pg__result').first()).toContainText('Mekanism: Advanced Tank');
+});
+
+test('hovering a milestone highlights where it comes from and where it leads', async ({ page }) => {
+  await page.goto('/progression/E2E_Gold');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+  await onlyMekanism(page);
+
+  await page.locator('.arf-pg__node[data-key="mekanism/mekanism_advanced_tank"]').hover();
+
+  await expect(page.locator('.arf-pg__node.is-upstream[data-key="mekanism/mekanism_basic_tank"]')).toHaveCount(1);
+  await expect(page.locator('.arf-pg__node.is-downstream[data-key="mekanism/mekanism_elite_tank"]')).toHaveCount(1);
+});
+
+test('a later-stage requirement shows as a badge and its link only on hover', async ({ page }) => {
+  await page.goto('/progression');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('.arf-pg__edge--back')).toHaveCount(0);
+
+  await page.locator('.arf-pg__node:has(.arf-pg__warn)').first().hover();
+
+  await expect(page.locator('.arf-pg__edge--back').first()).toBeVisible();
+});
+
+test('the selected milestone is kept in the URL and reopened from it', async ({ page }) => {
+  await page.goto('/progression');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+  await onlyMekanism(page);
+  await page.locator('.arf-pg__node[data-key="mekanism/mekanism_advanced_tank"]').click();
+  await expect(page).toHaveURL(/#m=mekanism%2Fmekanism_advanced_tank$/);
+
+  await page.reload();
+
+  await expect(page.locator('.arf-pg__panel h3')).toHaveText('Mekanism: Advanced Tank');
+});
+
+test('the graph follows the site theme and its switch drives the site', async ({ browser }) => {
+  const context = await browser.newContext({ colorScheme: 'light' });
+  const page = await context.newPage();
   await page.goto('/progression');
   const root = page.locator('.arf-pg');
-  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(root).toHaveAttribute('data-theme', 'light');
 
   await page.locator('.arf-pg__tool--theme').click();
 
-  await expect(root).toHaveAttribute('data-theme', 'light');
-  await testInfo.attach('light', { body: await page.screenshot(), contentType: 'image/png' });
+  await expect(root).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await context.close();
 });
