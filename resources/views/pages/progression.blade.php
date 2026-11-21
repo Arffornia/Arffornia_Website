@@ -6,7 +6,7 @@
 @endsection
 
 @section('headerSearch')
-    <button type="button" class="headerSearch" data-progression-search aria-label="{{ __('progression.search') }} (Ctrl+K)">
+    <button type="button" class="headerSearch" data-progression-search aria-label="{{ __('progression.search') }}" aria-keyshortcuts="Control+K Meta+K">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"/></svg>
         <span>{{ __('progression.search') }}</span>
         <kbd data-shortcut></kbd>
