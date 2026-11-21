@@ -49,8 +49,10 @@
             @endif
         </div>
 
-        <x-themeToggle />
-        <x-localeSwitcher />
+        <div class="headerActions">
+            @yield('headerSearch')
+            <x-themeToggle />
+            <x-localeSwitcher />
 
         <div class="profileImageContainer">
             @if (auth()->check())
@@ -60,6 +62,7 @@
                 <a href="/login" title="{{ __('nav.login') }}"><img id=profileImage src="https://minotar.net/avatar/Steve/50" alt="{{ __('nav.login') }}"></a>
             @endif
 
+        </div>
         </div>
     </div>
 </header>

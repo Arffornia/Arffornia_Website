@@ -67,6 +67,11 @@ class ProgressionViewController extends Controller
                     'private' => __('progression.private'),
                     'no_model' => __('progression.no_model'),
                 ],
+                'notice' => match (true) {
+                    auth()->guest() => ['text' => __('progression.login_hint'), 'action' => ['label' => __('progression.login_cta'), 'href' => route('login')]],
+                    $mode === 'fixture' => ['text' => __('progression.preview')],
+                    default => null,
+                },
             ],
         ]);
     }

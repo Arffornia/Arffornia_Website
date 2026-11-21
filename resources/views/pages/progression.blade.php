@@ -5,17 +5,16 @@
     <link rel="stylesheet" href="{{ asset('css/pages/progression.css') }}">
 @endsection
 
+@section('headerSearch')
+    <button type="button" class="headerSearch" data-progression-search aria-label="{{ __('progression.search') }} (Ctrl+K)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4"/></svg>
+        <span>{{ __('progression.search') }}</span>
+        <kbd data-shortcut></kbd>
+    </button>
+@endsection
+
 @section('content')
     <main class="progression-page">
-        @if ($mode === 'fixture')
-            <p class="progression-preview">{{ __('progression.preview') }}</p>
-        @endif
-        @guest
-            <p class="progression-login">
-                {{ __('progression.login_hint') }}
-                <a href="{{ route('login') }}">{{ __('progression.login_cta') }}</a>
-            </p>
-        @endguest
         <div id="progression-root" aria-label="{{ $playerName ? __('progression.player_title', ['name' => $playerName]) : __('progression.title') }}">
             <p data-loading>{{ __('progression.loading') }}</p>
             <p data-error hidden>{{ __('progression.error') }}</p>

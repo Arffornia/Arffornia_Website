@@ -154,6 +154,15 @@
 .arf-pg__legend-item--back i { border-color: var(--pg-danger); border-top-style: dashed; }
 .arf-pg__legend-item--back::before { content: "!"; display: grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--pg-danger); color: #fff; font: 800 10px var(--pg-display); }
 
+.arf-pg--no-top { grid-template-rows: auto 1fr; }
+.arf-pg__notice { position: absolute; right: 12px; bottom: 62px; z-index: 2; display: flex; align-items: center; gap: 10px; max-width: min(420px, calc(100% - 24px)); padding: 8px 8px 8px 14px; background: var(--pg-surface); border: 1px solid var(--pg-line); border-radius: 12px; box-shadow: var(--pg-shadow); color: var(--pg-muted); font: 13px var(--pg-body); animation: arf-pg-notice-in 240ms ease-out; }
+.arf-pg__notice p { margin: 0; flex: 1; min-width: 0; }
+.arf-pg__notice-action { flex: none; padding: 5px 10px; border-radius: 8px; background: var(--pg-orange); color: #fff; font-weight: 650; text-decoration: none; }
+.arf-pg__notice-action:focus-visible, .arf-pg__notice-close:focus-visible { outline: 2px solid var(--pg-orange); outline-offset: 2px; }
+.arf-pg__notice-close { flex: none; display: grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 8px; background: transparent; color: var(--pg-muted); cursor: pointer; }
+.arf-pg__notice-close:hover { background: var(--pg-line-soft); color: var(--pg-text); }
+@keyframes arf-pg-notice-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .arf-pg__notice { animation: none; } }
 .arf-pg__tools { position: absolute; right: 12px; bottom: 12px; display: flex; gap: 4px; padding: 4px; background: var(--pg-glass); border: 1px solid var(--pg-line-soft); border-radius: 12px; backdrop-filter: blur(6px); }
 .arf-pg__tool { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--pg-text); cursor: pointer; }
 .arf-pg__tool:hover { background: var(--pg-line-soft); }
