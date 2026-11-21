@@ -1,0 +1,68 @@
+/*
+    Full-window page, like /stages: the site is capped at 1620px on <html>, so lift the cap here and let
+    the site header float over the graph. Selectors target `body > header` because the viewer has its
+    own <header> inside the page.
+*/
+html {
+    max-width: none;
+}
+
+body > header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding-bottom: 7px;
+    background: color-mix(in srgb, var(--site-bg) 82%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--arf-border);
+}
+
+body > footer {
+    display: none;
+}
+
+.progression-page {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: 100vh;
+    padding-top: 64px;
+}
+
+.progression-preview,
+.progression-login {
+    margin: 0;
+    padding: 6px 16px;
+    font-family: var(--arf-font-body, Montserrat, sans-serif);
+    font-size: 13px;
+    background: var(--arf-surface-raised);
+    color: var(--arf-text-muted);
+    border-bottom: 1px solid var(--arf-border);
+}
+
+.progression-login {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 14px;
+}
+
+.progression-login a {
+    color: #fff;
+    background: var(--arf-color-brand-orange);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+#progression-root {
+    flex: 1;
+    min-height: 0;
+}
+
+#progression-root > p {
+    padding: 24px;
+}
