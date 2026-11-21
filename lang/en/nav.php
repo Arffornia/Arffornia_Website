@@ -7,6 +7,7 @@ return [
     'shop' => 'Shop',
     'rules' => 'Rules',
     'stages' => 'Stages',
+    'progression' => 'Progression',
     'admin_panel' => 'Admin Panel',
     'launcher_images' => 'Launcher Images',
     'profile' => 'My profile',

@@ -10,4 +10,6 @@ return [
     'preview' => "Aperçu : l'arbre du 31 juillet 2026 avec des données de démonstration. Ta vraie progression arrivera avec la nouvelle API de progression.",
     'private' => "Cette progression est privée : son propriétaire la cache.",
     'no_model' => "Aucun arbre de progression n’est encore publié.",
+    'login_cta' => 'Connecte-toi pour voir ta progression',
+    'login_hint' => "Tu regardes l'arbre de progression public.",
 ];

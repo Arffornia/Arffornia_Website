@@ -66,4 +66,34 @@ class ProgressionViewerPageTest extends TestCase
             $this->assertFileExists(public_path("progression-fixture/{$file}"));
         }
     }
+    public function test_guest_sees_a_login_call_to_action_on_the_catalog(): void
+    {
+        config(['progression.viewer' => 'fixture']);
+
+        $response = $this->get('/progression');
+
+        $response->assertOk();
+        $response->assertSee(__('progression.login_cta'));
+    }
+
+    public function test_logged_in_player_does_not_see_the_login_call_to_action(): void
+    {
+        config(['progression.viewer' => 'fixture']);
+        Stage::factory()->create(['number' => 1]);
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->get('/progression');
+
+        $response->assertOk();
+        $response->assertDontSee(__('progression.login_cta'));
+    }
+
+    public function test_nav_links_to_the_viewer_only_when_it_is_switched_on(): void
+    {
+        config(['progression.viewer' => 'fixture']);
+        $this->get('/news')->assertSee('href="' . route('progression') . '"', false);
+
+        config(['progression.viewer' => 'off']);
+        $this->get('/news')->assertDontSee('href="' . route('progression') . '"', false);
+    }
 }

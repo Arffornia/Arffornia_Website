@@ -47,13 +47,16 @@
     --site-canvas-line-thick: var(--arf-border);
 }
 
+/*
+    No background on <html>: while it has none, the body background (page images in shop.css,
+    vote.css) is painted on the whole canvas. Giving <html> one shrank them to the body box.
+*/
 html {
-    background: var(--site-bg);
     color: var(--site-text);
 }
 
 body {
-    background: var(--site-bg);
+    background-color: var(--site-bg);
     color: var(--site-text);
 }
 
