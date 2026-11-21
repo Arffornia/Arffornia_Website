@@ -1,5 +1,5 @@
 # Thin wrappers over the native tools. `make check` is what CI runs.
-.PHONY: check lint lint-i18n test test-js build fmt pint-test phpstan install tokens tokens-check
+.PHONY: check lint lint-i18n test test-js build fmt pint-test phpstan install tokens tokens-check icons-export icons-publish
 
 install:
 	composer install
@@ -44,3 +44,12 @@ tokens:
 
 tokens-check:
 	curl -fsSL $(TOKENS_URL) | diff -u public/css/tokens.css -
+
+# Item icons (scripts/icons/README.md): PACK is a launcher install of the pack, ICONS a work folder.
+ICONS ?= $(HOME)/.cache/arffornia/icons
+
+icons-export:
+	scripts/icons/export.sh "$(PACK)" "$(ICONS)"
+
+icons-publish:
+	scripts/icons/publish.sh "$(ICONS)"
