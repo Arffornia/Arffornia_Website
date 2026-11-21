@@ -32,6 +32,7 @@ class ShopPurchaseTest extends TestCase
             'promo_price' => 0,
             'is_unique' => false,
             'commands' => ['give {player} minecraft:diamond 1'],
+            'contents' => [['type' => 'item', 'item' => 'minecraft:diamond', 'count' => 1]],
         ], $attributes));
     }
 
@@ -52,7 +53,8 @@ class ShopPurchaseTest extends TestCase
         $this->assertSame(1, UserSale::where('user_id', $user->id)->where('shop_item_id', $item->id)->count());
         $reward = PendingReward::where('user_id', $user->id)->sole();
         $this->assertSame('pending', $reward->status);
-        $this->assertSame($item->commands, $reward->commands);
+        $this->assertSame($item->contents, $reward->contents);
+        $this->assertSame('shop', $reward->source);
     }
 
     public function test_promo_price_is_used_when_set(): void
@@ -92,10 +94,21 @@ class ShopPurchaseTest extends TestCase
         $this->assertSame(1, UserSale::count());
     }
 
-    public function test_item_without_commands_is_rejected(): void
+    public function test_item_without_typed_contents_is_rejected(): void
     {
         $user = $this->makeUser(1000);
-        $item = $this->makeItem(['commands' => null]);
+        $item = $this->makeItem(['contents' => null]);
+
+        $this->actingAs($user)->postJson("/shop/buy/{$item->id}")
+            ->assertJson(['success' => false, 'message' => 'This item is not configured for delivery.']);
+
+        $this->assertEquals(1000, $user->fresh()->money);
+    }
+
+    public function test_item_with_invalid_contents_is_rejected(): void
+    {
+        $user = $this->makeUser(1000);
+        $item = $this->makeItem(['contents' => [['type' => 'item', 'item' => 'minecraft:diamond', 'count' => 999999]]]);
 
         $this->actingAs($user)->postJson("/shop/buy/{$item->id}")
             ->assertJson(['success' => false, 'message' => 'This item is not configured for delivery.']);
