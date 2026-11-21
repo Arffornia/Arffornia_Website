@@ -78,7 +78,7 @@
 .default-title {
     font-size: 2.3rem;
     font-weight: 600;
-    color: black;
+    color: var(--site-text);
     border-left: 4px solid var(--arf-color-brand-orange);
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
@@ -90,7 +90,7 @@
 .palierText {
     font-size: 100%;
     font-weight: 500;
-    color: rgb(110, 110, 110);
+    color: var(--site-muted);
 }
 
 .palierTextContainer {
@@ -116,7 +116,7 @@
 #info__player-stat-text {
     font-size: 125%;
     font-weight: 500;
-    color: black;
+    color: var(--site-text);
 }
 
 .discord__container {
@@ -127,7 +127,7 @@
 .discord__text {
     font-size: 125%;
     font-weight: 500;
-    color: black;
+    color: var(--site-text);
 }
 
 .discord__left-container {
@@ -223,11 +223,11 @@
     margin-top: 1.5%;
 
     text-align: center;
-    color: #373737;
+    color: var(--site-text-soft);
     font-size: 250%;
     font-weight: 700;
-    background-color: #ededed;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: var(--site-card);
+    box-shadow: 0 4px 8px var(--site-shadow);
     border-radius: 8px;
 }
 
@@ -240,8 +240,8 @@
 }
 
 .podium .shape {
-    background-color: #ededed;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: var(--site-card);
+    box-shadow: 0 4px 8px var(--site-shadow);
     border-radius: 8px;
 }
 
@@ -284,7 +284,7 @@
 }
 
 .rank {
-    color: #373737;
+    color: var(--site-text-soft);
 }
 
 .podium .p2 .rank {

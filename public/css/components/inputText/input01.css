@@ -26,9 +26,9 @@
 }
 
 .inputText01Container:focus{
-    background: #ffffff;
+    background: var(--site-input-bg);
     font-size: 16px;
-    color: #000;
+    color: var(--site-input-text);
 }
 
 /*
@@ -82,8 +82,8 @@
 }
 
 .inputCheckBox01Container:focus{
-    background: #ffffff;
-    color: #000;
+    background: var(--site-input-bg);
+    color: var(--site-input-text);
 }
 
 
@@ -111,9 +111,9 @@
 }
 
 .inputFile01Container:focus {
-    background: #ffffff;
+    background: var(--site-input-bg);
     font-size: 16px;
-    color: #000;
+    color: var(--site-input-text);
 }
 
 .inputFile01Container::file-selector-button {

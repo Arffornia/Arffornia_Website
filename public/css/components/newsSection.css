@@ -38,7 +38,7 @@
 }
 
 .news-section .text-less {
-    color: #727272d4;
+    color: var(--site-muted);
 }
 
 .news-section .content {
@@ -49,9 +49,9 @@
 
 .news-section .block {
     display: flex;
-    background: #ededed;
+    background: var(--site-card);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px var(--site-shadow);
     height: var(--news-width);
     transition: transform 0.3s, opacity 0.3s;
     overflow: hidden;
@@ -83,15 +83,15 @@
 
 .news-section .medium-btn {
     background: transparent;
-    border: 1px solid #c2c2c2d3;
+    border: 1px solid var(--site-line-soft);
     padding: 10px 20px;
     border-radius: 6px;
     font-weight: 500;
-    color: #000000;
+    color: var(--site-text);
     cursor: pointer;
     transition: all 0.3s;
 }
 
 .news-section .medium-btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--site-hover);
 }
