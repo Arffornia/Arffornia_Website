@@ -44,7 +44,7 @@ class ProgressionViewController extends Controller
                     $mode === 'api' => url("/api/players/{$player->uuid}/progression/state"),
                     default => "{$fixture}/state-demo.json",
                 },
-                'iconBase' => $mode === 'api' ? url('/icons/128/') : config('progression.icon_base'),
+                'iconBase' => $mode === 'api' ? url('/icons/128').'/' : config('progression.icon_base'),
                 'locale' => app()->getLocale() === 'fr' ? 'fr' : 'en',
                 'title' => $player?->name,
                 'messages' => [

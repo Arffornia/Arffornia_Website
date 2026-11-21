@@ -22,5 +22,6 @@ class ProgressionViewerApiModeTest extends ProgressionTestCase
         $response->assertSee("api\\/players\\/{$player->uuid}\\/progression\\/state", false);
         $response->assertDontSee(__('progression.preview'));
         $response->assertSee('icons\\/manifest.json', false);
+        $response->assertSee('icons\\/128\\/"', false);
     }
 }
