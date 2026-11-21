@@ -47,7 +47,9 @@ class ProgressionModelController extends Controller
     public function replaceDraft(Request $request): JsonResponse
     {
         $request->validate(['document' => 'required|array']);
-        ['applied' => $applied, 'findings' => $findings] = $this->models->replaceDraft($request->input('document'));
+        // The raw body, not the input bag: the global middleware would trim strings and turn "" into null.
+        $document = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR)['document'];
+        ['applied' => $applied, 'findings' => $findings] = $this->models->replaceDraft($document);
 
         if (!$applied) {
             return response()->json(['message' => __('api.progression.draft_invalid'), 'findings' => $findings], Response::HTTP_UNPROCESSABLE_ENTITY);

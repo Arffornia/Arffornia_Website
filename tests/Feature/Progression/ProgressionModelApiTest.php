@@ -71,6 +71,17 @@ class ProgressionModelApiTest extends ProgressionTestCase
         $this->assertSame(1, MilestoneClosure::where('milestone_id', $kept->id)->count());
     }
 
+    public function test_a_draft_round_trip_keeps_empty_and_padded_texts_as_sent(): void
+    {
+        $this->milestone();
+        $document = $this->asService('admin')->getJson('/api/progression/drafts/current')->json('document');
+        $document['milestones'][0]['title'] = ['en' => ' Padded ', 'fr' => ''];
+
+        $this->asService('admin')->putJson('/api/progression/drafts/current', ['document' => $document])->assertOk();
+
+        $this->assertSame(' Padded ', \App\Models\Milestone::first()->name);
+    }
+
     public function test_a_draft_that_breaks_the_schema_is_rejected_and_changes_nothing(): void
     {
         $this->milestone();
