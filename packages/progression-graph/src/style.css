@@ -30,6 +30,8 @@
   --pg-text: #ece6f5;
   --pg-muted: #b3a7c2;
   --pg-faint: #7d6e93;
+  --pg-edge: #8a7aa3;
+  --pg-tile-line: #6e5c8a;
   --pg-col: rgba(255, 255, 255, .025);
   --pg-col-current: rgba(255, 115, 0, .07);
   --pg-glass: rgba(9, 7, 10, .78);
@@ -46,6 +48,8 @@
   --pg-text: #1a1422;
   --pg-muted: #4a3d5e;
   --pg-faint: #6e6084;
+  --pg-edge: #7f7096;
+  --pg-tile-line: #8f80a6;
   --pg-col: rgba(61, 47, 78, .035);
   --pg-col-current: rgba(255, 115, 0, .07);
   --pg-glass: rgba(255, 255, 255, .9);
@@ -98,20 +102,20 @@
 .arf-pg__col { fill: transparent; }
 .arf-pg__col.is-odd { fill: var(--pg-col); }
 .arf-pg__col.is-current { fill: var(--pg-col-current); }
-.arf-pg__col-label { font: 700 15px var(--pg-display); letter-spacing: .14em; fill: var(--pg-faint); }
+.arf-pg__col-label { font: 700 15px var(--pg-display); letter-spacing: .14em; fill: var(--pg-muted); }
 .arf-pg__col-label.is-current { fill: var(--pg-orange); }
 .arf-pg__row-rule { stroke: var(--pg-line-soft); stroke-width: 1; }
-.arf-pg__row-label { font: 700 15px var(--pg-display); letter-spacing: .04em; fill: var(--pg-muted); }
+.arf-pg__row-label { font: 700 15px var(--pg-display); letter-spacing: .04em; fill: var(--pg-text); }
 
-.arf-pg__edge { fill: none; stroke: var(--pg-line); stroke-width: 2; transition: opacity var(--arf-motion-fast, 120ms); }
-.arf-pg__edge.is-done { stroke: var(--pg-teal); opacity: .55; }
+.arf-pg__edge { fill: none; stroke: var(--pg-edge); stroke-width: 2; transition: opacity var(--arf-motion-fast, 120ms); }
+.arf-pg__edge.is-done { stroke: var(--pg-teal); opacity: .9; }
 .arf-pg__edge.is-in { stroke: var(--pg-in); stroke-width: 3; opacity: 1; }
 .arf-pg__edge.is-out { stroke: var(--pg-out); stroke-width: 3; opacity: 1; }
-.arf-pg__edge.is-faded { opacity: .14; }
+.arf-pg__edge.is-faded { opacity: .18; }
 .arf-pg__edge--back { stroke: var(--pg-danger); stroke-width: 2.5; stroke-dasharray: 7 5; pointer-events: none; }
-.arf-pg__junction { fill: var(--pg-line); }
+.arf-pg__junction { fill: var(--pg-edge); }
 .has-focus .arf-pg__junction { opacity: .2; }
-.arf-pg__arrow--base { fill: var(--pg-line); }
+.arf-pg__arrow--base { fill: var(--pg-edge); }
 .arf-pg__arrow--done { fill: var(--pg-teal); }
 .arf-pg__arrow--in { fill: var(--pg-in); }
 .arf-pg__arrow--out { fill: var(--pg-out); }
@@ -120,27 +124,27 @@
 .arf-pg__node { cursor: pointer; outline: none; }
 .arf-pg__hit { fill: transparent; }
 .arf-pg__glow { fill: none; stroke: transparent; stroke-width: 4; }
-.arf-pg__tile { fill: var(--pg-raised); stroke: var(--pg-line); stroke-width: 2; }
+.arf-pg__tile { fill: var(--pg-raised); stroke: var(--pg-tile-line); stroke-width: 2; }
 .arf-pg__node.is-done .arf-pg__tile { stroke: var(--pg-teal); }
 .arf-pg__node.is-available .arf-pg__tile { stroke: var(--pg-orange); }
 .arf-pg__node.is-available .arf-pg__glow { stroke: var(--pg-orange); stroke-opacity: .28; }
 .arf-pg__node.is-locked .arf-pg__tile { fill: var(--pg-surface); stroke-dasharray: 4 3; }
-.arf-pg__node.is-locked .arf-pg__icon { filter: grayscale(1); opacity: .45; }
-.arf-pg__node.is-locked .arf-pg__caption { fill: var(--pg-faint); }
+.arf-pg__node.is-locked .arf-pg__icon { filter: saturate(.8); opacity: .85; }
+.arf-pg__node.is-locked .arf-pg__caption { fill: var(--pg-muted); }
 .arf-pg__node:hover .arf-pg__tile, .arf-pg__node:focus-visible .arf-pg__tile { stroke: var(--pg-text); }
 .arf-pg__node { transition: opacity var(--arf-motion-fast, 120ms); }
 .arf-pg__node.is-active .arf-pg__glow { stroke: var(--pg-text); stroke-opacity: .55; stroke-width: 2.5; }
 .arf-pg__node.is-selected .arf-pg__glow { stroke: var(--pg-text); stroke-opacity: .9; stroke-width: 2.5; }
 .arf-pg__node.is-upstream .arf-pg__tile { stroke: var(--pg-in); }
 .arf-pg__node.is-downstream .arf-pg__tile { stroke: var(--pg-out); }
-.has-focus .arf-pg__node:not(.is-active):not(.is-upstream):not(.is-downstream) { opacity: .28; }
+.has-focus .arf-pg__node:not(.is-active):not(.is-upstream):not(.is-downstream) { opacity: .35; }
 .arf-pg__warn circle { fill: var(--pg-danger); stroke: var(--pg-canvas); stroke-width: 2; }
 .arf-pg__warn text { font: 800 11px var(--pg-display); fill: #fff; pointer-events: none; }
 .arf-pg__fallback { font: 700 14px var(--pg-display); fill: var(--pg-muted); }
 .arf-pg__badge { fill: var(--pg-teal); }
 .arf-pg__badge-mark { fill: none; stroke: var(--pg-on-accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .arf-pg__cross { fill: var(--pg-cross); stroke: var(--pg-canvas); stroke-width: 2; }
-.arf-pg__caption { font: 500 11px var(--pg-body); fill: var(--pg-muted); pointer-events: none; }
+.arf-pg__caption { font: 600 11px var(--pg-body); fill: var(--pg-text); pointer-events: none; }
 
 .arf-pg__legend { position: absolute; left: 12px; bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px 14px; max-width: calc(100% - 220px); font-size: 12px; color: var(--pg-muted); background: var(--pg-glass); border: 1px solid var(--pg-line-soft); padding: 7px 11px; border-radius: 10px; backdrop-filter: blur(6px); }
 .arf-pg__legend-item { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
