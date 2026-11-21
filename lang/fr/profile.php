@@ -19,4 +19,5 @@ return [
         'skin' => 'URL du skin : :value',
         'cape' => 'URL de la cape : :value',
     ],
+    'private' => 'Privé',
 ];

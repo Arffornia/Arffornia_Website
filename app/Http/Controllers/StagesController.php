@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Progression\ProgressionVisibility;
+
 use Illuminate\Support\Facades\Log;
 use App\Models\Stage;
 use App\Models\Milestone;
@@ -280,6 +282,9 @@ class StagesController extends Controller
 
         $user->load('activeProgression');
         $progression = $user->activeProgression;
+        if (!app(ProgressionVisibility::class)->canSee($progression)) {
+            abort(404, __('api.user.not_found'));
+        }
 
         return [
             // The page template reads it too (pages.stages), not only the mod.

@@ -12,8 +12,10 @@ class ProgressionStatsService
 {
     private const TTL_SECONDS = 300;
 
-    public function __construct(private readonly ProgressionStateService $states)
-    {
+    public function __construct(
+        private readonly ProgressionStateService $states,
+        private readonly SnapshotStore $snapshots,
+    ) {
     }
 
     /** @return array<string, mixed>|null null while no snapshot is published */
@@ -29,6 +31,8 @@ class ProgressionStatsService
 
     private function compute(Snapshot $snapshot): array
     {
+        $since = $this->snapshots->firstPublishedAt();
+        $since = $since === null ? null : Carbon::parse($since);
         $perStage = [];
         $total = 0;
         Progression::query()->select(['id', 'open_stage', 'max_stage_id'])->orderBy('id')->chunkById(500, function ($progressions) use ($snapshot, &$perStage, &$total) {
@@ -62,19 +66,20 @@ class ProgressionStatsService
             'stages' => array_map(fn (int $number) => [
                 'number' => $number,
                 'progressions' => $perStage[$number] ?? 0,
-                ...$this->stageDuration($number),
+                ...$this->stageDuration($number, $since),
             ], array_keys($snapshot->stages)),
             'milestones' => $milestones,
         ];
     }
 
     /**
-     * Median time to open a stage: from the opening of the stage before it, or from the creation of the
-     * progression for the second stage. Progressions created before the event log have no samples.
+     * Median time to open a stage: from the opening of the stage before it, or, with no earlier opening,
+     * from the creation of the progression when it began after the first publish. Older progressions
+     * would count their whole pre-log history, so they give no sample there.
      *
      * @return array{samples: int, median_seconds: ?int}
      */
-    private function stageDuration(int $number): array
+    private function stageDuration(int $number, ?Carbon $since): array
     {
         $opened = DB::table('progression_events as e')
             ->join('progressions as p', 'p.id', '=', 'e.progression_id')
@@ -89,11 +94,12 @@ class ProgressionStatsService
             ->select('e.occurred_at', 'p.created_at', DB::raw('max(prev.occurred_at) as previous_at'))
             ->get();
 
-        $durations = $opened->map(function ($row) {
-            $from = Carbon::parse($row->previous_at ?? $row->created_at);
+        $durations = $opened->filter(fn ($row) => $row->previous_at !== null || ($since !== null && Carbon::parse($row->created_at)->gte($since)))
+            ->map(function ($row) {
+                $from = Carbon::parse($row->previous_at ?? $row->created_at);
 
-            return max(0, (int) $from->diffInSeconds(Carbon::parse($row->occurred_at), true));
-        })->sort()->values();
+                return max(0, (int) $from->diffInSeconds(Carbon::parse($row->occurred_at), true));
+            })->sort()->values();
 
         if ($durations->isEmpty()) {
             return ['samples' => 0, 'median_seconds' => null];

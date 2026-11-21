@@ -28,7 +28,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Progression extends Model
 {
     use HasFactory;
-    protected $fillable = ['max_stage_id', 'current_milestone_id', 'completed_milestones', 'open_stage', 'is_public'];
+    protected $fillable = ['max_stage_id', 'current_milestone_id', 'completed_milestones', 'open_stage', 'is_public', 'evaluated_version'];
     protected $casts = ['completed_milestones' => 'array', 'is_public' => 'boolean'];
 
     public function maxStage()
@@ -36,6 +36,7 @@ class Progression extends Model
         return $this->belongsTo(Stage::class, 'max_stage_id');
     }
 
+    /** @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Milestone, $this> */
     public function currentTargetedMilestone()
     {
         return $this->belongsTo(Milestone::class, 'current_milestone_id');

@@ -19,4 +19,5 @@ return [
         'skin' => 'Skin URL: :value',
         'cape' => 'Cape URL: :value',
     ],
+    'private' => 'Private',
 ];

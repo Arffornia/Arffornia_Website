@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Progression;
-use App\Models\ServiceAccount;
 use App\Models\User;
 use App\Progression\Keys;
+use App\Progression\ProgressionVisibility;
 use App\Progression\ProgressionStateService;
 use App\Progression\ProgressionStatsService;
 use App\Services\UserService;
@@ -21,13 +21,19 @@ class ProgressionStateController extends Controller
         private readonly ProgressionStateService $states,
         private readonly ProgressionStatsService $stats,
         private readonly UserService $users,
+        private readonly ProgressionVisibility $visibility,
     ) {
     }
 
-    /** Public by default; a private progression is visible to its members, admins and the game server only. */
-    public function show(Request $request, Progression $progression): JsonResponse
+    /** A private progression answers exactly as a missing one. */
+    public function show(string $progression): JsonResponse
     {
-        if (!$progression->is_public && !$this->canSeePrivate($request, $progression)) {
+        return $this->stateOf(Progression::find($progression));
+    }
+
+    private function stateOf(?Progression $progression): JsonResponse
+    {
+        if ($progression === null || !$this->visibility->canSee($progression)) {
             return response()->json(['message' => __('api.progression.not_found')], Response::HTTP_NOT_FOUND);
         }
         $state = $this->states->state($progression);
@@ -38,14 +44,11 @@ class ProgressionStateController extends Controller
     }
 
     /** The state of a player's active progression, for the website's player page. */
-    public function showForPlayer(Request $request, string $playerUuid): JsonResponse
+    public function showForPlayer(string $playerUuid): JsonResponse
     {
         $user = preg_match('/^[0-9a-f]{32}$/', $playerUuid) ? $this->users->getUserByUuid($playerUuid) : null;
-        if ($user === null || $user->activeProgression === null) {
-            return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
-        }
 
-        return $this->show($request, $user->activeProgression);
+        return $this->stateOf($user?->activeProgression);
     }
 
     /** A member switches the progression between public and private. */
@@ -53,7 +56,7 @@ class ProgressionStateController extends Controller
     {
         $validated = $request->validate(['public' => 'required|boolean']);
         $viewer = $request->user();
-        if (!($viewer instanceof User) || (!$viewer->hasRole('admin') && !$this->isMember($viewer, $progression))) {
+        if (!($viewer instanceof User) || (!$viewer->hasRole('admin') && !ProgressionVisibility::isMember($viewer, $progression))) {
             return response()->json(['message' => __('api.forbidden')], Response::HTTP_FORBIDDEN);
         }
 
@@ -61,21 +64,6 @@ class ProgressionStateController extends Controller
         $progression->save();
 
         return response()->json(['progression_id' => $progression->id, 'public' => $progression->is_public]);
-    }
-
-    private function canSeePrivate(Request $request, Progression $progression): bool
-    {
-        $viewer = auth('sanctum')->user() ?? $request->user();
-        if ($viewer instanceof ServiceAccount) {
-            return $viewer->hasAnyRole(['admin', 'progression_editor']);
-        }
-
-        return $viewer instanceof User && ($viewer->hasRole('admin') || $this->isMember($viewer, $progression));
-    }
-
-    private function isMember(User $user, Progression $progression): bool
-    {
-        return (int) $user->active_progression_id === $progression->id || (int) $user->solo_progression_id === $progression->id;
     }
 
     public function events(Request $request, Progression $progression): JsonResponse

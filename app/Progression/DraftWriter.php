@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Writes a schema-valid snapshot document into the editable tables, matching rows by key so row
- * ids, item pictures and player targets survive. Used by PUT /api/progression/draft (graph tool, AI skill).
+ * ids, item pictures and player targets survive. Used by PUT /api/progression/drafts/current.
+ *
+ * Until the mod and the launcher leave the old routes, these tables are also what they read: a draft
+ * is live for them as soon as it is written, not when it is published.
  */
 class DraftWriter
 {
@@ -23,6 +26,7 @@ class DraftWriter
     {
         return DB::transaction(function () use ($document) {
             $findings = [];
+            $keyByOldId = Milestone::whereNotNull('key')->pluck('key', 'id')->all();
             $stageIds = $this->stages($document['stages']);
             $graphIds = $this->graphs($document['graphs']);
             $milestoneIds = $this->milestones($document['milestones'], $stageIds, $graphIds);
@@ -36,6 +40,7 @@ class DraftWriter
                 }
             }
 
+            $this->remapLegacyLists($keyByOldId, $milestoneIds);
             ProgressionGraph::whereNotIn('id', array_values($graphIds))->delete();
             $this->dropStaleStages($stageIds, $findings);
 
@@ -134,6 +139,31 @@ class DraftWriter
         }
 
         return $ids;
+    }
+
+    /**
+     * `completed_milestones` holds row ids: follow each id to its key and back to today's row, and drop
+     * the ids of milestones that left the draft, so the old list and the keyed state stay in step.
+     */
+    private function remapLegacyLists(array $keyByOldId, array $idByKey): void
+    {
+        Progression::query()->whereNotNull('completed_milestones')->orderBy('id')->chunkById(200, function ($progressions) use ($keyByOldId, $idByKey) {
+            foreach ($progressions as $progression) {
+                $before = $progression->completed_milestones ?? [];
+                $after = [];
+                foreach ($before as $id) {
+                    $key = $keyByOldId[(int) $id] ?? null;
+                    $mapped = $key === null ? (int) $id : ($idByKey[$key] ?? null);
+                    if ($mapped !== null && !in_array($mapped, $after, true)) {
+                        $after[] = $mapped;
+                    }
+                }
+                if ($after !== array_map('intval', $before)) {
+                    $progression->completed_milestones = $after;
+                    $progression->save();
+                }
+            }
+        });
     }
 
     private function requirements(Milestone $milestone, array $items): void

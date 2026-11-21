@@ -9,6 +9,8 @@ use App\Models\ProgressionGraph;
 /** The working draft (the editable tables) and its publication as a numbered snapshot. */
 class ModelService
 {
+    private const REFERENTIAL = ['duplicate_key', 'unknown_stage', 'unknown_graph', 'unknown_requirement'];
+
     public function __construct(
         private readonly ModelSerializer $serializer,
         private readonly ModelValidator $validator,
@@ -39,7 +41,6 @@ class ModelService
     /** @return array{document: array, findings: list<Finding>} */
     public function draft(): array
     {
-        $this->ensureKeys();
         [$document, $findings] = $this->serializer->draft();
 
         return ['document' => $document, 'findings' => self::bySeverity([...$findings, ...$this->validator->validate($document)])];
@@ -52,9 +53,17 @@ class ModelService
         if ($schemaErrors !== []) {
             return ['applied' => false, 'findings' => $schemaErrors];
         }
+        // References the tables cannot hold are refused before anything is written; backward links and
+        // cycles are allowed in a draft and only block a publish.
+        $rules = $this->validator->ruleFindings($document);
+        $broken = array_filter($rules, fn (Finding $f) => in_array($f->code, self::REFERENTIAL, true));
+        if ($broken !== []) {
+            return ['applied' => false, 'findings' => self::bySeverity($rules)];
+        }
+        $this->ensureKeys();
         $writeFindings = $this->writer->write($document);
 
-        return ['applied' => true, 'findings' => self::bySeverity([...$writeFindings, ...$this->validator->ruleFindings($document)])];
+        return ['applied' => true, 'findings' => self::bySeverity([...$writeFindings, ...$rules])];
     }
 
     /**
@@ -63,8 +72,9 @@ class ModelService
      *
      * @return array{snapshot: ?ModelSnapshot, findings: list<Finding>}
      */
-    public function publish(?int $userId, ?string $notes, bool $acceptRuleErrors): array
+    public function publish(?int $userId, ?string $notes, bool $acceptRuleErrors, bool $reevaluate = true): array
     {
+        $this->ensureKeys();
         ['document' => $document, 'findings' => $findings] = $this->draft();
         $blocking = array_filter($findings, fn (Finding $f) => $f->isError() && ($f->code === 'schema' || !$acceptRuleErrors));
         if ($blocking !== []) {
@@ -72,7 +82,9 @@ class ModelService
         }
 
         $snapshot = $this->snapshots->publish($document, $userId, $notes);
-        $this->states->reevaluateAll();
+        if ($reevaluate) {
+            $this->states->reevaluateAll();
+        }
 
         return ['snapshot' => $snapshot, 'findings' => $findings];
     }

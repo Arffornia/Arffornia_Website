@@ -138,11 +138,12 @@ class UserController extends Controller
         }
 
         $user->load('activeProgression.maxStage');
+        $visible = app(\App\Progression\ProgressionVisibility::class)->canSee($user->activeProgression);
 
         return view('pages.users.profile', [
             'user' => $user,
-            'stage_number' => $user->activeProgression->maxStage->number ?? 1,
-            'current_milestone_name' => $user->activeProgression->currentTargetedMilestone->name ?? 'None',
+            'stage_number' => $visible ? ($user->activeProgression->maxStage->number ?? 1) : __('profile.private'),
+            'current_milestone_name' => $visible ? ($user->activeProgression->currentTargetedMilestone->name ?? 'None') : __('profile.private'),
         ]);
     }
 
