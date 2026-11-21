@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { moduleProgress, nodeStates, splitLinks, stageProgress } from '../src/state.ts';
+import { lineage, moduleProgress, nodeStates, pathTo, splitLinks, stageProgress } from '../src/state.ts';
 import { milestone, snapshot } from './fixtures.ts';
 
 const tree = snapshot([milestone('a', 1), milestone('b', 1, ['a']), milestone('c', 2, ['b']), milestone('d', 1, ['c'])]);
@@ -47,4 +47,17 @@ test('module deliveries are capped at what the module asks', () => {
   const rows = moduleProgress(stage, { done: [], open_stage: 1, deliveries: [{ item: 'minecraft:iron_ingot', delivered: 250 }] });
 
   assert.deepEqual(rows, [{ item: 'minecraft:iron_ingot', need: 100, have: 100 }]);
+});
+
+test('lineage follows requirements upstream and dependents downstream, transitively', () => {
+  const chain = snapshot([milestone('a', 1), milestone('b', 1, ['a']), milestone('c', 2, ['b']), milestone('x', 1)]);
+  const l = lineage(chain);
+
+  assert.deepEqual([[...l.upstream('tech/c')].sort(), [...l.downstream('tech/a')].sort()], [['tech/a', 'tech/b'], ['tech/b', 'tech/c']]);
+});
+
+test('the path to a milestone lists only what is not done, earliest first', () => {
+  const chain = snapshot([milestone('a', 1), milestone('b', 1, ['a']), milestone('c', 2, ['b'])]);
+
+  assert.deepEqual(pathTo(chain, { done: ['tech/a'], open_stage: 1 }, 'tech/c').map((m) => m.key), ['tech/b']);
 });

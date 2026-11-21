@@ -75,3 +75,57 @@ export function dependents(snapshot: Snapshot): Map<string, Milestone[]> {
   }
   return out;
 }
+
+/** Every milestone reachable by following `requires` (upstream) or dependents (downstream), the start excluded. */
+export function lineage(snapshot: Snapshot): { upstream(key: string): Set<string>; downstream(key: string): Set<string> } {
+  const byKey = new Map(snapshot.milestones.map((m) => [m.key, m]));
+  const children = new Map<string, string[]>();
+  for (const m of snapshot.milestones) {
+    for (const k of m.requires) {
+      if (!byKey.has(k)) continue;
+      const list = children.get(k) ?? [];
+      list.push(m.key);
+      children.set(k, list);
+    }
+  }
+  const walk = (start: string, next: (key: string) => readonly string[]) => {
+    const seen = new Set<string>();
+    const stack = [...next(start)];
+    while (stack.length) {
+      const key = stack.pop()!;
+      if (seen.has(key) || key === start || !byKey.has(key)) continue;
+      seen.add(key);
+      stack.push(...next(key));
+    }
+    return seen;
+  };
+  const up = new Map<string, Set<string>>();
+  const down = new Map<string, Set<string>>();
+  return {
+    upstream(key) {
+      if (!up.has(key)) up.set(key, walk(key, (k) => byKey.get(k)?.requires ?? []));
+      return up.get(key)!;
+    },
+    downstream(key) {
+      if (!down.has(key)) down.set(key, walk(key, (k) => children.get(k) ?? []));
+      return down.get(key)!;
+    },
+  };
+}
+
+/** Milestones still to do before `key`, in the order a player can do them (stage, then dependency depth). */
+export function pathTo(snapshot: Snapshot, state: PlayerState, key: string): Milestone[] {
+  const byKey = new Map(snapshot.milestones.map((m) => [m.key, m]));
+  const done = new Set(state.done);
+  const todo = [...lineage(snapshot).upstream(key)].filter((k) => !done.has(k)).map((k) => byKey.get(k)!);
+  const depth = new Map<string, number>();
+  const depthOf = (m: Milestone, guard = new Set<string>()): number => {
+    if (depth.has(m.key)) return depth.get(m.key)!;
+    if (guard.has(m.key)) return 0;
+    guard.add(m.key);
+    const d = 1 + Math.max(0, ...m.requires.map((k) => byKey.get(k)).filter((x): x is Milestone => !!x && !done.has(x.key)).map((x) => depthOf(x, guard)));
+    depth.set(m.key, d);
+    return d;
+  };
+  return todo.sort((a, b) => a.stage - b.stage || depthOf(a) - depthOf(b) || a.key.localeCompare(b.key));
+}

@@ -25,13 +25,24 @@ handle.focus('mekanism/mekanism_advanced_tank');
 ## What it draws
 
 - One row per graph, stages as shared columns, the open stage highlighted.
-- Done, available and locked milestones; links done in teal. Selecting a milestone colours its
-  incoming links blue and its outgoing links orange, with a legend.
-- Requirements pointing to a later stage are data errors: they stay out of the layout and are
-  drawn as red dashed overlays.
+- Done, available and locked milestones; links done in teal.
+- Hovering a milestone highlights its whole lineage: everything it needs (upstream, blue) and
+  everything it opens (downstream, orange); the rest dims. A click pins it and opens the detail panel.
+- Requirements pointing to a later stage are data errors: a red `!` badge on the milestone, with
+  the reason in its tooltip and in the panel; the link is drawn (orthogonal, dashed red) only while
+  the milestone is hovered or selected.
 - Header: progress of the open stage against its threshold, and the Space Elevator module deliveries.
-- Graph filter chips, search (Enter focuses the first match), pan, wheel zoom, fit, sun/moon theme
-  switch bottom right, detail panel on click, Escape to close.
+- Graph filter chips, pan, wheel zoom, fit, sun/moon theme switch bottom right, Escape to close.
+- Ctrl+K (Cmd+K): command palette over milestones, items, mods and stages; Enter flies to the result
+  (no animation with `prefers-reduced-motion`).
+- Arrow keys walk the graph from the selection: left to a requirement, right to a dependent, up and
+  down in the stage column. The selection is kept in the URL (`#m=<key>`) so a view can be shared.
+- With a player state, the panel lists the path still to do before the selected milestone.
+
+## Theme
+
+The host decides: `theme` at mount, `handle.setTheme()` afterwards, and `onThemeChange` when the
+viewer's own switch is used. On the website the graph follows the site theme and its switch drives it.
 
 ## Commands
 
