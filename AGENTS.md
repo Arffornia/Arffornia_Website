@@ -21,6 +21,7 @@ progression, teams, shop, votes). Consumers: the NeoForge mod (`Arffornia_Mods`)
 | `app/Console/Commands/SyncServiceAccounts.php` | Syncs `SVC_ACCOUNT_*` env vars into `service_accounts` |
 | `database/migrations`, `database/factories`, `database/seeders` | Schema, factories, demo seed |
 | `resources/views`, `resources/js`, `resources/css`, `public/js` | Blade views and frontend (Vite 8) |
+| `packages/progression-graph` | Progression graph viewer in TypeScript, shared with the game and the launcher (spec 018); see its README |
 | `config/` | Laravel config (`app.php` has Azure OAuth, `voting.php` vote sites) |
 | `tests/Feature`, `tests/Unit` | PHPUnit 13 |
 | `prod.Dockerfile`, `nginx.Dockerfile`, `.docker/` | php-fpm and nginx images |

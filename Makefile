@@ -1,12 +1,12 @@
 # Thin wrappers over the native tools. `make check` is what CI runs.
-.PHONY: check lint lint-i18n test build fmt pint-test phpstan install tokens tokens-check
+.PHONY: check lint lint-i18n test test-js build fmt pint-test phpstan install tokens tokens-check
 
 install:
 	composer install
 	npm ci
 
 # build runs before test: feature tests render Blade views that need public/build/manifest.json.
-check: lint build test
+check: lint build test-js test
 
 lint: lint-i18n
 	composer validate --no-check-publish
@@ -17,6 +17,11 @@ lint-i18n:
 
 test:
 	vendor/bin/phpunit
+
+# Progression graph component (packages/progression-graph): types and unit tests
+test-js:
+	npm run typecheck
+	npm test
 
 build:
 	npm run build
