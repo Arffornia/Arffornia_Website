@@ -85,6 +85,26 @@ function showMessage(root: HTMLElement, text: string) {
   }
 }
 
+/**
+ * Two icon indexes: the id-keyed manifest of the item-icons bucket (`{format, items: {"ns:path": hash}}`,
+ * scripts/icons/README.md) in api mode, and the fixture's map of item id to a file path under iconBase.
+ */
+type IconIndex = { format: number; items: Record<string, string> } | Record<string, string>;
+
+function iconResolver(index: IconIndex, base: string): (item: string) => string | null {
+  if (typeof index.format === 'number' && typeof index.items === 'object') {
+    const items = (index as { items: Record<string, string> }).items;
+    return (item) => {
+      const hash = items[item];
+      if (!hash) return null;
+      const [ns, path] = item.split(':', 2);
+      return `${base}${encodeURIComponent(ns)}/${path.split('/').map(encodeURIComponent).join('/')}.png?v=${hash}`;
+    };
+  }
+  const files = index as Record<string, string>;
+  return (item) => (files[item] ? base + files[item].split('/').map(encodeURIComponent).join('/') : null);
+}
+
 async function loadState(config: PageConfig): Promise<{ state: PlayerState | null; hidden: boolean }> {
   if (!config.stateUrl) return { state: null, hidden: false };
   try {
@@ -114,14 +134,15 @@ async function main() {
       }
       throw error;
     }
-    const [laidOut, icons, player] = await Promise.all([withLayout(snapshot), getJson<Record<string, string>>(config.iconsUrl), loadState(config)]);
+    const [laidOut, iconIndex, player] = await Promise.all([withLayout(snapshot), getJson<IconIndex>(config.iconsUrl), loadState(config)]);
+    const icon = iconResolver(iconIndex, config.iconBase);
     const handle = mountProgressionGraph(root, {
       snapshot: laidOut,
       state: player.state,
       locale: config.locale,
       title: player.hidden ? `${config.title ?? ''} · ${config.messages.private}` : (config.title ?? undefined),
       theme: siteTheme()?.get() ?? (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'),
-      icon: (item) => (icons[item] ? config.iconBase + icons[item].split('/').map(encodeURIComponent).join('/') : null),
+      icon,
       onThemeChange: (theme) => siteTheme()?.set(theme),
       brand: false,
       searchButton: false,
