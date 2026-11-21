@@ -39,7 +39,7 @@
 }
 
 .techno-section .text-less {
-    color: #727272d4;
+    color: var(--site-muted);
 }
 
 .techno-section .content {
@@ -50,9 +50,9 @@
 
 .techno-section .block {
     display: flex;
-    background: #ededed;
+    background: var(--site-card);
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px var(--site-shadow);
     height: var(--techno-width);
     transition: transform 0.3s, opacity 0.3s;
     overflow: hidden;

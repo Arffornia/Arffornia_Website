@@ -36,7 +36,7 @@
 
 .content {
     padding-top: 1%;
-    color: #000;
+    color: var(--site-text);
     width: 100%;
 }
 

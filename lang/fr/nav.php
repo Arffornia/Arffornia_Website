@@ -11,4 +11,6 @@ return [
     'launcher_images' => 'Images du launcher',
     'profile' => 'Mon profil',
     'login' => 'Se connecter',
+    'theme_dark' => 'Passer au thème sombre',
+    'theme_light' => 'Passer au thème clair',
 ];

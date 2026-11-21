@@ -5,6 +5,10 @@
     background-color: #000000;
 }
 
+[data-theme="dark"] .content {
+    background-color: var(--arf-surface);
+}
+
 .text {
     color: white;
     padding: 5%;

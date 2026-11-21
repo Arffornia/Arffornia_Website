@@ -1,9 +1,9 @@
 :root {
     /* Colors */
-    --color-background: #f2f2f2;
-    --color-line-thin: rgba(0, 0, 0, 0.05);
-    --color-line-thin-alt: rgba(0, 0, 0, 0.07);
-    --color-line-thick: #aaa;
+    --color-background: var(--site-canvas);
+    --color-line-thin: var(--site-canvas-line);
+    --color-line-thin-alt: var(--site-canvas-line-alt);
+    --color-line-thick: var(--site-canvas-line-thick);
 
     /* Grid size */
     --grid-small-size: 20px;
