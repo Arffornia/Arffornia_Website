@@ -41,7 +41,6 @@ Route::get('stages', [StagesController::class, 'loadStagesView']);
 Route::get('stages/{playerUuid}', [StagesController::class, 'loadPlayerStageView']);
 
 // Progression graph viewer (spec 018 item 3), 404 unless config('progression.viewer') is enabled
-Route::get('progression/icons.json', [ProgressionViewController::class, 'icons'])->name('progression.icons');
 Route::get('progression', [ProgressionViewController::class, 'catalogView'])->name('progression');
 Route::get('progression/{playerName}', [ProgressionViewController::class, 'playerView'])->name('progression.player');
 
