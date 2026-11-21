@@ -62,7 +62,7 @@ test('the palette ranks a milestone above the items it unlocks', async ({ page }
   await page.goto('/progression');
   await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
 
-  await page.locator('.arf-pg__search').click();
+  await page.locator('[data-progression-search]').click();
   await page.keyboard.type('adv tank');
 
   await expect(page.locator('.arf-pg__result').first()).toContainText('Mekanism: Advanced Tank');

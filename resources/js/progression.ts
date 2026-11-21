@@ -10,6 +10,7 @@ interface PageConfig {
   locale: Locale;
   title: string | null;
   messages: { private: string; no_model: string };
+  notice: { text: string; action?: { label: string; href: string } } | null;
 }
 
 interface SiteTheme {
@@ -122,7 +123,16 @@ async function main() {
       theme: siteTheme()?.get() ?? (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'),
       icon: (item) => (icons[item] ? config.iconBase + icons[item].split('/').map(encodeURIComponent).join('/') : null),
       onThemeChange: (theme) => siteTheme()?.set(theme),
+      brand: false,
+      searchButton: false,
+      notice: config.notice,
     });
+    const searchButton = document.querySelector<HTMLButtonElement>('[data-progression-search]');
+    if (searchButton) {
+      const shortcut = searchButton.querySelector('[data-shortcut]');
+      if (shortcut) shortcut.textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
+      searchButton.addEventListener('click', () => handle.openSearch());
+    }
     window.addEventListener('arffornia:theme', (event) => handle.setTheme((event as CustomEvent<{ theme: 'dark' | 'light' }>).detail.theme));
     root.dataset.ready = 'true';
   } catch (error) {

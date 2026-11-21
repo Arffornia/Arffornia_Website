@@ -15,6 +15,12 @@ export interface ViewOptions {
   onThemeChange?: (theme: 'dark' | 'light') => void;
   /** Keep the selected milestone in the URL hash (#m=<key>) so a view can be shared. Default true. */
   deepLink?: boolean;
+  /** Show the "Progression · <name>" block in the header. Default true; a host page with its own title turns it off. */
+  brand?: boolean;
+  /** Show the search button in the toolbar. Default true; a host with its own search field calls openSearch(). */
+  searchButton?: boolean;
+  /** A small dismissible note shown above the map tools, with an optional link. */
+  notice?: { text: string; action?: { label: string; href: string } } | null;
 }
 
 export interface ViewHandle {
@@ -152,21 +158,29 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
   if (!state) root.classList.add('arf-pg--catalog');
 
   const top = html('header', 'arf-pg__top', root);
-  const brand = html('div', 'arf-pg__brand', top);
-  html('b', '', brand, tr.t('title'));
-  html('span', '', brand, options.title ?? (state?.player?.name ?? tr.t('catalog')));
+  if (options.brand !== false) {
+    const brand = html('div', 'arf-pg__brand', top);
+    html('b', '', brand, tr.t('title'));
+    html('span', '', brand, options.title ?? (state?.player?.name ?? tr.t('catalog')));
+  }
   renderHeader(top);
+  if (!top.childElementCount) {
+    top.remove();
+    root.classList.add('arf-pg--no-top');
+  }
 
   const toolbar = html('div', 'arf-pg__toolbar', root);
   const chips = html('div', 'arf-pg__chips', toolbar);
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
-  const search = html('button', 'arf-pg__search', toolbar);
-  search.type = 'button';
-  search.setAttribute('aria-label', `${tr.t('search_button')} (${isMac ? '⌘' : 'Ctrl'}+K)`);
-  search.append(iconSvg(ICONS.search));
-  html('span', '', search, tr.t('palette_placeholder'));
-  html('kbd', '', search, isMac ? '⌘K' : 'Ctrl K');
-  search.addEventListener('click', () => openPalette());
+  if (options.searchButton !== false) {
+    const search = html('button', 'arf-pg__search', toolbar);
+    search.type = 'button';
+    search.setAttribute('aria-label', `${tr.t('search_button')} (${isMac ? '⌘' : 'Ctrl'}+K)`);
+    search.append(iconSvg(ICONS.search));
+    html('span', '', search, tr.t('palette_placeholder'));
+    html('kbd', '', search, isMac ? '⌘K' : 'Ctrl K');
+    search.addEventListener('click', () => openPalette());
+  }
 
   const stage = html('div', 'arf-pg__stage', root);
   const canvas = svg('svg', { class: 'arf-pg__canvas', role: 'img', 'aria-label': tr.t('title') }, stage);
@@ -187,6 +201,21 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
     const item = html('span', `arf-pg__legend-item arf-pg__legend-item--${kind}`, legend);
     html('i', '', item);
     item.append(label);
+  }
+
+  if (options.notice) {
+    const note = html('aside', 'arf-pg__notice', stage);
+    note.setAttribute('role', 'status');
+    html('p', '', note, options.notice.text);
+    if (options.notice.action) {
+      const a = html('a', 'arf-pg__notice-action', note, options.notice.action.label);
+      a.href = options.notice.action.href;
+    }
+    const x = html('button', 'arf-pg__notice-close', note);
+    x.type = 'button';
+    x.setAttribute('aria-label', tr.t('close'));
+    x.append(iconSvg(ICONS.close));
+    x.addEventListener('click', () => note.remove());
   }
 
   const tools = html('div', 'arf-pg__tools', stage);

@@ -73,7 +73,8 @@ class ProgressionViewerPageTest extends TestCase
         $response = $this->get('/progression');
 
         $response->assertOk();
-        $response->assertSee(__('progression.login_cta'));
+        $notice = $response->viewData('config')['notice'];
+        $this->assertSame(__('progression.login_cta'), $notice['action']['label']);
     }
 
     public function test_logged_in_player_does_not_see_the_login_call_to_action(): void
@@ -85,7 +86,7 @@ class ProgressionViewerPageTest extends TestCase
         $response = $this->actingAs($user)->get('/progression');
 
         $response->assertOk();
-        $response->assertDontSee(__('progression.login_cta'));
+        $this->assertArrayNotHasKey('action', $response->viewData('config')['notice'] ?? []);
     }
 
     public function test_nav_links_to_the_viewer_only_when_it_is_switched_on(): void

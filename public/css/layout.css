@@ -108,7 +108,10 @@ a {
     text-decoration: none;
 }
 
-.profileImageContainer {
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-left: auto;
 }
 
@@ -118,8 +121,6 @@ a {
     place-items: center;
     width: 34px;
     height: 34px;
-    margin-left: auto;
-    margin-right: 8px;
     padding: 0;
     border: 2px solid var(--site-line);
     border-radius: 8px;
@@ -166,8 +167,6 @@ a {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-left: auto;
-    margin-right: 16px;
 }
 
 .locale-switcher + .profileImageContainer {
