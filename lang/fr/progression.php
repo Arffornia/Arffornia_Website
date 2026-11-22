@@ -13,4 +13,9 @@ return [
     'login_cta' => 'Se connecter',
     'login_hint' => 'Connecte-toi pour suivre ta propre progression sur cet arbre.',
     'search' => 'Chercher une milestone, un item, un mod',
+    'next_title' => 'Prochaines milestones',
+    'next_empty' => 'Rien de disponible pour l’instant : termine le stage ouvert pour débloquer le suivant.',
+    'privacy_public' => 'Progression publique',
+    'privacy_hint' => 'Tout le monde peut voir cette progression. Désactive-la pour la montrer seulement à ton équipe.',
+    'privacy_failed' => 'Le réglage n’a pas pu être enregistré. Réessaie.',
 ];
