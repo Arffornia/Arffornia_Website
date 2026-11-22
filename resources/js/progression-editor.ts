@@ -22,6 +22,19 @@ interface Draft {
   published_version: number | null;
   document: Snapshot;
   subject?: string | null;
+  can_undo: boolean;
+  can_redo: boolean;
+}
+
+interface HistoryEntry {
+  id: number;
+  type: string;
+  action: string | null;
+  subject: string | null;
+  state: string | null;
+  revision: number;
+  user: string | null;
+  at: string | null;
 }
 
 type Mode = 'view' | 'add' | 'delete' | 'link' | 'unlink' | 'move';
@@ -30,7 +43,27 @@ type PanelView =
   | { kind: 'milestone'; key: string }
   | { kind: 'new-milestone'; graph: string; stage: number }
   | { kind: 'graph'; key: string | null }
-  | { kind: 'stage'; number: number | null };
+  | { kind: 'stage'; number: number | null }
+  | { kind: 'history' }
+  | { kind: 'review' };
+
+interface Finding {
+  severity: 'error' | 'warning' | 'info';
+  code: string;
+  subject: string;
+  message: string;
+}
+
+interface Diff {
+  against: number | null;
+  empty: boolean;
+  stages: { added: number[]; removed: number[]; changed: { key: number; fields: string[] }[] };
+  graphs: { added: string[]; removed: string[]; changed: { key: string; fields: string[] }[] };
+  milestones: { added: string[]; removed: string[]; moved: { key: string; from: { stage: number; graph: string }; to: { stage: number; graph: string } }[]; changed: { key: string; fields: string[] }[] };
+  links: { added: { from: string; to: string }[]; removed: { from: string; to: string }[] };
+  unlocks: { added: { milestone: string; item: string }[]; removed: { milestone: string; item: string }[]; changed: { milestone: string; item: string; fields: string[] }[] };
+  marks: Record<string, string>;
+}
 
 const MODES: [Mode, string][] = [['view', 'v'], ['add', 'a'], ['delete', 'd'], ['link', 'l'], ['unlink', 'u'], ['move', 'm']];
 
@@ -125,6 +158,7 @@ class Editor {
   handle: ViewHandle | null = null;
   view: ViewTransform | null = null;
   renderSeq = 0;
+  marks: Record<string, string> | null = null;
   icon: (item: string) => string | null = () => null;
 
   readonly sidebar = h('aside', { class: 'pe-side' });
@@ -223,7 +257,14 @@ class Editor {
 
   onKey(e: KeyboardEvent) {
     const target = e.target as HTMLElement;
-    if (target.closest('input, textarea, select, [contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (target.closest('input, textarea, select, [contenteditable]')) return;
+    const key = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && (key === 'z' || key === 'y')) {
+      e.preventDefault();
+      void this.step(key === 'y' || e.shiftKey ? 'redo' : 'undo');
+      return;
+    }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     const mode = MODES.find(([, key]) => key === e.key.toLowerCase());
     if (mode) this.setMode(mode[0]);
   }
@@ -239,7 +280,13 @@ class Editor {
     const file = h('input', { type: 'file', accept: 'application/json,.json', hidden: true, 'data-import': true });
     file.addEventListener('change', () => void this.importFile(file));
     this.bar.replaceChildren(
-      h('div', { class: 'pe-draft' }, h('strong', {}, t('draft_title', { id: d.id })), h('span', { 'data-revision': String(d.revision) }, t('draft_meta', { revision: d.revision, base: d.base_version ?? '-' }))),
+      h('div', { class: 'pe-draft' }, h('strong', {}, t('draft_title', { id: d.id })), h('span', { 'data-revision': String(d.revision) }, d.base_version === null ? t('draft_meta_unpublished', { revision: d.revision }) : t('draft_meta', { revision: d.revision, base: d.base_version }))),
+      h('div', { class: 'pe-history', role: 'group', 'aria-label': t('history') },
+        button(t('undo'), () => void this.step('undo'), { 'data-action': 'undo', disabled: !d.can_undo, title: `${t('undo')} (Ctrl+Z)` }),
+        button(t('redo'), () => void this.step('redo'), { 'data-action': 'redo', disabled: !d.can_redo, title: `${t('redo')} (Ctrl+Shift+Z)` }),
+        button(t('history'), () => this.showPanel({ kind: 'history' }), { 'data-action': 'history' }),
+      ),
+      button(t('review'), () => this.showPanel({ kind: 'review' }), { 'data-action': 'review', class: 'is-primary' }),
       modes,
       h('div', { class: 'pe-actions' },
         button(t('fit'), () => this.handle?.fit(), { 'data-action': 'fit' }),
@@ -249,6 +296,118 @@ class Editor {
         button(t('discard'), () => void this.discard(), { 'data-action': 'discard', class: 'is-danger' }),
       ),
     );
+  }
+
+  async step(direction: 'undo' | 'redo') {
+    if (direction === 'undo' ? !this.draft.can_undo : !this.draft.can_redo) return;
+    try {
+      const next = await this.request<Draft>('POST', this.draftUrl(`/${direction}`), { revision: this.draft.revision });
+      this.say(t(direction === 'undo' ? 'undone' : 'redone'));
+      this.setDraft(next);
+    } catch (error) {
+      await this.fail(error);
+    }
+  }
+
+  historyPanel(): HTMLElement[] {
+    const list = h('ol', { class: 'pe-log', 'data-list': 'history' }, h('li', { class: 'pe-hint' }, t('loading')));
+    void this.request<{ entries: HistoryEntry[] }>('GET', this.draftUrl('/history')).then(({ entries }) => {
+      list.replaceChildren(...entries.map((e) => {
+        const what = e.type === 'edit' ? t(`action.${e.action}`) : t(`log.${e.type}`);
+        const when = e.at ? new Date(e.at).toLocaleString(this.cfg.locale) : '';
+        return h('li', { 'data-type': e.type, 'data-state': e.state ?? undefined },
+          h('strong', {}, what),
+          e.subject ? h('span', { class: 'pe-key' }, e.subject) : null,
+          h('span', { class: 'pe-hint' }, `${e.user ?? t('someone')} · ${when} · r${e.revision}${e.state && e.state !== 'applied' ? ` · ${t(`state.${e.state}`)}` : ''}`),
+        );
+      }));
+    }).catch((error) => void this.fail(error));
+    return [h('h3', {}, t('history_title', { id: this.draft.id })), list];
+  }
+
+  reviewPanel(): HTMLElement[] {
+    const checks = h('div', { 'data-section': 'checks' }, h('p', { class: 'pe-hint' }, t('loading')));
+    const changes = h('div', { 'data-section': 'diff' }, h('p', { class: 'pe-hint' }, t('loading')));
+    const publish = h('div', { 'data-section': 'publish' });
+    const revision = this.draft.revision;
+    void Promise.all([
+      this.request<{ valid: boolean; warnings: number; findings: Finding[] }>('POST', this.draftUrl('/validate')),
+      this.request<Diff>('GET', this.draftUrl('/diff')),
+    ]).then(([validation, diff]) => {
+      if (this.panelView.kind !== 'review' || this.draft.revision !== revision) return;
+      checks.replaceChildren(this.findingList(validation.findings));
+      changes.replaceChildren(...this.diffList(diff));
+      publish.replaceChildren(this.publishForm(validation.valid, validation.warnings));
+      this.marks = diff.marks;
+      void this.renderGraph();
+    }).catch((error) => void this.fail(error));
+    return [
+      h('h3', {}, t('review_title')),
+      h('h4', {}, t('checks')), checks,
+      h('h4', {}, t('changes')), changes,
+      h('h4', {}, t('publish')), publish,
+    ];
+  }
+
+  findingList(findings: Finding[]): HTMLElement {
+    if (!findings.length) return h('p', { class: 'pe-ok', 'data-valid': 'true' }, t('no_findings'));
+    const list = h('ul', { class: 'pe-findings', 'data-list': 'findings' });
+    for (const f of findings) {
+      const target = this.milestone(f.subject) ? f.subject : null;
+      const subject = target ? button(f.subject, () => this.handle?.focus(target), { class: 'pe-link' }) : h('span', { class: 'pe-key' }, f.subject);
+      list.append(h('li', { 'data-severity': f.severity, 'data-code': f.code }, h('b', {}, t(`severity.${f.severity}`)), subject, h('span', {}, f.message)));
+    }
+    return list;
+  }
+
+  diffList(diff: Diff): HTMLElement[] {
+    const against = diff.against === null ? t('against_nothing') : t('against_version', { version: diff.against });
+    if (diff.empty) return [h('p', { class: 'pe-hint' }, against), h('p', { 'data-diff-empty': true }, t('no_changes'))];
+    const title = (key: string) => text(this.milestone(key)?.title) || key;
+    const rows: [string, string][] = [
+      ...diff.milestones.added.map((k): [string, string] => ['added', t('diff.milestone_added', { title: title(k) })]),
+      ...diff.milestones.removed.map((k): [string, string] => ['removed', t('diff.milestone_removed', { key: k })]),
+      ...diff.milestones.moved.map((m): [string, string] => ['moved', t('diff.milestone_moved', { title: title(m.key), from: m.from.stage, to: m.to.stage })]),
+      ...diff.milestones.changed.map((c): [string, string] => ['changed', t('diff.milestone_changed', { title: title(c.key), fields: c.fields.join(', ') })]),
+      ...diff.links.added.map((l): [string, string] => ['added', t('diff.link_added', { from: title(l.from), to: title(l.to) })]),
+      ...diff.links.removed.map((l): [string, string] => ['removed', t('diff.link_removed', { from: l.from, to: l.to })]),
+      ...diff.unlocks.added.map((u): [string, string] => ['added', t('diff.unlock_added', { item: u.item, title: title(u.milestone) })]),
+      ...diff.unlocks.removed.map((u): [string, string] => ['removed', t('diff.unlock_removed', { item: u.item, title: title(u.milestone) })]),
+      ...diff.unlocks.changed.map((u): [string, string] => ['changed', t('diff.unlock_changed', { item: u.item, title: title(u.milestone), fields: u.fields.join(', ') })]),
+      ...diff.stages.added.map((n): [string, string] => ['added', t('diff.stage_added', { n })]),
+      ...diff.stages.removed.map((n): [string, string] => ['removed', t('diff.stage_removed', { n })]),
+      ...diff.stages.changed.map((c): [string, string] => ['changed', t('diff.stage_changed', { n: c.key, fields: c.fields.join(', ') })]),
+      ...diff.graphs.added.map((k): [string, string] => ['added', t('diff.graph_added', { key: k })]),
+      ...diff.graphs.removed.map((k): [string, string] => ['removed', t('diff.graph_removed', { key: k })]),
+      ...diff.graphs.changed.map((c): [string, string] => ['changed', t('diff.graph_changed', { key: c.key, fields: c.fields.join(', ') })]),
+    ];
+    const list = h('ul', { class: 'pe-diff', 'data-list': 'diff' });
+    for (const [kind, line] of rows) list.append(h('li', { 'data-kind': kind }, line));
+    return [h('p', { class: 'pe-hint' }, `${against} · ${t('diff_legend')}`), list];
+  }
+
+  publishForm(valid: boolean, warnings: number): HTMLElement {
+    const confirmBox = h('input', { type: 'checkbox', name: 'confirm_warnings' });
+    const submit = h('button', { type: 'submit', class: 'is-primary', disabled: !valid || warnings > 0, 'data-action': 'publish' }, t('publish'));
+    confirmBox.addEventListener('change', () => (submit.disabled = !valid || !confirmBox.checked));
+    return this.form('publish', (form) => void this.publish(formValue(form, 'notes'), confirmBox.checked),
+      valid ? null : h('p', { class: 'pe-error-text', 'data-blocked': true }, t('publish_blocked')),
+      field(t('notes'), textarea('notes', '')),
+      warnings > 0 ? h('label', { class: 'pe-check' }, confirmBox, t('confirm_warnings', { n: warnings })) : null,
+      submit,
+    );
+  }
+
+  async publish(notes: string, confirmWarnings: boolean) {
+    try {
+      const result = await this.request<{ version: number }>('POST', this.draftUrl('/publish'), { notes: notes || null, confirm_warnings: confirmWarnings });
+      this.marks = null;
+      this.panelView = { kind: 'none' };
+      this.setDraft(await this.request<Draft>('POST', this.cfg.api, {}));
+      this.say(t('published', { version: result.version }));
+    } catch (error) {
+      await this.fail(error);
+    }
   }
 
   async importFile(file: HTMLInputElement) {
@@ -367,6 +526,7 @@ class Editor {
       onPick: (hit) => this.onPick(hit),
       draggable: () => this.mode === 'move',
       onDrop: (key, hit) => void this.onDrop(key, hit),
+      marks: this.marks ?? undefined,
     });
     if (this.graphFilter && doc.graphs.some((g) => g.key === this.graphFilter)) this.handle.showGraphs([this.graphFilter]);
     if (this.view) this.handle.setView(this.view);
@@ -423,8 +583,13 @@ class Editor {
 
   // ---- side panel ----
   showPanel(view: PanelView) {
+    const leavingReview = this.panelView.kind === 'review' && view.kind !== 'review';
     this.panelView = view;
     this.renderPanel();
+    if (leavingReview && this.marks) {
+      this.marks = null;
+      void this.renderGraph();
+    }
   }
 
   renderPanel() {
@@ -434,6 +599,8 @@ class Editor {
       v.kind === 'new-milestone' ? this.newMilestoneForm(v.graph, v.stage) :
       v.kind === 'graph' ? this.graphForm(v.key) :
       v.kind === 'stage' ? this.stageForm(v.number) :
+      v.kind === 'history' ? this.historyPanel() :
+      v.kind === 'review' ? this.reviewPanel() :
       [h('p', { class: 'pe-hint' }, t('panel_empty'))];
     this.panel.replaceChildren(...content);
     this.panel.dataset.view = v.kind;

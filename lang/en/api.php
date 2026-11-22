@@ -97,6 +97,10 @@ return [
         'link_missing' => 'This link does not exist.',
         'item_exists' => ':item is already in the list.',
         'item_missing' => ':item is not in the list.',
+        'nothing_to_undo' => 'Nothing to undo.',
+        'nothing_to_redo' => 'Nothing to redo.',
+        'publish_errors' => 'The draft has errors; nothing was published.',
+        'publish_needs_confirmation' => 'The draft has warnings; confirm them to publish.',
         'import_invalid' => 'The file does not follow the progression model schema (:detail).',
     ],
 ];

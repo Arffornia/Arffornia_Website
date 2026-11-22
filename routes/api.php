@@ -106,6 +106,12 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::put('progression/drafts/{draft}/document', [ProgressionDraftController::class, 'import'])->whereNumber('draft');
     Route::get('progression/drafts/{draft}/document', [ProgressionDraftController::class, 'export'])->whereNumber('draft');
     Route::post('progression/drafts/{draft}/discard', [ProgressionDraftController::class, 'discard'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/undo', [ProgressionDraftController::class, 'undo'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/redo', [ProgressionDraftController::class, 'redo'])->whereNumber('draft');
+    Route::get('progression/drafts/{draft}/history', [ProgressionDraftController::class, 'history'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/validate', [ProgressionDraftController::class, 'validateDraft'])->whereNumber('draft');
+    Route::get('progression/drafts/{draft}/diff', [ProgressionDraftController::class, 'diff'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/publish', [ProgressionDraftController::class, 'publish'])->whereNumber('draft');
 
     // Launcher images Management
     Route::put('launcherImages/{image}/toggle-prod', [AdminPanelManager::class, 'toggleProdStatus']);

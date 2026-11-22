@@ -3,6 +3,7 @@
 namespace App\Progression\Editor;
 
 use App\Models\ProgressionDraft;
+use App\Models\ProgressionDraftEntry;
 use App\Progression\ModelSerializer;
 use App\Progression\ModelValidator;
 use App\Progression\SnapshotStore;
@@ -16,6 +17,7 @@ class DraftService
         private readonly ModelSerializer $serializer,
         private readonly ModelValidator $validator,
         private readonly SnapshotStore $snapshots,
+        private readonly DraftHistory $history,
     ) {
     }
 
@@ -45,14 +47,17 @@ class DraftService
             }
             $document['status'] = 'draft';
 
-            return [ProgressionDraft::create([
+            $draft = ProgressionDraft::create([
                 'status' => ProgressionDraft::STATUS_OPEN,
                 'revision' => 0,
                 'document' => $document,
                 'base_version' => $fromVersion ?? $this->snapshots->latest()?->version,
                 'base_hash' => $this->tablesHash(),
                 'created_by' => $userId,
-            ]), true];
+            ]);
+            $this->history->log($draft, $userId, 'open', $fromVersion !== null ? "version {$fromVersion}" : 'tables');
+
+            return [$draft, true];
         });
     }
 
@@ -62,13 +67,10 @@ class DraftService
         return hash('sha256', json_encode($this->serializer->draft()[0], JSON_THROW_ON_ERROR));
     }
 
-    /**
-     * @param  callable(array): array{0: array, 1: ?string}  $change
-     * @return array{0: ProgressionDraft, 1: list<array<string, mixed>>, 2: ?string}
-     */
-    private function change(ProgressionDraft $draft, int $revision, callable $change): array
+    /** Runs $work on the draft row locked, open, and at the revision the editor saw. */
+    private function locked(ProgressionDraft $draft, int $revision, callable $work): mixed
     {
-        return DB::transaction(function () use ($draft, $revision, $change) {
+        return DB::transaction(function () use ($draft, $revision, $work) {
             $locked = ProgressionDraft::whereKey($draft->id)->lockForUpdate()->firstOrFail();
             if (!$locked->isOpen()) {
                 throw new DraftActionRefused('draft_closed');
@@ -76,6 +78,18 @@ class DraftService
             if ($locked->revision !== $revision) {
                 throw new DraftConflict($locked->revision);
             }
+
+            return $work($locked);
+        });
+    }
+
+    /**
+     * @param  callable(array): array{0: array, 1: ?string}  $change
+     * @return array{0: ProgressionDraft, 1: list<array<string, mixed>>, 2: ?string}
+     */
+    private function change(ProgressionDraft $draft, int $revision, ?int $userId, string $action, callable $change): array
+    {
+        return $this->locked($draft, $revision, function (ProgressionDraft $locked) use ($userId, $action, $change) {
             $before = $locked->document;
             [$after, $subject] = $change($before);
             $changes = DraftChanges::between($before, $after);
@@ -83,6 +97,7 @@ class DraftService
                 $locked->document = $after;
                 $locked->revision++;
                 $locked->save();
+                $this->history->recordEdit($locked, $userId, $action, $subject, $changes);
             }
 
             return [$locked, $changes, $subject];
@@ -90,9 +105,39 @@ class DraftService
     }
 
     /** @return array{0: ProgressionDraft, 1: list<array<string, mixed>>, 2: ?string} */
-    public function act(ProgressionDraft $draft, int $revision, string $action, array $payload): array
+    public function act(ProgressionDraft $draft, int $revision, ?int $userId, string $action, array $payload): array
     {
-        return $this->change($draft, $revision, fn (array $document) => $this->editor->apply($document, $action, $payload));
+        return $this->change($draft, $revision, $userId, $action, fn (array $document) => $this->editor->apply($document, $action, $payload));
+    }
+
+    /** Reverts the newest applied edit. */
+    public function undo(ProgressionDraft $draft, int $revision, ?int $userId): ProgressionDraft
+    {
+        return $this->locked($draft, $revision, function (ProgressionDraft $locked) use ($userId) {
+            $entry = $this->history->nextUndo($locked) ?? throw new DraftActionRefused('nothing_to_undo');
+            $locked->document = DraftChanges::apply($locked->document, $entry->changes, reverse: true);
+            $locked->revision++;
+            $locked->save();
+            $entry->update(['state' => ProgressionDraftEntry::UNDONE]);
+            $this->history->log($locked, $userId, 'undo', $entry->subject, $entry->id);
+
+            return $locked;
+        });
+    }
+
+    /** Replays the oldest undone edit. */
+    public function redo(ProgressionDraft $draft, int $revision, ?int $userId): ProgressionDraft
+    {
+        return $this->locked($draft, $revision, function (ProgressionDraft $locked) use ($userId) {
+            $entry = $this->history->nextRedo($locked) ?? throw new DraftActionRefused('nothing_to_redo');
+            $locked->document = DraftChanges::apply($locked->document, $entry->changes);
+            $locked->revision++;
+            $locked->save();
+            $entry->update(['state' => ProgressionDraftEntry::APPLIED]);
+            $this->history->log($locked, $userId, 'redo', $entry->subject, $entry->id);
+
+            return $locked;
+        });
     }
 
     /**
@@ -100,7 +145,7 @@ class DraftService
      *
      * @return array{0: ProgressionDraft, 1: list<array<string, mixed>>, 2: ?string}
      */
-    public function import(ProgressionDraft $draft, int $revision, array $document): array
+    public function import(ProgressionDraft $draft, int $revision, ?int $userId, array $document): array
     {
         $errors = $this->validator->schemaErrors($document);
         if ($errors !== []) {
@@ -108,15 +153,16 @@ class DraftService
         }
         $document['status'] = 'draft';
 
-        return $this->change($draft, $revision, fn () => [$document, null]);
+        return $this->change($draft, $revision, $userId, 'draft.import', fn () => [$document, null]);
     }
 
-    public function discard(ProgressionDraft $draft): void
+    public function discard(ProgressionDraft $draft, ?int $userId): void
     {
         if (!$draft->isOpen()) {
             throw new DraftActionRefused('draft_closed');
         }
         $draft->status = ProgressionDraft::STATUS_DISCARDED;
         $draft->save();
+        $this->history->log($draft, $userId, 'discard');
     }
 }

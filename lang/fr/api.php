@@ -94,6 +94,10 @@ return [
         'link_missing' => 'Ce lien n’existe pas.',
         'item_exists' => ':item est déjà dans la liste.',
         'item_missing' => ':item n’est pas dans la liste.',
+        'nothing_to_undo' => 'Rien à annuler.',
+        'nothing_to_redo' => 'Rien à rétablir.',
+        'publish_errors' => 'Le brouillon contient des erreurs ; rien n’a été publié.',
+        'publish_needs_confirmation' => 'Le brouillon contient des avertissements ; confirmez-les pour publier.',
         'import_invalid' => 'Le fichier ne suit pas le schéma du modèle de progression (:detail).',
     ],
 ];

@@ -277,3 +277,95 @@ test('delete a stage and a graph', async () => {
   await saved(before);
   await expect(page.locator('[data-graph-row="create_mod"]')).toHaveCount(0);
 });
+
+test('undo and redo with the buttons and the keyboard, then read the history', async () => {
+  let before = await revision();
+  await page.locator('[data-action="undo"]').click();
+  await saved(before);
+  await expect(page.locator('[data-graph-row="create_mod"]')).toBeVisible();
+
+  before = await revision();
+  await page.locator('[data-action="redo"]').click();
+  await saved(before);
+  await expect(page.locator('[data-graph-row="create_mod"]')).toHaveCount(0);
+  await expect(page.locator('[data-action="redo"]')).toBeDisabled();
+
+  before = await revision();
+  await page.locator('body').click({ position: { x: 5, y: 5 } });
+  await page.keyboard.press('Control+z');
+  await saved(before);
+  await expect(page.locator('[data-graph-row="create_mod"]')).toBeVisible();
+  before = await revision();
+  await page.keyboard.press('Control+Shift+z');
+  await saved(before);
+  await expect(page.locator('[data-graph-row="create_mod"]')).toHaveCount(0);
+
+  await page.locator('[data-action="history"]').click();
+  const log = page.locator('[data-list="history"]');
+  await expect(log.locator('li[data-type="redo"]')).toHaveCount(2);
+  await expect(log.locator('li[data-type="edit"]').first()).toContainText('Graph deleted');
+  await expect(log.locator('li[data-type="open"]')).toContainText('E2E_Admin');
+});
+
+async function addMilestone(title: string, stage: string) {
+  const before = await revision();
+  await mode('add');
+  await page.locator('.arf-pg__canvas').click({ position: { x: 400, y: 14 } });
+  const form = page.locator('form[data-form="new-milestone"]');
+  await form.locator('[name="title_en"]').fill(title);
+  await form.locator('[name="graph"]').selectOption('tech');
+  await form.locator('[name="stage"]').selectOption(stage);
+  await form.locator('button[type="submit"]').click();
+  await saved(before);
+}
+
+test('review refuses to publish a draft with a backward link and highlights the changes', async ({}, testInfo) => {
+  let before = await revision();
+  await page.locator('[data-action="add-graph"]').click();
+  await page.locator('form[data-form="graph"] [name="name_en"]').fill('Tech');
+  await page.locator('form[data-form="graph"] button[type="submit"]').click();
+  await saved(before);
+  before = await revision();
+  await page.locator('[data-action="add-stage"]').click();
+  await page.locator('form[data-form="stage"] [name="name_en"]').fill('Second');
+  await page.locator('form[data-form="stage"] button[type="submit"]').click();
+  await saved(before);
+  await addMilestone('Early', '1');
+  await addMilestone('Later', '2');
+  before = await revision();
+  await mode('link');
+  await page.locator('.arf-pg__node[data-key="tech/later"]').click();
+  await page.locator('.arf-pg__node[data-key="tech/early"]').click();
+  await saved(before);
+
+  await page.locator('[data-action="review"]').click();
+  const panel = page.locator('.pe-panel');
+  await expect(panel.locator('[data-code="requires_later_stage"]')).toHaveAttribute('data-severity', 'error');
+  await expect(panel.locator('[data-blocked]')).toBeVisible();
+  await expect(panel.locator('[data-action="publish"]')).toBeDisabled();
+  await expect(panel.locator('[data-list="diff"] li[data-kind="added"]').first()).toBeVisible();
+  await expect(page.locator('.arf-pg__node.is-mark-added[data-key="tech/early"]')).toHaveCount(1);
+  await testInfo.attach('review', { body: await page.screenshot({ path: testInfo.outputPath('review.png') }), contentType: 'image/png' });
+});
+
+test('publish once the errors are fixed and the warnings confirmed', async () => {
+  const before = await revision();
+  await openMilestone('tech/early');
+  await page.locator('[data-unlink="tech/later"]').click();
+  await saved(before);
+
+  await page.locator('[data-action="review"]').click();
+  const panel = page.locator('.pe-panel');
+  await expect(panel.locator('[data-severity="error"]')).toHaveCount(0);
+  await expect(panel.locator('[data-code="no_validation"]').first()).toBeVisible();
+  await expect(panel.locator('[data-action="publish"]')).toBeDisabled();
+  await panel.locator('[name="notes"]').fill('E2E publish');
+  await panel.locator('[name="confirm_warnings"]').check();
+  await panel.locator('[data-action="publish"]').click();
+
+  await expect(page.locator('.pe-status')).toContainText('version 1');
+  await expect(page.locator('[data-revision]').first()).toHaveAttribute('data-revision', '0');
+  const model = await page.request.get('/api/progression/model');
+  expect(model.headers()['x-model-version']).toBe('1');
+  expect((await model.json()).milestones.map((m: { key: string }) => m.key).sort()).toEqual(['tech/early', 'tech/later']);
+});
