@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\Milestone;
 use App\Models\MilestoneUnlock;
+use App\Progression\Keys;
 use App\Models\Recipe;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -11,7 +13,9 @@ use ZipArchive;
 
 /**
  * Builds the recipe datapack the mod downloads (Arffornia_Mods#14): Crafter recipes as
- * `arffornia:machine` recipes and every banned recipe disabled with a `neoforge:false` condition.
+ * `arffornia:machine` recipes gated by `arffornia:milestone/<key>`, every banned recipe disabled with a
+ * `neoforge:false` condition, and one hidden advancement `arffornia:milestone/<key>` per obtain or craft
+ * milestone (Arffornia_Mods#79).
  * Identical data gives identical bytes, so the sha256 is a stable version and ETag.
  */
 class RecipeDatapackService
@@ -28,10 +32,15 @@ class RecipeDatapackService
 
     private const FIXED_MTIME = 315532800;
 
-    /** Stage key of a milestone until milestones get stable keys (spec 017). Must match the mod's CrafterRecipes. */
-    public static function milestoneStage(int $milestoneId): string
+    public static function milestoneStage(string $milestoneKey): string
     {
-        return 'arffornia:milestone/' . $milestoneId;
+        return 'arffornia:milestone/' . $milestoneKey;
+    }
+
+    /** The mod reads an all-digit `milestone/<n>` as a legacy row id, so such a key would gate on the wrong milestone. */
+    public static function isGateKey(?string $milestoneKey): bool
+    {
+        return $milestoneKey !== null && preg_match(Keys::MILESTONE_PATTERN, $milestoneKey) === 1 && ! ctype_digit($milestoneKey);
     }
 
     /** @return array<string, array<mixed>> pack path => JSON body, sorted by path */
@@ -47,7 +56,20 @@ class RecipeDatapackService
             }
         }
 
-        $recipes = Recipe::with('milestoneUnlock')->orderBy('id')->get();
+        $milestones = Milestone::whereNotNull('key')->whereNotNull('validation')->orderBy('key')->get(['key', 'validation']);
+        foreach ($milestones as $milestone) {
+            $advancement = $this->milestoneAdvancement($milestone->validation);
+            if ($advancement === null) {
+                continue;
+            }
+            if (! self::isGateKey($milestone->key)) {
+                Log::warning('Recipe datapack: skipping milestone advancement with an unusable key', ['key' => $milestone->key]);
+                continue;
+            }
+            $files["data/arffornia/advancement/milestone/{$milestone->key}.json"] = $advancement;
+        }
+
+        $recipes = Recipe::with('milestoneUnlock.milestone:id,key')->orderBy('id')->get();
         foreach ($recipes as $recipe) {
             $path = $this->recipePath($recipe->type);
             $body = $path !== null ? $this->machineRecipe($recipe) : null;
@@ -64,8 +86,8 @@ class RecipeDatapackService
     }
 
     /**
-     * The zip and its sha256, cached until a recipe or an unlock changes. The short TTL bounds two edits
-     * landing in the same second, which the key cannot tell apart.
+     * The zip and its sha256, cached until a recipe, an unlock or a milestone key or validation changes. The
+     * short TTL bounds two edits landing in the same second, which the key cannot tell apart.
      *
      * @return array{0: string, 1: string}
      */
@@ -74,6 +96,7 @@ class RecipeDatapackService
         $key = 'recipe-datapack:' . sha1(json_encode([
             Recipe::count(), Recipe::max('updated_at'), Recipe::max('id'),
             MilestoneUnlock::count(), MilestoneUnlock::max('updated_at'), MilestoneUnlock::max('id'),
+            Milestone::orderBy('id')->get(['id', 'key', 'validation'])->toArray(),
         ]));
 
         return Cache::remember($key, now()->addMinutes(5), function () {
@@ -160,15 +183,15 @@ class RecipeDatapackService
             $results[] = ['id' => $result['item'], 'count' => $count];
         }
 
-        $milestoneId = $recipe->milestoneUnlock?->milestone_id;
-        if ($ingredients === [] || $results === [] || $milestoneId === null) {
+        $milestoneKey = $recipe->milestoneUnlock?->milestone?->key;
+        if ($ingredients === [] || $results === [] || ! self::isGateKey($milestoneKey)) {
             return null;
         }
 
         $body = [
             'type' => 'arffornia:machine',
             'machine' => self::CRAFTER,
-            'stage' => self::milestoneStage($milestoneId),
+            'stage' => self::milestoneStage($milestoneKey),
             'ingredients' => array_values($ingredients),
             'results' => $results,
         ];
@@ -180,5 +203,49 @@ class RecipeDatapackService
         }
 
         return $body;
+    }
+
+    /**
+     * Hidden advancement (no `display`) for an obtain or craft validation; deliver milestones have none.
+     * Any one key item completes the milestone, hence one requirement group holding every criterion.
+     *
+     * @param  array<string, mixed>|null  $validation
+     * @return array<string, mixed>|null
+     */
+    private function milestoneAdvancement(?array $validation): ?array
+    {
+        $type = $validation['type'] ?? null;
+        if (! in_array($type, ['obtain', 'craft'], true) || ! is_array($validation['items'] ?? null)) {
+            return null;
+        }
+        $items = [];
+        foreach ($validation['items'] as $item) {
+            if (is_string($item) && self::isResourceId(str_starts_with($item, '#') ? substr($item, 1) : $item)) {
+                $items[] = $item;
+            }
+        }
+        $items = array_values(array_unique($items));
+        if ($items === []) {
+            return null;
+        }
+
+        if ($type === 'craft') {
+            return [
+                'criteria' => ['crafted' => [
+                    'trigger' => 'arffornia:item_crafted',
+                    'conditions' => ['items' => array_map(fn (string $item) => ['items' => $item], $items)],
+                ]],
+            ];
+        }
+
+        $criteria = [];
+        foreach ($items as $index => $item) {
+            $criteria["obtained_{$index}"] = [
+                'trigger' => 'minecraft:inventory_changed',
+                'conditions' => ['items' => [['items' => $item]]],
+            ];
+        }
+
+        return ['criteria' => $criteria, 'requirements' => [array_keys($criteria)]];
     }
 }

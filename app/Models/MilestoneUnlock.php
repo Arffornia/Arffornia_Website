@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,6 +55,11 @@ class MilestoneUnlock extends Model
      * @var array
      */
     protected $appends = ['image_url'];
+
+    public function milestone(): BelongsTo
+    {
+        return $this->belongsTo(Milestone::class);
+    }
 
     /**
      * Get the full URL to the item's image.
