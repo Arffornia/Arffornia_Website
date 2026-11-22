@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Rewards\CrateCatalog;
 use Arffornia\MinecraftOauth\MinecraftOauth;
 use GuzzleHttp\Client;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
             'connect_timeout' => 5,
             'timeout' => 10,
         ])));
+
+        $this->app->singleton(CrateCatalog::class, fn () => new CrateCatalog(resource_path('crates/crates.json')));
     }
 
     /**

@@ -84,6 +84,49 @@ class DayStreakTest extends ApiTestCase
         $this->connect($player)->assertOk()->assertJsonPath('day_streak', 1);
     }
 
+    public function test_with_keys_a_missed_day_restarts_the_cycle_at_day_one(): void
+    {
+        config(['rewards.streak.as_keys' => true]);
+        $player = $this->player(['day_streak' => 6, 'best_streak' => 6]);
+        $player->forceFill(['last_streak_date' => '2026-11-07'])->save();
+        Carbon::setTestNow('2026-11-09 12:00:00');
+
+        $response = $this->connect($player)->assertOk()->assertJsonPath('day_streak', 1);
+
+        $this->assertSame(
+            [['type' => 'key', 'crate' => 'arffornia:streak', 'count' => 1]],
+            PendingReward::findOrFail($response->json('reward_id'))->contents
+        );
+    }
+
+    public function test_with_keys_day_seven_queues_a_streak_key_and_a_vote_key(): void
+    {
+        config(['rewards.streak.as_keys' => true]);
+        $player = $this->player(['day_streak' => 6]);
+        $player->forceFill(['last_streak_date' => '2026-11-08'])->save();
+        Carbon::setTestNow('2026-11-09 12:00:00');
+
+        $response = $this->connect($player)->assertOk()->assertJsonPath('day_streak', 7);
+
+        $this->assertSame(
+            [['type' => 'key', 'crate' => 'arffornia:streak', 'count' => 1], ['type' => 'key', 'crate' => 'arffornia:vote', 'count' => 1]],
+            PendingReward::findOrFail($response->json('reward_id'))->contents
+        );
+    }
+
+    public function test_the_best_streak_follows_the_streak_and_survives_a_reset(): void
+    {
+        $player = $this->player(['day_streak' => 9, 'best_streak' => 9]);
+        $player->forceFill(['last_streak_date' => '2026-11-08'])->save();
+        Carbon::setTestNow('2026-11-09 12:00:00');
+        $this->connect($player);
+
+        Carbon::setTestNow('2026-11-12 12:00:00');
+        $this->connect($player);
+
+        $this->assertSame([1, 10], [$player->fresh()->day_streak, $player->fresh()->best_streak]);
+    }
+
     public function test_the_day_changes_at_midnight_paris_time_not_utc(): void
     {
         $player = $this->player(['day_streak' => 3]);

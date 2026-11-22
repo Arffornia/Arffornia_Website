@@ -37,3 +37,15 @@ test('shop item titles stay inside their cards', async ({ page }) => {
   );
   expect(overflowing).toEqual([]);
 });
+
+test('shop lists the crates and opens a preview with the odds', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await page.goto('/shop');
+
+  const streak = page.locator('.crate[data-crate-id="arffornia:streak"]');
+  await streak.locator('summary').click();
+
+  await expect(streak.locator('.crate-loot tbody tr')).toHaveCount(5);
+  await expect(streak.locator('.crate-loot')).toContainText('40 %');
+  await testInfo.attach('crates', { body: await page.locator('.crates').screenshot(), contentType: 'image/png' });
+});

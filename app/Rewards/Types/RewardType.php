@@ -13,4 +13,7 @@ interface RewardType
 
     /** The entry as stored and sent to the mod, from validated input. */
     public static function normalize(array $validated): array;
+
+    /** Inventory slots the delivered entry needs at most, or at least for a roll the mod owns (see RewardCatalog). */
+    public static function slots(array $entry): int;
 }

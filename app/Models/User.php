@@ -46,6 +46,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $role
  * @property string $grade
  * @property int $day_streak
+ * @property int $best_streak
  * @property \Illuminate\Support\Carbon|null $last_streak_date
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDayStreak($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereGrade($value)

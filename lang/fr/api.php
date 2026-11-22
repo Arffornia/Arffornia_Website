@@ -77,5 +77,6 @@ return [
         'not_found' => 'Récompense introuvable.',
         'already_claimed' => 'Récompense déjà récupérée.',
         'not_claimable' => 'Cette récompense ne peut pas être récupérée.',
+        'too_many_slots' => 'Cette récompense demande :slots emplacements d\'inventaire ; la limite est de :max.',
     ],
 ];

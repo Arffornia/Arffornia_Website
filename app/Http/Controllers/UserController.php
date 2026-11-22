@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 
 use App\Models\ServiceAccount;
 use App\Services\StagesService;
+use App\Services\RewardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +29,7 @@ class UserController extends Controller
     private UserService $userService;
     private StagesService $stageService;
 
-    public function __construct(UserService $userService, StagesService $stageService)
+    public function __construct(UserService $userService, StagesService $stageService, private readonly RewardService $rewardService)
     {
         $this->userService = $userService;
         $this->stageService = $stageService;
@@ -144,6 +145,7 @@ class UserController extends Controller
             'user' => $user,
             'stage_number' => $visible ? ($user->activeProgression->maxStage->number ?? 1) : __('profile.private'),
             'current_milestone_name' => $visible ? ($user->activeProgression->currentTargetedMilestone->name ?? 'None') : __('profile.private'),
+            'streak' => $this->rewardService->streakCalendar($user),
         ]);
     }
 

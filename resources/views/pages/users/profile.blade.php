@@ -47,6 +47,8 @@
                 </div>
             </div>
         </div>
+
+        <x-streak-calendar :calendar="$streak" />
     </div>
 @endsection
 

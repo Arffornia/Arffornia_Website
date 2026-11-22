@@ -87,7 +87,11 @@ class RewardService
             }
 
             $streak = $last === $today->subDay()->format('Y-m-d') ? (int) $user->day_streak + 1 : 1;
-            $user->forceFill(['day_streak' => $streak, 'last_streak_date' => $today->format('Y-m-d')])->save();
+            $user->forceFill([
+                'day_streak' => $streak,
+                'best_streak' => max($streak, (int) $user->best_streak),
+                'last_streak_date' => $today->format('Y-m-d'),
+            ])->save();
 
             $reward = PendingReward::create([
                 'user_id' => $user->id,
@@ -101,8 +105,60 @@ class RewardService
         });
     }
 
+    /**
+     * The week of the streak calendar the player is in. `day_streak` is 0 once a day was missed, and `week` holds the
+     * seven streak days around the player's next or current day, each with the reward it gives.
+     *
+     * @return array{day_streak: int, best_streak: int, last_streak_date: string|null, today_claimed: bool, week: list<array{day: int, contents: list<array<string, mixed>>}>}
+     */
+    public function streakCalendar(User $player): array
+    {
+        $today = CarbonImmutable::now((string) config('rewards.streak.timezone'))->startOfDay();
+        $last = $player->last_streak_date?->format('Y-m-d');
+        $todayClaimed = $last === $today->format('Y-m-d');
+        $alive = $todayClaimed || $last === $today->subDay()->format('Y-m-d');
+        $streak = $alive ? (int) $player->day_streak : 0;
+
+        $current = $todayClaimed ? $streak : $streak + 1;
+        $firstDay = intdiv(max($current, 1) - 1, 7) * 7 + 1;
+
+        $week = [];
+        for ($day = $firstDay; $day < $firstDay + 7; $day++) {
+            $week[] = ['day' => $day, 'contents' => $this->streakContents($day)];
+        }
+
+        return [
+            'day_streak' => $streak,
+            'best_streak' => max($streak, (int) $player->best_streak),
+            'last_streak_date' => $last,
+            'today_claimed' => $todayClaimed,
+            'week' => $week,
+        ];
+    }
+
     /** @return list<array<string, mixed>> */
     public function streakContents(int $streak): array
+    {
+        return RewardCatalog::validate(
+            config('rewards.streak.as_keys') ? $this->cycleContents($streak) : $this->tierContents($streak)
+        );
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function cycleContents(int $streak): array
+    {
+        $contents = config('rewards.streak.cycle.daily');
+        foreach (config('rewards.streak.cycle.bonuses') as $bonus) {
+            if ($streak % $bonus['every'] === 0) {
+                array_push($contents, ...$bonus['contents']);
+            }
+        }
+
+        return $contents;
+    }
+
+    /** @return list<array<string, mixed>> */
+    private function tierContents(int $streak): array
     {
         $tier = collect(config('rewards.streak.tiers'))
             ->filter(fn (array $tier) => $tier['min_days'] <= $streak)
@@ -113,6 +169,6 @@ class RewardService
             throw new RuntimeException("rewards.streak.tiers has no tier for a streak of {$streak} days; the first tier must start at 1.");
         }
 
-        return RewardCatalog::validate($tier['contents']);
+        return $tier['contents'];
     }
 }

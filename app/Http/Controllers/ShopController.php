@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ShopItem;
+use App\Rewards\CrateCatalog;
 use App\Services\ShopItemsService;
 use Illuminate\Contracts\View\View;
 
@@ -10,7 +11,7 @@ class ShopController extends Controller
 {
     private ShopItemsService $shopItemsService;
 
-    public function __construct(ShopItemsService $shopItemsService)
+    public function __construct(ShopItemsService $shopItemsService, private readonly CrateCatalog $crates)
     {
         $this->shopItemsService = $shopItemsService;
     }
@@ -51,6 +52,7 @@ class ShopController extends Controller
                 'saleItems' => $this->shopItemsService->getDiscounts(6),
                 'bestSellerItems' => $this->shopItemsService->getBestSellers(6),
                 'initialItemId' => $initialItemId,
+                'crates' => $this->crates->all(),
             ]
         );
     }

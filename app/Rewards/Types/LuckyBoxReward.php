@@ -19,4 +19,10 @@ final class LuckyBoxReward implements RewardType
     {
         return ['type' => 'lucky_box', 'box' => $validated['box'], 'count' => (int) $validated['count']];
     }
+
+    /** Each roll lands at least one stack; the mod rolls first and checks the whole roll fits before claiming. */
+    public static function slots(array $entry): int
+    {
+        return $entry['count'];
+    }
 }

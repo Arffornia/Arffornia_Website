@@ -20,4 +20,19 @@ return [
         'cape' => 'URL de la cape : :value',
     ],
     'private' => 'Privé',
+    'streak' => [
+        'title' => 'Série quotidienne',
+        'current' => 'Série en cours :',
+        'best' => 'Meilleure série :',
+        'days' => '{0} Aucun jour|{1} :count jour|[2,*] :count jours',
+        'day' => 'Jour :day',
+        'done' => 'Fait',
+        'today' => 'Aujourd\'hui',
+        'contents' => [
+            'key' => ':count × clé (:crate)',
+            'lucky_box' => ':count × lucky box',
+            'item' => ':count × :item',
+            'perk' => 'Un avantage',
+        ],
+    ],
 ];

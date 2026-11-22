@@ -110,6 +110,7 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,reward_service'])->group(funct
     Route::get('/rewards/pending', [RewardController::class, 'pending']);
     Route::post('/rewards/{reward}/claim', [RewardController::class, 'claim'])->where('reward', '[0-9]{1,18}');
     Route::post('/rewards/day-streak', [RewardController::class, 'dayStreak']);
+    Route::get('/players/{uuid}/rewards/streak', [RewardController::class, 'streak']);
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function () {
