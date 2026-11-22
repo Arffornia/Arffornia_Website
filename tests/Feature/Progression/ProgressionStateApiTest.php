@@ -50,6 +50,74 @@ class ProgressionStateApiTest extends ProgressionTestCase
             ->assertJsonPath('results.1.status', 'applied');
     }
 
+    /** Stage 1: a then b (b requires a). Stage 2: f. */
+    private function chainModel(): void
+    {
+        $a = $this->milestone(['name' => 'a']);
+        $this->link($a, $this->milestone(['name' => 'b']));
+        $this->milestone(['name' => 'f', 'stage_id' => $this->stage(2)->id]);
+        $this->publish()->assertCreated();
+    }
+
+    public function test_a_milestone_whose_prerequisite_is_not_done_is_refused_and_nothing_is_recorded(): void
+    {
+        $this->chainModel();
+        $progressionId = $this->player()->active_progression_id;
+
+        $this->sendEvents($progressionId, [$this->completed('evt-00000001', 'arffornia/b')])
+            ->assertOk()
+            ->assertJsonPath('results.0', ['id' => 'evt-00000001', 'status' => 'rejected', 'reason' => 'milestone_unavailable'])
+            ->assertJsonPath('state.completed', []);
+
+        $this->assertSame(0, DB::table('progression_milestones')->where('progression_id', $progressionId)->count());
+        $this->assertSame(0, DB::table('progression_events')->where('progression_id', $progressionId)->count());
+    }
+
+    public function test_a_milestone_of_a_closed_stage_is_refused_and_opens_nothing(): void
+    {
+        $this->chainModel();
+        $progressionId = $this->player()->active_progression_id;
+
+        $this->sendEvents($progressionId, [$this->completed('evt-00000001', 'arffornia/f')])
+            ->assertJsonPath('results.0.reason', 'milestone_unavailable')
+            ->assertJsonPath('state.open_stage', 1);
+
+        $this->assertSame(0, DB::table('progression_events')->where('type', 'stage_opened')->count());
+    }
+
+    public function test_a_refused_milestone_is_accepted_once_its_prerequisite_is_done(): void
+    {
+        $this->chainModel();
+        $progressionId = $this->player()->active_progression_id;
+        $this->sendEvents($progressionId, [$this->completed('evt-00000001', 'arffornia/b')])->assertJsonPath('results.0.reason', 'milestone_unavailable');
+
+        $this->sendEvents($progressionId, [$this->completed('evt-00000002', 'arffornia/a')])->assertJsonPath('results.0.status', 'applied');
+
+        $this->sendEvents($progressionId, [$this->completed('evt-00000003', 'arffornia/b')])
+            ->assertJsonPath('results.0.status', 'applied')
+            ->assertJsonPath('state.completed.*.key', ['arffornia/a', 'arffornia/b']);
+    }
+
+    public function test_a_prerequisite_later_in_the_same_batch_still_makes_the_milestone_available(): void
+    {
+        $this->chainModel();
+
+        $this->sendEvents($this->player()->active_progression_id, [$this->completed('evt-00000001', 'arffornia/b'), $this->completed('evt-00000002', 'arffornia/a')])
+            ->assertJsonPath('results.*.status', ['applied', 'applied']);
+    }
+
+    public function test_replaying_an_applied_event_stays_a_duplicate(): void
+    {
+        $this->chainModel();
+        $progressionId = $this->player()->active_progression_id;
+        $this->sendEvents($progressionId, [$this->completed('evt-00000001', 'arffornia/a'), $this->completed('evt-00000002', 'arffornia/b')]);
+
+        $this->sendEvents($progressionId, [$this->completed('evt-00000002', 'arffornia/b'), $this->completed('evt-00000001', 'arffornia/a')])
+            ->assertJsonPath('results.*.status', ['duplicate', 'duplicate']);
+
+        $this->assertSame(2, DB::table('progression_milestones')->where('progression_id', $progressionId)->count());
+    }
+
     public function test_a_stage_stays_closed_below_its_threshold(): void
     {
         $this->fiveMilestoneModel();
