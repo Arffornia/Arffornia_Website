@@ -11,6 +11,8 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('images/Crafting_Table100x100.png') }}">
 
+    @vite(['resources/css/app.css'])
+
     @yield('extraHead')
 
     <title>Arffornia</title>
@@ -29,8 +31,9 @@
             <a href="{{ route('admin.progression') }}">{{ __('nav.progression_editor') }}</a>
         </div>
 
-        <x-themeToggle />
-        <x-localeSwitcher />
+        <div class="headerActions">
+            <x-themeToggle />
+            <x-localeSwitcher />
 
         <div class="profileImageContainer">
             @if (auth()->check())
@@ -40,6 +43,7 @@
                 <a href="/login" title="{{ __('nav.login') }}"><img id=profileImage src="https://minotar.net/avatar/Steve/50" alt="{{ __('nav.login') }}"></a>
             @endif
 
+        </div>
         </div>
     </div>
 </header>
