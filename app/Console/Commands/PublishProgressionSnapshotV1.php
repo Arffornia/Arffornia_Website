@@ -19,8 +19,7 @@ use RuntimeException;
  * ids become keys. Rule errors of the old tree (backward links) are published as they are and listed
  * for Brian; schema errors stop the command.
  *
- * The game may keep writing through `/progression/add` meanwhile: those writes only reach the id list
- * while the keys are uncommitted, so the move runs again after the commit (it is idempotent).
+ * The move runs again after the commit (it is idempotent), so a write that landed on the id list meanwhile is not lost.
  */
 class PublishProgressionSnapshotV1 extends Command
 {
