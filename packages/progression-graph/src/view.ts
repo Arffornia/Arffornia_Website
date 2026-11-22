@@ -21,6 +21,30 @@ export interface ViewOptions {
   searchButton?: boolean;
   /** A small dismissible note shown above the map tools, with an optional link. */
   notice?: { text: string; action?: { label: string; href: string } } | null;
+  /** Show the built-in detail panel on selection. Default true; the editor shows its own. */
+  panel?: boolean;
+  onSelect?: (key: string | null) => void;
+  /** Called on a click (not a pan); return true to skip the default selection. */
+  onPick?: (hit: PickHit) => boolean;
+  /** When it returns true, dragging a milestone moves it instead of panning; onDrop gets where it was dropped. */
+  draggable?: () => boolean;
+  onDrop?: (key: string, hit: PickHit) => void;
+  /** Extra class per milestone key, drawn as `is-mark-<value>` (diff highlights). */
+  marks?: Record<string, string>;
+}
+
+/** What is under the pointer: a milestone or a link, and the graph row and stage column of that point. */
+export interface PickHit {
+  node: string | null;
+  edge: { from: string; to: string } | null;
+  graph: string | null;
+  stage: number | null;
+}
+
+export interface ViewTransform {
+  x: number;
+  y: number;
+  k: number;
 }
 
 export interface ViewHandle {
@@ -30,6 +54,10 @@ export interface ViewHandle {
   setTheme(theme: 'dark' | 'light'): void;
   openSearch(): void;
   fit(): void;
+  getView(): ViewTransform;
+  setView(view: ViewTransform): void;
+  /** Shows only these graphs, or every graph with null. */
+  showGraphs(keys: string[] | null): void;
   destroy(): void;
 }
 
@@ -334,6 +362,11 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
         path.dataset.from = e.from;
         path.dataset.to = e.to;
         edgeEls.push({ from: e.from, to: e.to, el: path });
+        if (options.onPick) {
+          const hit = svg('path', { class: 'arf-pg__edge-hit', d: path.getAttribute('d')! }, edgesLayer);
+          hit.dataset.from = e.from;
+          hit.dataset.to = e.to;
+        }
         for (const j of e.junctions ?? []) svg('circle', { class: 'arf-pg__junction', cx: j.x, cy: j.y + top, r: 3 }, edgesLayer).dataset.from = e.from;
       }
 
@@ -383,7 +416,8 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
 
   function drawNode(m: Milestone, x: number, y: number): SVGGElement {
     const st: NodeState = states.get(m.key) ?? 'neutral';
-    const g = svg('g', { class: `arf-pg__node is-${st}`, transform: `translate(${x} ${y})`, tabindex: 0, role: 'button' });
+    const mark = options.marks?.[m.key];
+    const g = svg('g', { class: `arf-pg__node is-${st}${mark ? ` is-mark-${mark}` : ''}`, transform: `translate(${x} ${y})`, tabindex: 0, role: 'button' });
     g.dataset.key = m.key;
     g.setAttribute('aria-label', tr.text(m.title));
     svg('rect', { class: 'arf-pg__hit', x: 0, y: 0, width: N.width, height: N.height, rx: 10 }, g);
@@ -530,6 +564,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
   }
 
   function renderPanel() {
+    if (options.panel === false) return;
     panel.replaceChildren();
     const m = selected ? byKey.get(selected) : undefined;
     panel.hidden = !m;
@@ -607,6 +642,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
     applyClasses();
     renderPanel();
     writeHash();
+    options.onSelect?.(selected);
   }
 
   // ---- deep link ----
@@ -739,10 +775,26 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
     flyTo({ k, x: v.w / 2 - (col.x + col.width / 2) * k, y: 12 });
   }
 
-  let drag: { id: number; x: number; y: number; moved: boolean } | null = null;
+  function hitAt(clientX: number, clientY: number, target: Element | null): PickHit {
+    const v = viewport();
+    const wx = (clientX - v.left - view.x) / view.k;
+    const wy = (clientY - v.top - view.y) / view.k;
+    const node = (target?.closest?.('.arf-pg__node') as SVGGElement | null)?.dataset.key ?? null;
+    const edgeEl = target?.closest?.('.arf-pg__edge-hit') as SVGPathElement | null;
+    const edge = edgeEl?.dataset.from && edgeEl.dataset.to ? { from: edgeEl.dataset.from, to: edgeEl.dataset.to } : null;
+    const column = layout.columns.find((c) => wx >= c.x && wx < c.x + c.width);
+    let graph: string | null = null;
+    for (const [key, top] of rowTop) {
+      if (wy >= top && wy < top + layout.graphs[key].height) graph = key;
+    }
+    return { node, edge, graph, stage: column?.stage ?? null };
+  }
+
+  let drag: { id: number; x: number; y: number; moved: boolean; node: SVGGElement | null; ox: number; oy: number } | null = null;
   const onPointerDown = (e: PointerEvent) => {
     if (e.button !== 0) return;
-    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
+    const node = options.draggable?.() ? ((e.target as Element).closest?.('.arf-pg__node') as SVGGElement | null) : null;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, node, ox: e.clientX, oy: e.clientY };
   };
   const onPointerMove = (e: PointerEvent) => {
     if (!drag || drag.id !== e.pointerId) return;
@@ -750,6 +802,15 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
     if (!drag.moved && Math.hypot(dx, dy) < 4) return;
     if (!drag.moved) canvas.setPointerCapture(e.pointerId);
     drag.moved = true;
+    if (drag.node) {
+      const key = drag.node.dataset.key!;
+      const m = byKey.get(key)!;
+      const p = layout.graphs[m.graph].nodes[key];
+      const top = rowTop.get(m.graph) ?? 0;
+      drag.node.setAttribute('transform', `translate(${p.x + (e.clientX - drag.ox) / view.k} ${p.y + top + (e.clientY - drag.oy) / view.k})`);
+      drag.node.classList.add('is-dragging');
+      return;
+    }
     userMoved = true;
     view.x += dx;
     view.y += dy;
@@ -760,12 +821,22 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
   };
   const onPointerUp = (e: PointerEvent) => {
     if (!drag || drag.id !== e.pointerId) return;
-    const wasDrag = drag.moved;
+    const { moved, node: dragged } = drag;
     drag = null;
     stage.classList.remove('is-panning');
-    if (wasDrag) return;
-    const node = (e.target as Element).closest?.('.arf-pg__node') as SVGGElement | null;
-    select(node?.dataset.key ?? null);
+    if (moved && dragged) {
+      const key = dragged.dataset.key!;
+      const m = byKey.get(key)!;
+      const p = layout.graphs[m.graph].nodes[key];
+      dragged.setAttribute('transform', `translate(${p.x} ${p.y + (rowTop.get(m.graph) ?? 0)})`);
+      dragged.classList.remove('is-dragging');
+      options.onDrop?.(key, hitAt(e.clientX, e.clientY, null));
+      return;
+    }
+    if (moved) return;
+    const hit = hitAt(e.clientX, e.clientY, e.target as Element);
+    if (options.onPick?.(hit)) return;
+    select(hit.node);
   };
   const onPointerOver = (e: PointerEvent) => {
     if (drag?.moved) return;
@@ -1025,6 +1096,19 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
     setTheme: applyTheme,
     openSearch: openPalette,
     fit,
+    getView: () => ({ ...view }),
+    setView(next: ViewTransform) {
+      userMoved = true;
+      Object.assign(view, next);
+      applyView();
+    },
+    showGraphs(keys: string[] | null) {
+      hidden.clear();
+      if (keys) snapshot.graphs.forEach((g) => !keys.includes(g.key) && hidden.add(g.key));
+      syncChips();
+      draw();
+      fit();
+    },
     destroy() {
       resize.disconnect();
       document.removeEventListener('keydown', onGlobalKey);

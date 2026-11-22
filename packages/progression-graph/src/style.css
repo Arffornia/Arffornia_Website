@@ -112,6 +112,11 @@
 .arf-pg__edge.is-in { stroke: var(--pg-in); stroke-width: 3; opacity: 1; }
 .arf-pg__edge.is-out { stroke: var(--pg-out); stroke-width: 3; opacity: 1; }
 .arf-pg__edge.is-faded { opacity: .18; }
+.arf-pg__edge-hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; cursor: pointer; }
+.arf-pg__node.is-dragging { opacity: .75; pointer-events: none; }
+.arf-pg__node.is-mark-added .arf-pg__glow { stroke: var(--pg-teal); stroke-width: 3; }
+.arf-pg__node.is-mark-changed .arf-pg__glow { stroke: var(--pg-orange); stroke-width: 3; }
+.arf-pg__node.is-mark-moved .arf-pg__glow { stroke: var(--pg-in); stroke-width: 3; stroke-dasharray: 5 3; }
 .arf-pg__edge--back { stroke: var(--pg-danger); stroke-width: 2.5; stroke-dasharray: 7 5; pointer-events: none; }
 .arf-pg__junction { fill: var(--pg-edge); }
 .has-focus .arf-pg__junction { opacity: .2; }

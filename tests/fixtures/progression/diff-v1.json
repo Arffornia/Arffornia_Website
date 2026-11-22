@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "version": 1,
+  "status": "published",
+  "stages": [
+    {
+      "number": 1,
+      "name": {
+        "en": "Stage 1"
+      },
+      "threshold": 0.8,
+      "module": []
+    },
+    {
+      "number": 2,
+      "name": {
+        "en": "Stage 2"
+      },
+      "threshold": 0.8,
+      "module": []
+    }
+  ],
+  "graphs": [
+    {
+      "key": "arffornia",
+      "name": {
+        "en": "Arffornia"
+      },
+      "branch": "neutral",
+      "mod_id": null
+    },
+    {
+      "key": "mek",
+      "name": {
+        "en": "Mekanism"
+      },
+      "branch": "tech",
+      "mod_id": "mekanism"
+    }
+  ],
+  "milestones": [
+    {
+      "key": "arffornia/a",
+      "graph": "arffornia",
+      "stage": 1,
+      "title": {
+        "en": "A"
+      },
+      "requires": [],
+      "validation": {
+        "type": "obtain",
+        "items": [
+          "minecraft:stone"
+        ]
+      },
+      "unlocks": [],
+      "effort": null,
+      "power": null,
+      "source": "manual"
+    },
+    {
+      "key": "arffornia/b",
+      "graph": "arffornia",
+      "stage": 1,
+      "title": {
+        "en": "B"
+      },
+      "requires": [
+        "arffornia/a"
+      ],
+      "validation": {
+        "type": "obtain",
+        "items": [
+          "minecraft:stone"
+        ]
+      },
+      "unlocks": [
+        {
+          "item": "minecraft:furnace",
+          "gate_mode": "crafting",
+          "recipes_to_ban": []
+        }
+      ],
+      "effort": null,
+      "power": null,
+      "source": "manual"
+    },
+    {
+      "key": "arffornia/c",
+      "graph": "arffornia",
+      "stage": 2,
+      "title": {
+        "en": "C"
+      },
+      "requires": [
+        "arffornia/b"
+      ],
+      "validation": {
+        "type": "obtain",
+        "items": [
+          "minecraft:stone"
+        ]
+      },
+      "unlocks": [],
+      "effort": null,
+      "power": null,
+      "source": "manual"
+    },
+    {
+      "key": "mek/d",
+      "graph": "mek",
+      "stage": 1,
+      "title": {
+        "en": "D"
+      },
+      "requires": [],
+      "validation": {
+        "type": "obtain",
+        "items": [
+          "minecraft:stone"
+        ]
+      },
+      "unlocks": [],
+      "effort": null,
+      "power": null,
+      "source": "manual"
+    }
+  ]
+}

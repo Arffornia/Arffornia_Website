@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\ProgressionViewController;
+use App\Http\Controllers\ProgressionEditorController;
 use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\ShopItemsController;
 
@@ -70,7 +71,18 @@ Route::middleware(['auth', "anyRole:user"])->group(callback: function () {
 // Admin
 Route::middleware(['auth', "anyRole:admin"])->group(callback: function () {
     Route::get('/admin', [AdminPanelManager::class, 'adminPanelView'])->name("adminPanel");
+    Route::get('/admin/progression', [ProgressionEditorController::class, 'editorView'])->name('admin.progression');
 
     Route::get('/admin/launcherImages', [AdminPanelManager::class, 'launcherImagesView'])->name("launcherImages");
     Route::post('/admin/launcherImages', [AdminPanelManager::class, 'uploadNewLauncherImage'])->name("launcherImages.upload");
 });
+
+// Playwright only (e2e/serve.sh sets APP_ENV=testing and E2E_LOGIN=true): log in as a seeded user.
+if (app()->environment('testing') && config('app.e2e_login')) {
+    Route::get('/_e2e/login/{name}', function (string $name) {
+        \Illuminate\Support\Facades\Auth::login(\App\Models\User::where('name', $name)->firstOrFail());
+        request()->session()->regenerate();
+
+        return redirect('/');
+    })->where('name', 'E2E_[A-Za-z]+');
+}

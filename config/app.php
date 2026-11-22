@@ -28,6 +28,9 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    // Testing-only login route for the Playwright journeys (e2e/serve.sh); honoured only when env is "testing".
+    'e2e_login' => (bool) env('E2E_LOGIN', false),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode

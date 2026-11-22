@@ -44,6 +44,21 @@ class E2ESeeder extends Seeder
             ]);
         }
 
+        // Admin for the editor journeys; logs in through the testing-only route (routes/web.php, E2E_LOGIN).
+        $adminProgression = Progression::create(['max_stage_id' => $stage->id, 'completed_milestones' => []]);
+        User::create([
+            'name' => 'E2E_Admin',
+            'uuid' => '00000000000000000000000000000009',
+            'progress_point' => 0,
+            'money' => 0,
+            'stage_id' => $stage->id,
+            'day_streak' => 0,
+            'grade' => 'citizen',
+            'role' => 'user,admin',
+            'solo_progression_id' => $adminProgression->id,
+            'active_progression_id' => $adminProgression->id,
+        ]);
+
         $news = new News();
         $news->forceFill([
             'title' => 'E2E news title',

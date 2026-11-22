@@ -13,6 +13,7 @@ use App\Http\Controllers\LauncherController;
 use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\ShopItemsController;
 use App\Http\Controllers\ProgressionController;
+use App\Http\Controllers\ProgressionDraftController;
 use App\Http\Controllers\ProgressionModelController;
 use App\Http\Controllers\ProgressionStateController;
 use App\Http\Controllers\PlaytimeController;
@@ -97,6 +98,20 @@ Route::middleware(['auth:sanctum', 'anyRole:admin'])->group(function () {
     Route::post('progression/drafts/current/validate', [ProgressionModelController::class, 'validateDraft']);
     Route::post('progression/drafts/current/publish', [ProgressionModelController::class, 'publish']);
     Route::get('stats/progression', [ProgressionStateController::class, 'stats']);
+
+    // Admin editor drafts (spec 019), separate from the table draft above until the old editor is removed
+    Route::post('progression/drafts', [ProgressionDraftController::class, 'open']);
+    Route::get('progression/drafts/{draft}', [ProgressionDraftController::class, 'show'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/actions', [ProgressionDraftController::class, 'act'])->whereNumber('draft');
+    Route::put('progression/drafts/{draft}/document', [ProgressionDraftController::class, 'import'])->whereNumber('draft');
+    Route::get('progression/drafts/{draft}/document', [ProgressionDraftController::class, 'export'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/discard', [ProgressionDraftController::class, 'discard'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/undo', [ProgressionDraftController::class, 'undo'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/redo', [ProgressionDraftController::class, 'redo'])->whereNumber('draft');
+    Route::get('progression/drafts/{draft}/history', [ProgressionDraftController::class, 'history'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/validate', [ProgressionDraftController::class, 'validateDraft'])->whereNumber('draft');
+    Route::get('progression/drafts/{draft}/diff', [ProgressionDraftController::class, 'diff'])->whereNumber('draft');
+    Route::post('progression/drafts/{draft}/publish', [ProgressionDraftController::class, 'publish'])->whereNumber('draft');
 
     // Launcher images Management
     Route::put('launcherImages/{image}/toggle-prod', [AdminPanelManager::class, 'toggleProdStatus']);
