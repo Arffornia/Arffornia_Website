@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "version": 2,
+  "status": "published",
+  "stages": [
+    {
+      "number": 1,
+      "name": {
+        "en": "Stage 1"
+      },
+      "threshold": 0.8,
+      "module": []
+    },
+    {
+      "number": 2,
+      "name": {
+        "en": "Stage 2"
+      },
+      "threshold": 0.6,
+      "module": []
+    },
+    {
+      "number": 3,
+      "name": {
+        "en": "Stage 3"
+      },
+      "threshold": 0.8,
+      "module": []
+    }
+  ],
+  "graphs": [
+    {
+      "key": "arffornia",
+      "name": {
+        "en": "Arffornia"
+      },
+      "branch": "neutral",
+      "mod_id": null
+    },
+    {
+      "key": "mek",
+      "name": {
+        "en": "Mekanism 2"
+      },
+      "branch": "tech",
+      "mod_id": "mekanism"
+    }
+  ],
+  "milestones": [
+    {
+      "key": "arffornia/a",
+      "graph": "arffornia",
+      "stage": 1,
+      "title": {
+        "en": "A renamed"
+      },
+      "requires": [],
+      "validation": {
+        "type": "obtain",
+        "items": [
+          "minecraft:stone"
+        ]
+      },
+      "unlocks": [],
+      "effort": null,
+      "power": null,
+      "source": "manual"
+    },
+    {
+      "key": "arffornia/b",
+      "graph": "arffornia",
+      "stage": 1,
+      "title": {
+        "en": "B"
+      },
+      "requires": [
+        "arffornia/a"
+      ],
+      "validation": {
+        "type": "obtain",
+        "items": [
+          "minecraft:stone"
+        ]
+      },
+      "unlocks": [
+        {
+          "item": "minecraft:furnace",
+          "gate_mode": "machine",
+          "recipes_to_ban": []
+        },
+        {
+          "item": "minecraft:blast_furnace",
+          "gate_mode": "crafting",
+          "recipes_to_ban": []
+        }
+      ],
+      "effort": null,
+      "power": null,
+      "source": "manual"
+    },
+    {
+      "key": "arffornia/c",
+      "graph": "arffornia",
+      "stage": 3,
+      "title": {
+        "en": "C"
+      },
+      "requires": [
+        "arffornia/a"
+      ],
+      "validation": {
+        "type": "obtain",
+        "items": [
+          "minecraft:stone"
+        ]
+      },
+      "unlocks": [],
+      "effort": null,
+      "power": null,
+      "source": "manual"
+    },
+    {
+      "key": "arffornia/e",
+      "graph": "arffornia",
+      "stage": 1,
+      "title": {
+        "en": "E"
+      },
+      "requires": [
+        "arffornia/a"
+      ],
+      "validation": {
+        "type": "obtain",
+        "items": [
+          "minecraft:stone"
+        ]
+      },
+      "unlocks": [],
+      "effort": null,
+      "power": null,
+      "source": "manual"
+    }
+  ]
+}

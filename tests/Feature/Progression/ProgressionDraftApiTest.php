@@ -285,7 +285,7 @@ class ProgressionDraftApiTest extends ProgressionTestCase
     {
         $reasons = [];
         foreach (glob(app_path('Progression/Editor/*.php')) as $file) {
-            preg_match_all("/DraftActionRefused\\('([a-z_]+)'/", file_get_contents($file), $m);
+            preg_match_all("/(?:DraftActionRefused|PublishRefused)\\('([a-z_]+)'/", file_get_contents($file), $m);
             array_push($reasons, ...$m[1]);
         }
 

@@ -259,3 +259,58 @@ body > footer {
 .pe-log .pe-hint {
     margin: 0;
 }
+
+.pe button.is-primary {
+    border-color: var(--arf-color-brand-orange);
+    background: var(--arf-color-brand-orange);
+    color: #fff;
+}
+
+.pe-findings,
+.pe-diff {
+    margin: 0 0 8px;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+}
+
+.pe-findings li,
+.pe-diff li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px 0 4px 8px;
+    border-left: 3px solid var(--site-line);
+    margin-bottom: 4px;
+}
+
+.pe-findings li[data-severity="error"],
+.pe-diff li[data-kind="removed"] {
+    border-left-color: var(--arf-color-state-danger);
+}
+
+.pe-findings li[data-severity="warning"],
+.pe-diff li[data-kind="changed"] {
+    border-left-color: var(--arf-color-state-warning);
+}
+
+.pe-diff li[data-kind="added"] {
+    border-left-color: var(--arf-color-brand-teal);
+}
+
+.pe .pe-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--arf-color-brand-orange);
+    text-decoration: underline;
+}
+
+.pe-ok {
+    color: var(--arf-color-state-success);
+}
+
+.pe-error-text {
+    margin: 0;
+    color: var(--arf-color-state-danger);
+}
