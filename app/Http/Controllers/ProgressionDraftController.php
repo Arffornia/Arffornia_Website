@@ -8,6 +8,9 @@ use App\Progression\Editor\DraftActionRefused;
 use App\Progression\Editor\DraftConflict;
 use App\Progression\Editor\DraftEditor;
 use App\Progression\Editor\DraftHistory;
+use App\Progression\Editor\DraftPublisher;
+use App\Progression\Editor\PublishRefused;
+use App\Progression\Finding;
 use App\Models\ProgressionDraftEntry;
 use App\Progression\Editor\DraftService;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +24,7 @@ class ProgressionDraftController extends Controller
     public function __construct(
         private readonly DraftService $drafts,
         private readonly DraftHistory $history,
+        private readonly DraftPublisher $publisher,
     ) {
     }
 
@@ -109,6 +113,54 @@ class ProgressionDraftController extends Controller
                 'at' => $e->created_at?->toIso8601String(),
             ])->values(),
         ]);
+    }
+
+    public function validateDraft(ProgressionDraft $draft): JsonResponse
+    {
+        $findings = $this->publisher->findings($draft);
+
+        return response()->json([
+            'valid' => !array_any($findings, fn (Finding $f) => $f->isError()),
+            'warnings' => count(array_filter($findings, fn (Finding $f) => $f->severity === 'warning')),
+            'findings' => $findings,
+        ]);
+    }
+
+    /** `against`: `published` (default) or a snapshot version. */
+    public function diff(Request $request, ProgressionDraft $draft): JsonResponse
+    {
+        $validated = $request->validate(['against' => ['sometimes', 'regex:/^(published|[1-9][0-9]*)$/']]);
+        $against = $validated['against'] ?? 'published';
+
+        return $this->guard(fn () => response()->json($this->publisher->diff($draft, $against === 'published' ? 'published' : (int) $against)));
+    }
+
+    public function publish(Request $request, ProgressionDraft $draft): JsonResponse
+    {
+        $validated = $request->validate([
+            'notes' => 'nullable|string|max:2000',
+            'confirm_warnings' => 'sometimes|boolean',
+        ]);
+
+        return $this->guard(function () use ($request, $draft, $validated) {
+            try {
+                [$version, $findings] = $this->publisher->publish($draft, self::userId($request), $validated['notes'] ?? null, (bool) ($validated['confirm_warnings'] ?? false));
+            } catch (PublishRefused $refused) {
+                return response()->json([
+                    'message' => __("api.progression_editor.{$refused->reason}"),
+                    'reason' => $refused->reason,
+                    'needs_confirmation' => $refused->reason === 'publish_needs_confirmation',
+                    'findings' => $refused->findings,
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            return response()->json([
+                'message' => __('api.progression.published'),
+                'version' => $version,
+                'findings' => $findings,
+                'draft' => $this->payload($draft->refresh()),
+            ], Response::HTTP_CREATED);
+        });
     }
 
     public function discard(Request $request, ProgressionDraft $draft): JsonResponse
