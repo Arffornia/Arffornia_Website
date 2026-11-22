@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Progression\ProgressionVisibility;
 use App\Services\UserService;
 use Illuminate\Contracts\View\View;
 
@@ -35,6 +36,7 @@ class ProgressionViewController extends Controller
         return view('pages.progression', [
             'playerName' => $player?->name,
             'mode' => $mode,
+            'privacy' => $this->privacy($player),
             'config' => [
                 'mode' => $mode,
                 'modelUrl' => $mode === 'api' ? url('/api/progression/model') : "{$fixture}/model.json",
@@ -50,6 +52,9 @@ class ProgressionViewController extends Controller
                 'messages' => [
                     'private' => __('progression.private'),
                     'no_model' => __('progression.no_model'),
+                    'next_title' => __('progression.next_title'),
+                    'next_empty' => __('progression.next_empty'),
+                    'privacy_failed' => __('progression.privacy_failed'),
                 ],
                 'notice' => match (true) {
                     auth()->guest() => ['text' => __('progression.login_hint'), 'action' => ['label' => __('progression.login_cta'), 'href' => route('login')]],
@@ -58,5 +63,25 @@ class ProgressionViewController extends Controller
                 },
             ],
         ]);
+    }
+
+    /**
+     * The public/private switch (spec 019 Q4), shown only to the members of the player's active
+     * progression and to admins: the ones the visibility route accepts.
+     *
+     * @return array{url: string, public: bool}|null
+     */
+    private function privacy(?User $player): ?array
+    {
+        $progression = $player?->activeProgression;
+        $viewer = auth()->user();
+        if ($progression === null || !($viewer instanceof User)) {
+            return null;
+        }
+        if (!$viewer->hasRole('admin') && !ProgressionVisibility::isMember($viewer, $progression)) {
+            return null;
+        }
+
+        return ['url' => url("/api/progressions/{$progression->id}/visibility"), 'public' => $progression->is_public !== false];
     }
 }

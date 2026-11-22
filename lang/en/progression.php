@@ -13,4 +13,9 @@ return [
     'login_cta' => 'Log in',
     'login_hint' => 'Log in to follow your own progress on this tree.',
     'search' => 'Search milestones, items, mods',
+    'next_title' => 'Next milestones',
+    'next_empty' => 'Nothing available right now: finish the open stage to unlock the next one.',
+    'privacy_public' => 'Public progress',
+    'privacy_hint' => 'Anyone can see this progress. Turn it off to show it only to your team.',
+    'privacy_failed' => 'The setting could not be saved. Try again.',
 ];
