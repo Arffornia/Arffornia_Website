@@ -96,7 +96,8 @@ class RecipeDatapackTest extends ApiTestCase
         $reversed = $service->files();
 
         $this->assertSame(['data/arffornia/recipe/recipe_a.json', 'data/arffornia/recipe/recipe_b.json', 'data/arffornia/recipe/recipe_c.json',
-            'data/mekanism/recipe/item_a.json', 'data/mekanism/recipe/item_b.json', 'data/mekanism/recipe/item_c.json'], array_keys($reversed));
+            'data/mekanism/recipe/item_a.json', 'data/mekanism/recipe/item_b.json', 'data/mekanism/recipe/item_c.json'],
+            array_values(array_filter(array_keys($reversed), fn (string $path) => str_contains($path, '/recipe/'))));
     }
 
     public function test_etag_is_the_sha256_of_the_body_and_answers_not_modified(): void
@@ -138,7 +139,8 @@ class RecipeDatapackTest extends ApiTestCase
 
         $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
 
-        $this->assertEqualsCanonicalizing(['pack.mcmeta', 'data/minecraft/recipe/stick.json'], array_keys($entries));
+        $this->assertEqualsCanonicalizing(['pack.mcmeta', 'data/minecraft/recipe/stick.json'],
+            array_values(array_filter(array_keys($entries), fn (string $path) => ! str_contains($path, '/advancement/'))));
     }
 
     public function test_recipe_with_an_invalid_ingredient_is_skipped_rather_than_published_cheaper(): void
@@ -208,6 +210,21 @@ class RecipeDatapackTest extends ApiTestCase
             ],
             'requirements' => [['obtained_0', 'obtained_1']],
         ], $entries['data/arffornia/advancement/milestone/mekanism/ore_x3.json']);
+    }
+
+    public function test_milestone_without_a_stored_validation_is_obtained_by_getting_what_it_unlocks(): void
+    {
+        $milestone = $this->milestone(['key' => 'oritech/the_beginning', 'validation' => null]);
+        MilestoneUnlock::factory()->create(['milestone_id' => $milestone->id, 'item_id' => 'oritech:basic_generator_block', 'recipes_to_ban' => []]);
+
+        $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
+
+        $this->assertSame([
+            'criteria' => [
+                'obtained_0' => ['trigger' => 'minecraft:inventory_changed', 'conditions' => ['items' => [['items' => 'oritech:basic_generator_block']]]],
+            ],
+            'requirements' => [['obtained_0']],
+        ], $entries['data/arffornia/advancement/milestone/oritech/the_beginning.json']);
     }
 
     public function test_craft_milestone_becomes_a_hidden_item_crafted_advancement(): void
