@@ -80,5 +80,6 @@ return [
         'not_found' => 'Reward not found.',
         'already_claimed' => 'Reward already claimed.',
         'not_claimable' => 'Reward cannot be claimed.',
+        'too_many_slots' => 'This reward needs :slots inventory slots; the limit is :max.',
     ],
 ];

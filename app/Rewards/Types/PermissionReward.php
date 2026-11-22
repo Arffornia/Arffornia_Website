@@ -19,4 +19,9 @@ final class PermissionReward implements RewardType
     {
         return ['type' => 'permission', 'node' => $validated['node'], 'value' => (bool) ($validated['value'] ?? true)];
     }
+
+    public static function slots(array $entry): int
+    {
+        return 0;
+    }
 }

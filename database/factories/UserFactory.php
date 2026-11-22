@@ -27,6 +27,7 @@ class UserFactory extends Factory
             'progress_point' => random_int(0, 10000000),
             'stage_id' => $stageId,
             'day_streak' => 0,
+            'best_streak' => 0,
             'role' => 'user',
             'grade' => 'citizen',
             'remember_token' => Str::random(10),

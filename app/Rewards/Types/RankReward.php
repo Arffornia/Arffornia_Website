@@ -18,4 +18,9 @@ final class RankReward implements RewardType
     {
         return ['type' => 'rank', 'group' => $validated['group']];
     }
+
+    public static function slots(array $entry): int
+    {
+        return 0;
+    }
 }

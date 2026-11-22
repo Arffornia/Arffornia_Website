@@ -11,6 +11,47 @@
         <div class="shop-content-container">
 
             <div class="shop">
+                <div class="shop-section crates">
+                    <p class="section-title">{{ __('shop.crates.title') }}</p>
+                    <p class="crates-intro">{{ __('shop.crates.intro') }}</p>
+                    <div class="crates-container">
+                        @foreach ($crates as $crate)
+                            <details class="crate" data-crate-id="{{ $crate['id'] }}">
+                                <summary class="crate-name">{{ __('crates.' . $crate['translate']) }}</summary>
+                                @if (empty($crate['loot']))
+                                    <p class="crate-empty">{{ __('shop.crates.contents_soon') }}</p>
+                                @else
+                                    <table class="crate-loot">
+                                        <thead>
+                                            <tr>
+                                                <th>{{ __('shop.crates.item') }}</th>
+                                                <th>{{ __('shop.crates.count') }}</th>
+                                                <th>{{ __('shop.crates.odds') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($crate['loot'] as $entry)
+                                                @php([$ns, $path] = explode(':', $entry['item'], 2))
+                                                <tr @class(['rare' => $entry['rare']])>
+                                                    <td class="crate-item">
+                                                        <img src="{{ url('/icons/36/' . $ns . '/' . $path . '.png') }}" alt="" width="36" height="36" loading="lazy" />
+                                                        <span>{{ \App\Rewards\RewardLabel::itemName($entry['item']) }}</span>
+                                                        @if ($entry['rare'])
+                                                            <span class="crate-rare">{{ __('shop.crates.rare') }}</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $entry['min'] === $entry['max'] ? $entry['min'] : $entry['min'] . '–' . $entry['max'] }}</td>
+                                                    <td>{{ rtrim(rtrim(number_format($entry['odds'], 2, '.', ''), '0'), '.') }} %</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @endif
+                            </details>
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="shop-section">
                     <p class="section-title">{{ __('shop.arrivals') }}</p>
                     <div class="items-container">

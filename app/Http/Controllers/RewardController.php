@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Reward delivery for the game server: list a player's pending rewards, claim one idempotently, record the daily
- * login streak. Rewards are typed data (App\Rewards\RewardCatalog); the game server maps each type to a safe action.
+ * login streak and show its calendar. Rewards are typed data (App\Rewards\RewardCatalog); the game server maps each type to a safe action.
  */
 class RewardController extends Controller
 {
@@ -83,6 +83,21 @@ class RewardController extends Controller
         }
 
         return response()->json($this->rewardService->recordDailyConnection($player));
+    }
+
+    public function streak(string $uuid): JsonResponse
+    {
+        $validator = Validator::make(['player_uuid' => $uuid], ['player_uuid' => self::PLAYER_UUID_RULES]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $player = $this->rewardService->findPlayer($uuid);
+        if ($player === null) {
+            return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json($this->rewardService->streakCalendar($player));
     }
 
     private function present(PendingReward $reward): array

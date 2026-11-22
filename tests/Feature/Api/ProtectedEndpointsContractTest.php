@@ -41,6 +41,7 @@ class ProtectedEndpointsContractTest extends ApiTestCase
             'rewards/pending' => ['GET', '/api/rewards/pending', ['admin', 'reward_service']],
             'rewards/{id}/claim' => ['POST', '/api/rewards/1/claim', ['admin', 'reward_service']],
             'rewards/day-streak' => ['POST', '/api/rewards/day-streak', ['admin', 'reward_service']],
+            'players/{uuid}/rewards/streak' => ['GET', '/api/players/' . str_repeat('a', 32) . '/rewards/streak', ['admin', 'reward_service']],
         ];
     }
 

@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "crates": {
+    "arffornia:streak": {
+      "name": {"translate": "crate.arffornia.streak"},
+      "loot_table": "arffornia:crate/streak",
+      "key_model": "arffornia:item/key_streak",
+      "preview": "loot_table",
+      "calendar": "streak",
+      "loot": [
+        {"item": "minecraft:iron_ingot", "weight": 40, "min": 8, "max": 16},
+        {"item": "minecraft:gold_ingot", "weight": 25, "min": 4, "max": 12},
+        {"item": "minecraft:redstone", "weight": 20, "min": 16, "max": 32},
+        {"item": "minecraft:diamond", "weight": 12, "min": 1, "max": 3},
+        {"item": "minecraft:netherite_scrap", "weight": 3, "min": 1, "max": 1, "rare": true}
+      ]
+    },
+    "arffornia:vote": {
+      "name": {"translate": "crate.arffornia.vote"},
+      "loot_table": "arffornia:crate/vote",
+      "key_model": "arffornia:item/key_vote",
+      "preview": "loot_table",
+      "loot": []
+    },
+    "arffornia:legendary": {
+      "name": {"translate": "crate.arffornia.legendary"},
+      "loot_table": "arffornia:crate/legendary",
+      "key_model": "arffornia:item/key_legendary",
+      "preview": "loot_table",
+      "loot": []
+    }
+  }
+}
