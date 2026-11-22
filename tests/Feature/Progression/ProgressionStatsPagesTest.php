@@ -60,9 +60,9 @@ class ProgressionStatsPagesTest extends ProgressionTestCase
         $html = $response->getContent();
         $this->assertCell($html, 'data-stat="progressions"', '3');
         $this->assertCell($html, 'data-stat="active"', '2');
-        $this->assertCell($html, 'data-stat="playtime-total"', '1h 30m');
-        $this->assertRow($html, 'data-stage="1"', ['data-col="at"' => '2', 'data-col="reached"' => '3 (100 %)']);
-        $this->assertRow($html, 'data-stage="2"', ['data-col="at"' => '1', 'data-col="reached"' => '1 (33 %)']);
+        $this->assertCell($html, 'data-stat="playtime-total"', '1 h 30');
+        $this->assertRow($html, 'data-stage="1"', ['data-col="at"' => '2', 'data-col="reached"' => '3', 'data-col="reached-rate"' => '100%']);
+        $this->assertRow($html, 'data-stage="2"', ['data-col="at"' => '1', 'data-col="reached"' => '1', 'data-col="reached-rate"' => '33%']);
         $this->assertRow($html, 'data-milestone="arffornia/e"', ['data-col="waiting"' => '2', 'data-col="completed"' => '0']);
         $this->assertRow($html, 'data-day="2026-11-12"', ['data-col="completed"' => '5']);
     }
@@ -72,17 +72,22 @@ class ProgressionStatsPagesTest extends ProgressionTestCase
         $this->actingAs($this->fast)->get('/admin/progression/stats')->assertForbidden();
     }
 
-    public function test_player_page_shows_progress_rank_time_per_stage_and_team(): void
+    public function test_player_page_shows_progress_rank_time_per_stage_recent_milestones_and_team(): void
     {
         $response = $this->get('/progression/Fast/stats');
 
         $response->assertOk();
         $html = $response->getContent();
-        $this->assertCell($html, 'data-stat="overall"', '4 / 6 (67 %)');
+        $this->assertCell($html, 'data-stat="overall"', '4');
+        $this->assertStringContainsString('67%', $html);
         $this->assertCell($html, 'data-stat="open-stage"', '2');
-        $this->assertCell($html, 'data-stat="rank"', '1 of 2');
-        $this->assertRow($html, 'data-stage="1"', ['data-col="progress"' => '4 / 5', 'data-col="playtime"' => '1h']);
-        $this->assertRow($html, 'data-stage="2"', ['data-col="progress"' => '0 / 1', 'data-col="playtime"' => '30m']);
+        $this->assertCell($html, 'data-stat="rank"', '#1');
+        $this->assertStringContainsString('among 2 progressions', $html);
+        $this->assertCell($html, 'data-stat="playtime"', '1 h 30');
+        $this->assertRow($html, 'data-stage="1"', ['data-col="progress"' => '4 / 5', 'data-col="playtime"' => '1 h']);
+        $this->assertRow($html, 'data-stage="2"', ['data-col="progress"' => '0 / 1', 'data-col="playtime"' => '30 min']);
+        $this->assertRow($html, 'data-milestone="arffornia/d"', []);
+        $this->assertRow($html, 'data-day="2026-11-10"', []);
         $response->assertSeeInOrder(['Fast', '4'], false);
     }
 
@@ -94,7 +99,11 @@ class ProgressionStatsPagesTest extends ProgressionTestCase
             ->assertJsonPath('rank', 1)
             ->assertJsonPath('stages.0.playtime_seconds', 3600)
             ->assertJsonPath('stages.0.seconds', 2 * 86400 + 9 * 3600)
-            ->assertJsonPath('members.0.completed', 4);
+            ->assertJsonPath('members.0.completed', 4)
+            ->assertJsonPath('stages.1.name', 'Stage 2')
+            ->assertJsonPath('recent.0.key', 'arffornia/d')
+            ->assertJsonCount(14, 'playtime_days')
+            ->assertJsonPath('playtime_days.13', ['day' => '2026-11-12', 'seconds' => 1800]);
     }
 
     public function test_a_private_progression_hides_its_stats(): void
@@ -114,7 +123,7 @@ class ProgressionStatsPagesTest extends ProgressionTestCase
     /** @param array<string, string> $cells */
     private function assertRow(string $html, string $rowAttribute, array $cells): void
     {
-        $this->assertSame(1, preg_match('#<tr ' . preg_quote($rowAttribute, '#') . '>(.*?)</tr>#s', $html, $row), "row {$rowAttribute}");
+        $this->assertSame(1, preg_match('#<li\b[^>]*' . preg_quote($rowAttribute, '#') . '[^>]*>(.*?)</li>#s', $html, $row), "row {$rowAttribute}");
         foreach ($cells as $attribute => $expected) {
             $this->assertCell($row[1], $attribute, $expected);
         }

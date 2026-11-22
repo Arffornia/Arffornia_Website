@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 /** Spec 019 player statistics for one progression: progress, time and playtime per stage, team share, rank. */
 class PlayerStatsService
 {
+    private const RECENT_COMPLETIONS = 6;
+    private const PLAYTIME_DAYS = 14;
+
     public function __construct(private readonly ProgressionStateService $states)
     {
     }
@@ -18,7 +21,8 @@ class PlayerStatsService
     public function stats(Progression $progression): ?array
     {
         $state = $this->states->state($progression);
-        if ($state === null) {
+        $snapshot = $this->states->snapshot();
+        if ($state === null || $snapshot === null) {
             return null;
         }
 
@@ -37,6 +41,7 @@ class PlayerStatsService
             $until = $next === null ? null : ($opened[$next['number']] ?? null);
             $stages[] = [
                 'number' => $stage['number'],
+                'name' => self::localized($snapshot->stages[$stage['number']]['name'] ?? null) ?? (string) $stage['number'],
                 'done' => $stage['done'],
                 'total' => $stage['total'],
                 'opened_at' => $from?->toIso8601ZuluString(),
@@ -59,7 +64,64 @@ class PlayerStatsService
             'ranked' => (int) DB::table('progression_milestones')->distinct()->count('progression_id'),
             'stages' => $stages,
             'members' => $this->members($progression, $members),
+            'recent' => $this->recent($state['completed'], $snapshot),
+            'playtime_days' => $this->playtimeDays($members->pluck('id')->all(), $now),
         ];
+    }
+
+    /**
+     * @param list<array{key: string, completed_at: string}> $completed oldest first
+     * @return list<array{key: string, title: string, stage: int, completed_at: string, item: ?string}>
+     */
+    private function recent(array $completed, Snapshot $snapshot): array
+    {
+        return array_map(function (array $row) use ($snapshot) {
+            $milestone = $snapshot->milestones[$row['key']];
+
+            return [
+                'key' => $row['key'],
+                'title' => self::localized($milestone['title'] ?? null) ?? $row['key'],
+                'stage' => (int) $milestone['stage'],
+                'completed_at' => $row['completed_at'],
+                'item' => self::iconItem($milestone),
+            ];
+        }, array_reverse(array_slice($completed, -self::RECENT_COMPLETIONS)));
+    }
+
+    /** Same pick as the graph viewer: the first unlocked item, else the first item to validate. Tags have no icon. */
+    private static function iconItem(array $milestone): ?string
+    {
+        $validation = $milestone['validation']['items'][0] ?? null;
+        $item = $milestone['unlocks'][0]['item'] ?? (is_array($validation) ? ($validation['item'] ?? null) : $validation);
+
+        return is_string($item) && !str_starts_with($item, '#') && preg_match(Keys::ITEM_PATTERN, $item) ? $item : null;
+    }
+
+    /** @return list<array{day: string, seconds: int}> one entry per day, oldest first, today included */
+    private function playtimeDays(array $userIds, Carbon $now): array
+    {
+        $from = $now->copy()->subDays(self::PLAYTIME_DAYS - 1)->startOfDay();
+        $seconds = $userIds === [] ? collect() : DB::table('player_playtime')->whereIn('user_id', $userIds)
+            ->where('day', '>=', $from->toDateString())->where('day', '<=', $now->toDateString())
+            ->select('day', DB::raw('sum(seconds) as seconds'))->groupBy('day')->pluck('seconds', 'day')
+            ->mapWithKeys(fn ($total, $day) => [substr((string) $day, 0, 10) => (int) $total]);
+
+        $days = [];
+        for ($day = $from->copy(); $day->lte($now); $day->addDay()) {
+            $days[] = ['day' => $day->toDateString(), 'seconds' => $seconds[$day->toDateString()] ?? 0];
+        }
+
+        return $days;
+    }
+
+    /** Snapshot texts are per locale with English required (ADR-0009). */
+    private static function localized(mixed $text): ?string
+    {
+        if (!is_array($text)) {
+            return is_string($text) ? $text : null;
+        }
+
+        return $text[app()->getLocale()] ?? $text['en'] ?? null;
     }
 
     /** Daily rows count from the day the stage opened up to the day before the next one opened. */
