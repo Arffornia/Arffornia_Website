@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Models\Milestone;
+use App\Models\MilestoneRequirement;
 use App\Models\MilestoneUnlock;
 use App\Progression\Keys;
+use App\Progression\ModelSerializer;
 use App\Models\Recipe;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -56,17 +58,19 @@ class RecipeDatapackService
             }
         }
 
-        $milestones = Milestone::whereNotNull('key')->whereNotNull('validation')->orderBy('key')->get(['key', 'validation']);
+        // The serializer derives a validation the column may not hold (obtain what the milestone unlocks), the
+        // same one the mod reads from the model, so the advancements must come from it and not from the column.
+        $milestones = app(ModelSerializer::class)->draft()[0]['milestones'];
         foreach ($milestones as $milestone) {
-            $advancement = $this->milestoneAdvancement($milestone->validation);
+            $advancement = $this->milestoneAdvancement($milestone['validation'] ?? null);
             if ($advancement === null) {
                 continue;
             }
-            if (! self::isGateKey($milestone->key)) {
-                Log::warning('Recipe datapack: skipping milestone advancement with an unusable key', ['key' => $milestone->key]);
+            if (! self::isGateKey($milestone['key'] ?? null)) {
+                Log::warning('Recipe datapack: skipping milestone advancement with an unusable key', ['key' => $milestone['key'] ?? null]);
                 continue;
             }
-            $files["data/arffornia/advancement/milestone/{$milestone->key}.json"] = $advancement;
+            $files["data/arffornia/advancement/milestone/{$milestone['key']}.json"] = $advancement;
         }
 
         $recipes = Recipe::with('milestoneUnlock.milestone:id,key')->orderBy('id')->get();
@@ -86,7 +90,7 @@ class RecipeDatapackService
     }
 
     /**
-     * The zip and its sha256, cached until a recipe, an unlock or a milestone key or validation changes. The
+     * The zip and its sha256, cached until a recipe, an unlock, a requirement or a milestone key or validation changes. The
      * short TTL bounds two edits landing in the same second, which the key cannot tell apart.
      *
      * @return array{0: string, 1: string}
@@ -97,6 +101,7 @@ class RecipeDatapackService
             Recipe::count(), Recipe::max('updated_at'), Recipe::max('id'),
             MilestoneUnlock::count(), MilestoneUnlock::max('updated_at'), MilestoneUnlock::max('id'),
             Milestone::orderBy('id')->get(['id', 'key', 'validation'])->toArray(),
+            MilestoneRequirement::count(), MilestoneRequirement::max('updated_at'), MilestoneRequirement::max('id'),
         ]));
 
         return Cache::remember($key, now()->addMinutes(5), function () {
