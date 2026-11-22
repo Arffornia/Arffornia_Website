@@ -22,6 +22,19 @@ interface Draft {
   published_version: number | null;
   document: Snapshot;
   subject?: string | null;
+  can_undo: boolean;
+  can_redo: boolean;
+}
+
+interface HistoryEntry {
+  id: number;
+  type: string;
+  action: string | null;
+  subject: string | null;
+  state: string | null;
+  revision: number;
+  user: string | null;
+  at: string | null;
 }
 
 type Mode = 'view' | 'add' | 'delete' | 'link' | 'unlink' | 'move';
@@ -30,7 +43,8 @@ type PanelView =
   | { kind: 'milestone'; key: string }
   | { kind: 'new-milestone'; graph: string; stage: number }
   | { kind: 'graph'; key: string | null }
-  | { kind: 'stage'; number: number | null };
+  | { kind: 'stage'; number: number | null }
+  | { kind: 'history' };
 
 const MODES: [Mode, string][] = [['view', 'v'], ['add', 'a'], ['delete', 'd'], ['link', 'l'], ['unlink', 'u'], ['move', 'm']];
 
@@ -223,7 +237,14 @@ class Editor {
 
   onKey(e: KeyboardEvent) {
     const target = e.target as HTMLElement;
-    if (target.closest('input, textarea, select, [contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (target.closest('input, textarea, select, [contenteditable]')) return;
+    const key = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && (key === 'z' || key === 'y')) {
+      e.preventDefault();
+      void this.step(key === 'y' || e.shiftKey ? 'redo' : 'undo');
+      return;
+    }
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     const mode = MODES.find(([, key]) => key === e.key.toLowerCase());
     if (mode) this.setMode(mode[0]);
   }
@@ -240,6 +261,11 @@ class Editor {
     file.addEventListener('change', () => void this.importFile(file));
     this.bar.replaceChildren(
       h('div', { class: 'pe-draft' }, h('strong', {}, t('draft_title', { id: d.id })), h('span', { 'data-revision': String(d.revision) }, t('draft_meta', { revision: d.revision, base: d.base_version ?? '-' }))),
+      h('div', { class: 'pe-history', role: 'group', 'aria-label': t('history') },
+        button(t('undo'), () => void this.step('undo'), { 'data-action': 'undo', disabled: !d.can_undo, title: `${t('undo')} (Ctrl+Z)` }),
+        button(t('redo'), () => void this.step('redo'), { 'data-action': 'redo', disabled: !d.can_redo, title: `${t('redo')} (Ctrl+Shift+Z)` }),
+        button(t('history'), () => this.showPanel({ kind: 'history' }), { 'data-action': 'history' }),
+      ),
       modes,
       h('div', { class: 'pe-actions' },
         button(t('fit'), () => this.handle?.fit(), { 'data-action': 'fit' }),
@@ -249,6 +275,33 @@ class Editor {
         button(t('discard'), () => void this.discard(), { 'data-action': 'discard', class: 'is-danger' }),
       ),
     );
+  }
+
+  async step(direction: 'undo' | 'redo') {
+    if (direction === 'undo' ? !this.draft.can_undo : !this.draft.can_redo) return;
+    try {
+      const next = await this.request<Draft>('POST', this.draftUrl(`/${direction}`), { revision: this.draft.revision });
+      this.say(t(direction === 'undo' ? 'undone' : 'redone'));
+      this.setDraft(next);
+    } catch (error) {
+      await this.fail(error);
+    }
+  }
+
+  historyPanel(): HTMLElement[] {
+    const list = h('ol', { class: 'pe-log', 'data-list': 'history' }, h('li', { class: 'pe-hint' }, t('loading')));
+    void this.request<{ entries: HistoryEntry[] }>('GET', this.draftUrl('/history')).then(({ entries }) => {
+      list.replaceChildren(...entries.map((e) => {
+        const what = e.type === 'edit' ? t(`action.${e.action}`) : t(`log.${e.type}`);
+        const when = e.at ? new Date(e.at).toLocaleString(this.cfg.locale) : '';
+        return h('li', { 'data-type': e.type, 'data-state': e.state ?? undefined },
+          h('strong', {}, what),
+          e.subject ? h('span', { class: 'pe-key' }, e.subject) : null,
+          h('span', { class: 'pe-hint' }, `${e.user ?? t('someone')} · ${when} · r${e.revision}${e.state && e.state !== 'applied' ? ` · ${t(`state.${e.state}`)}` : ''}`),
+        );
+      }));
+    }).catch((error) => void this.fail(error));
+    return [h('h3', {}, t('history_title', { id: this.draft.id })), list];
   }
 
   async importFile(file: HTMLInputElement) {
@@ -434,6 +487,7 @@ class Editor {
       v.kind === 'new-milestone' ? this.newMilestoneForm(v.graph, v.stage) :
       v.kind === 'graph' ? this.graphForm(v.key) :
       v.kind === 'stage' ? this.stageForm(v.number) :
+      v.kind === 'history' ? this.historyPanel() :
       [h('p', { class: 'pe-hint' }, t('panel_empty'))];
     this.panel.replaceChildren(...content);
     this.panel.dataset.view = v.kind;

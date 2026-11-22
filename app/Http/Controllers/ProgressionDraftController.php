@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Progression\Editor\DraftActionRefused;
 use App\Progression\Editor\DraftConflict;
 use App\Progression\Editor\DraftEditor;
+use App\Progression\Editor\DraftHistory;
+use App\Models\ProgressionDraftEntry;
 use App\Progression\Editor\DraftService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,8 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
 /** Spec 019: the admin editor's draft. Admin only (routes/api.php). */
 class ProgressionDraftController extends Controller
 {
-    public function __construct(private readonly DraftService $drafts)
-    {
+    public function __construct(
+        private readonly DraftService $drafts,
+        private readonly DraftHistory $history,
+    ) {
     }
 
     public function open(Request $request): JsonResponse
@@ -49,7 +53,7 @@ class ProgressionDraftController extends Controller
         $payload = Validator::make(is_array($raw) ? $raw : [], DraftEditor::rules($action))->validate();
 
         return $this->guard(function () use ($request, $draft, $action, $payload) {
-            [$draft, $changes, $subject] = $this->drafts->act($draft, (int) $request->input('revision'), $action, $payload);
+            [$draft, $changes, $subject] = $this->drafts->act($draft, (int) $request->input('revision'), self::userId($request), $action, $payload);
 
             return response()->json([...$this->payload($draft), 'subject' => $subject, 'changed' => count($changes)]);
         });
@@ -61,7 +65,7 @@ class ProgressionDraftController extends Controller
         $document = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR)['document'];
 
         return $this->guard(function () use ($request, $draft, $document) {
-            [$draft, $changes] = $this->drafts->import($draft, (int) $request->input('revision'), $document);
+            [$draft, $changes] = $this->drafts->import($draft, (int) $request->input('revision'), self::userId($request), $document);
 
             return response()->json([...$this->payload($draft), 'changed' => count($changes)]);
         });
@@ -74,10 +78,43 @@ class ProgressionDraftController extends Controller
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
     }
 
-    public function discard(ProgressionDraft $draft): JsonResponse
+    public function undo(Request $request, ProgressionDraft $draft): JsonResponse
     {
-        return $this->guard(function () use ($draft) {
-            $this->drafts->discard($draft);
+        $request->validate(['revision' => 'required|integer|min:0']);
+
+        return $this->guard(fn () => response()->json($this->payload($this->drafts->undo($draft, (int) $request->input('revision'), self::userId($request)))));
+    }
+
+    public function redo(Request $request, ProgressionDraft $draft): JsonResponse
+    {
+        $request->validate(['revision' => 'required|integer|min:0']);
+
+        return $this->guard(fn () => response()->json($this->payload($this->drafts->redo($draft, (int) $request->input('revision'), self::userId($request)))));
+    }
+
+    /** The audit log of the draft, newest first. */
+    public function history(ProgressionDraft $draft): JsonResponse
+    {
+        return response()->json([
+            'draft' => $draft->id,
+            'entries' => $this->history->entries($draft)->map(fn (ProgressionDraftEntry $e) => [
+                'id' => $e->id,
+                'type' => $e->type,
+                'action' => $e->action,
+                'subject' => $e->subject,
+                'state' => $e->state,
+                'target_id' => $e->target_id,
+                'revision' => $e->revision,
+                'user' => $e->user?->name,
+                'at' => $e->created_at?->toIso8601String(),
+            ])->values(),
+        ]);
+    }
+
+    public function discard(Request $request, ProgressionDraft $draft): JsonResponse
+    {
+        return $this->guard(function () use ($request, $draft) {
+            $this->drafts->discard($draft, self::userId($request));
 
             return response()->json($this->payload($draft->refresh()));
         });
@@ -92,6 +129,8 @@ class ProgressionDraftController extends Controller
             'base_version' => $draft->base_version,
             'published_version' => $draft->published_version,
             'updated_at' => $draft->updated_at?->toIso8601String(),
+            'can_undo' => $this->history->nextUndo($draft) !== null,
+            'can_redo' => $this->history->nextRedo($draft) !== null,
             'document' => $draft->document,
         ];
     }

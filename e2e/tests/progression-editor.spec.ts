@@ -277,3 +277,32 @@ test('delete a stage and a graph', async () => {
   await saved(before);
   await expect(page.locator('[data-graph-row="create_mod"]')).toHaveCount(0);
 });
+
+test('undo and redo with the buttons and the keyboard, then read the history', async () => {
+  let before = await revision();
+  await page.locator('[data-action="undo"]').click();
+  await saved(before);
+  await expect(page.locator('[data-graph-row="create_mod"]')).toBeVisible();
+
+  before = await revision();
+  await page.locator('[data-action="redo"]').click();
+  await saved(before);
+  await expect(page.locator('[data-graph-row="create_mod"]')).toHaveCount(0);
+  await expect(page.locator('[data-action="redo"]')).toBeDisabled();
+
+  before = await revision();
+  await page.locator('body').click({ position: { x: 5, y: 5 } });
+  await page.keyboard.press('Control+z');
+  await saved(before);
+  await expect(page.locator('[data-graph-row="create_mod"]')).toBeVisible();
+  before = await revision();
+  await page.keyboard.press('Control+Shift+z');
+  await saved(before);
+  await expect(page.locator('[data-graph-row="create_mod"]')).toHaveCount(0);
+
+  await page.locator('[data-action="history"]').click();
+  const log = page.locator('[data-list="history"]');
+  await expect(log.locator('li[data-type="redo"]')).toHaveCount(2);
+  await expect(log.locator('li[data-type="edit"]').first()).toContainText('Graph deleted');
+  await expect(log.locator('li[data-type="open"]')).toContainText('E2E_Admin');
+});
