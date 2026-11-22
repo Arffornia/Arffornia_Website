@@ -1,0 +1,65 @@
+/* Progression statistics pages (spec 019): admin and player. */
+.progression-stats {
+    padding-bottom: 48px;
+}
+
+.progression-stats h2 {
+    margin-top: 32px;
+}
+
+.progression-stats__meta {
+    color: var(--arf-text-muted);
+    font-size: 13px;
+}
+
+.progression-stats__tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.progression-stats__tiles > div {
+    padding: 12px 16px;
+    border: 1px solid var(--arf-border);
+    border-radius: 10px;
+}
+
+.progression-stats__tiles dt {
+    color: var(--arf-text-muted);
+    font-size: 13px;
+}
+
+.progression-stats__tiles dd {
+    margin: 4px 0 0;
+    font-size: 22px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.progression-stats table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+}
+
+.progression-stats th,
+.progression-stats td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--arf-border);
+    text-align: left;
+}
+
+.progression-stats th {
+    color: var(--arf-text-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+@media (max-width: 700px) {
+    .progression-stats {
+        padding-left: 16px;
+        padding-right: 16px;
+        overflow-x: auto;
+    }
+}

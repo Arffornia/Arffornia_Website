@@ -29,6 +29,7 @@
             <a href="{{ route('adminPanel') }}">{{ __('nav.admin_panel') }}</a>
             <a href="{{ route('launcherImages') }}">{{ __('nav.launcher_images') }}</a>
             <a href="{{ route('admin.progression') }}">{{ __('nav.progression_editor') }}</a>
+            <a href="{{ route('admin.progression.stats') }}">{{ __('nav.progression_stats') }}</a>
         </div>
 
         <div class="headerActions">
