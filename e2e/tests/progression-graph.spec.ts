@@ -114,3 +114,35 @@ test('the graph follows the site theme and its switch drives the site', async ({
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await context.close();
 });
+
+test('player page lists the next milestones and the owner switches it to private', async ({ page }, testInfo) => {
+  await page.goto('/_e2e/login/E2E_Gold');
+  await page.goto('/progression/E2E_Gold');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+
+  const next = page.locator('[data-progression-side] [data-next] li button');
+  await expect(next.first()).toBeVisible();
+  await next.first().click();
+  await expect(page.locator('.arf-pg__panel')).toBeVisible();
+  const privacy = page.locator('[data-privacy-switch]');
+  await expect(privacy).toBeChecked();
+  await testInfo.attach('player-progress-page', { body: await page.screenshot(), contentType: 'image/png' });
+
+  const saved = page.waitForResponse((r) => r.url().includes('/visibility') && r.request().method() === 'PUT');
+  await privacy.uncheck();
+
+  expect((await saved).status()).toBe(200);
+  await page.reload();
+  await expect(page.locator('[data-privacy-switch]')).not.toBeChecked();
+
+  const restored = page.waitForResponse((r) => r.url().includes('/visibility'));
+  await page.locator('[data-privacy-switch]').check();
+  expect((await restored).status()).toBe(200);
+});
+
+test('a visitor sees no privacy switch on another player page', async ({ page }) => {
+  await page.goto('/progression/E2E_Silver');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+
+  await expect(page.locator('[data-privacy-switch]')).toHaveCount(0);
+});

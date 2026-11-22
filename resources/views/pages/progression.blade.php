@@ -20,6 +20,21 @@
             <p data-error hidden>{{ __('progression.error') }}</p>
             <p data-message hidden></p>
         </div>
+        @if ($playerName)
+            <aside class="progression-side" data-progression-side aria-label="{{ __('progression.next_title') }}">
+                @if ($privacy)
+                    <label class="progression-privacy">
+                        <input type="checkbox" role="switch" data-privacy-switch data-url="{{ $privacy['url'] }}" data-csrf="{{ csrf_token() }}" @checked($privacy['public'])>
+                        <span>{{ __('progression.privacy_public') }}</span>
+                    </label>
+                    <p class="progression-privacy__hint" data-privacy-hint>{{ __('progression.privacy_hint') }}</p>
+                @endif
+                <div data-next hidden>
+                    <h2>{{ __('progression.next_title') }}</h2>
+                    <ol></ol>
+                </div>
+            </aside>
+        @endif
     </main>
     <script>
         window.ArfforniaProgression = @json($config);

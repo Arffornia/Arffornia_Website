@@ -1,5 +1,5 @@
-import { mountProgressionGraph } from '../../packages/progression-graph/src/index.ts';
-import type { GraphLayout, Locale, PlayerState, Snapshot } from '../../packages/progression-graph/src/index.ts';
+import { mountProgressionGraph, nodeStates } from '../../packages/progression-graph/src/index.ts';
+import type { GraphLayout, Locale, PlayerState, Snapshot, ViewHandle } from '../../packages/progression-graph/src/index.ts';
 import { iconResolver, type IconIndex } from './progression-icons.ts';
 
 interface PageConfig {
@@ -10,7 +10,7 @@ interface PageConfig {
   iconBase: string;
   locale: Locale;
   title: string | null;
-  messages: { private: string; no_model: string };
+  messages: { private: string; no_model: string; next_title: string; next_empty: string; privacy_failed: string };
   notice: { text: string; action?: { label: string; href: string } } | null;
 }
 
@@ -98,10 +98,71 @@ async function loadState(config: PageConfig): Promise<{ state: PlayerState | nul
   }
 }
 
+/** Spec 019 player view: what the player can do now, the available milestones sorted by stage. */
+function showNext(snapshot: Snapshot, state: PlayerState, config: PageConfig, handle: ViewHandle) {
+  const box = document.querySelector<HTMLElement>('[data-progression-side] [data-next]');
+  const list = box?.querySelector('ol');
+  if (!box || !list) return;
+  const states = nodeStates(snapshot, state);
+  const available = snapshot.milestones
+    .filter((m) => states.get(m.key) === 'available')
+    .map((m) => ({ key: m.key, stage: m.stage, title: (config.locale === 'fr' ? m.title.fr : undefined) ?? m.title.en }))
+    .sort((a, b) => a.stage - b.stage || a.title.localeCompare(b.title));
+  list.replaceChildren();
+  if (available.length === 0) {
+    const empty = document.createElement('li');
+    empty.className = 'is-empty';
+    empty.textContent = config.messages.next_empty;
+    list.append(empty);
+  }
+  for (const milestone of available) {
+    const item = document.createElement('li');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.key = milestone.key;
+    const stage = document.createElement('span');
+    stage.className = 'stage';
+    stage.textContent = String(milestone.stage);
+    button.append(stage, document.createTextNode(milestone.title));
+    button.addEventListener('click', () => handle.focus(milestone.key));
+    item.append(button);
+    list.append(item);
+  }
+  box.removeAttribute('hidden');
+}
+
+/** The public/private switch (spec 019 Q4); the page reverts it when the site refuses the change. */
+function bindPrivacy(config: PageConfig) {
+  const input = document.querySelector<HTMLInputElement>('[data-privacy-switch]');
+  if (!input) return;
+  input.addEventListener('change', async () => {
+    const wanted = input.checked;
+    input.disabled = true;
+    try {
+      const response = await fetch(input.dataset.url ?? '', {
+        method: 'PUT',
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': input.dataset.csrf ?? '' },
+        body: JSON.stringify({ public: wanted }),
+      });
+      if (!response.ok) throw new HttpError(response.status, input.dataset.url ?? '');
+      input.checked = ((await response.json()) as { public: boolean }).public;
+    } catch (error) {
+      input.checked = !wanted;
+      const hint = document.querySelector('[data-privacy-hint]');
+      if (hint) hint.textContent = config.messages.privacy_failed;
+      console.error(error);
+    } finally {
+      input.disabled = false;
+    }
+  });
+}
+
 async function main() {
   const root = document.getElementById('progression-root');
   const config = (window as unknown as { ArfforniaProgression?: PageConfig }).ArfforniaProgression;
   if (!root || !config) return;
+  bindPrivacy(config);
 
   try {
     let snapshot: Snapshot;
@@ -129,7 +190,8 @@ async function main() {
       searchButton: false,
       notice: config.notice,
     });
-    const searchButton = document.querySelector<HTMLButtonElement>('[data-progression-search]');
+    if (player.state) showNext(laidOut, player.state, config, handle);
+    const searchButton =document.querySelector<HTMLButtonElement>('[data-progression-search]');
     if (searchButton) {
       const shortcut = searchButton.querySelector('[data-shortcut]');
       if (shortcut) shortcut.textContent = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘K' : 'Ctrl K';
