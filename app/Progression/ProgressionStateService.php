@@ -72,8 +72,7 @@ class ProgressionStateService
 
         $next = [];
         foreach ($snapshot->milestones as $key => $milestone) {
-            if (!isset($done[$key]) && $milestone['stage'] <= $open
-                && array_all($milestone['requires'], fn (string $required) => isset($done[$required]))) {
+            if (!isset($done[$key]) && self::isAvailable($milestone, $done, $open)) {
                 $next[] = $key;
             }
         }
@@ -94,8 +93,11 @@ class ProgressionStateService
 
     /**
      * Applies events from the game. Each event id is applied once per progression, a milestone is
-     * completed once whatever the event id, so replays and reordering change nothing. A batch costs a
-     * fixed number of queries plus two per delivery.
+     * completed once whatever the event id, so replays and reordering change nothing. A milestone that is
+     * not available (rule 3: its stage is open and its prerequisites are done) is rejected with
+     * `milestone_unavailable` and nothing is recorded; within a batch it is retried once the rest has
+     * been applied, so a prerequisite sent after it still counts. A batch costs a fixed number of
+     * queries plus two per delivery.
      *
      * @param  list<array<string, mixed>>  $events
      * @return array{retired: bool, results: list<array<string, string>>}
@@ -116,11 +118,12 @@ class ProgressionStateService
             $results = [];
             $eventRows = [];
             $completions = [];
+            $unavailable = [];
 
-            foreach ($events as $event) {
+            foreach ($events as $index => $event) {
                 $id = $event['id'];
                 if (isset($seen[$id])) {
-                    $results[] = ['id' => $id, 'status' => 'duplicate'];
+                    $results[$index] = ['id' => $id, 'status' => 'duplicate'];
                     continue;
                 }
                 $seen[$id] = true;
@@ -130,55 +133,98 @@ class ProgressionStateService
                 if ($event['type'] === self::EVENT_MILESTONE) {
                     $key = $event['milestone'];
                     if (!isset($snapshot->milestones[$key])) {
-                        $results[] = ['id' => $id, 'status' => 'rejected', 'reason' => 'unknown_milestone'];
+                        $results[$index] = ['id' => $id, 'status' => 'rejected', 'reason' => 'unknown_milestone'];
                         continue;
                     }
-                    // A new id for a done milestone is recorded as a no-op, so replaying that id stays a duplicate.
-                    $noop = isset($done[$key]);
-                    $eventRows[] = $this->eventRow($progression->id, self::EVENT_MILESTONE, $id, $key, null, $noop ? ['noop' => true] : null, $actor, $at, $snapshot->version);
-                    if ($noop) {
-                        $results[] = ['id' => $id, 'status' => 'duplicate'];
+                    if (!isset($done[$key]) && !self::isAvailable($snapshot->milestones[$key], $done, $open)) {
+                        $unavailable[$index] = [$id, $key, $at, $actor];
                         continue;
                     }
-                    $done[$key] = true;
-                    $completions[] = ['progression_id' => $progression->id, 'milestone_key' => $key, 'completed_at' => $at, 'completed_by' => $actor];
-                    $results[] = ['id' => $id, 'status' => 'applied'];
+                    $results[$index] = $this->completeFromEvent($progression, $snapshot, $id, $key, $at, $actor, $done, $eventRows, $completions);
                     continue;
                 }
 
                 $stage = $snapshot->stages[$event['stage']] ?? null;
                 if ($stage === null || !in_array($event['item'], array_column($stage['module'], 'item'), true)) {
-                    $results[] = ['id' => $id, 'status' => 'rejected', 'reason' => 'not_in_module'];
+                    $results[$index] = ['id' => $id, 'status' => 'rejected', 'reason' => 'not_in_module'];
                     continue;
                 }
                 // Only the module of the highest open stage counts: it is the one that opens the next stage.
                 if ((int) $event['stage'] !== $open) {
-                    $results[] = ['id' => $id, 'status' => 'rejected', 'reason' => 'stage_not_current'];
+                    $results[$index] = ['id' => $id, 'status' => 'rejected', 'reason' => 'stage_not_current'];
                     continue;
                 }
                 $row = ['progression_id' => $progression->id, 'stage_number' => $open, 'item' => $event['item']];
                 DB::table('progression_deliveries')->insertOrIgnore([...$row, 'count' => 0]);
                 DB::table('progression_deliveries')->where($row)->increment('count', $event['count']);
                 $eventRows[] = $this->eventRow($progression->id, self::EVENT_MODULE, $id, null, $open, ['item' => $event['item'], 'count' => $event['count']], $actor, $at, $snapshot->version);
-                $results[] = ['id' => $id, 'status' => 'applied'];
+                $results[$index] = ['id' => $id, 'status' => 'applied'];
                 // A delivery may open the stage, and the next module is then the one that counts.
                 $this->flushCompletions($progression, $completions);
                 $open = $this->evaluate($progression, $snapshot);
             }
 
-            $this->flushCompletions($progression, $completions);
-            if ($eventRows !== []) {
-                DB::table('progression_events')->insert($eventRows);
+            // Completions earlier in the batch, or a stage they open, may make a held-back milestone available.
+            // Stage opening is projected in memory so that chains cost no query per pass.
+            if ($unavailable !== []) {
+                $delivered = $this->deliveries($progression->id);
+                do {
+                    $progress = false;
+                    while (($next = $snapshot->nextStage($open)) !== null && $this->passed($snapshot, $open, $done, $delivered[$open] ?? [])) {
+                        $open = $next;
+                    }
+                    foreach ($unavailable as $index => [$id, $key, $at, $actor]) {
+                        if (isset($done[$key]) || self::isAvailable($snapshot->milestones[$key], $done, $open)) {
+                            $results[$index] = $this->completeFromEvent($progression, $snapshot, $id, $key, $at, $actor, $done, $eventRows, $completions);
+                            unset($unavailable[$index]);
+                            $progress = true;
+                        }
+                    }
+                } while ($progress && $unavailable !== []);
+                foreach ($unavailable as $index => [$id]) {
+                    $results[$index] = ['id' => $id, 'status' => 'rejected', 'reason' => 'milestone_unavailable'];
+                }
             }
-            $this->evaluate($progression, $snapshot);
 
-            return ['retired' => false, 'results' => $results];
+            $this->flushCompletions($progression, $completions, $eventRows);
+            $this->evaluate($progression, $snapshot);
+            ksort($results);
+
+            return ['retired' => false, 'results' => array_values($results)];
         });
     }
 
-    /** @param list<array<string, mixed>> $completions emptied once written */
-    private function flushCompletions(Progression $progression, array &$completions): void
+    /** @return array<string, string> the event's result */
+    private function completeFromEvent(Progression $progression, Snapshot $snapshot, string $id, string $key, Carbon $at, ?string $actor, array &$done, array &$eventRows, array &$completions): array
     {
+        // A new id for a done milestone is recorded as a no-op, so replaying that id stays a duplicate.
+        $noop = isset($done[$key]);
+        $eventRows[] = $this->eventRow($progression->id, self::EVENT_MILESTONE, $id, $key, null, $noop ? ['noop' => true] : null, $actor, $at, $snapshot->version);
+        if ($noop) {
+            return ['id' => $id, 'status' => 'duplicate'];
+        }
+        $done[$key] = true;
+        $completions[] = ['progression_id' => $progression->id, 'milestone_key' => $key, 'completed_at' => $at, 'completed_by' => $actor];
+
+        return ['id' => $id, 'status' => 'applied'];
+    }
+
+    /** Rule 3 of spec 017: the milestone's stage is open and all its prerequisites are done. */
+    private static function isAvailable(array $milestone, array $done, int $open): bool
+    {
+        return $milestone['stage'] <= $open && array_all($milestone['requires'], fn (string $required) => isset($done[$required]));
+    }
+
+    /**
+     * @param  list<array<string, mixed>>  $completions  emptied once written
+     * @param  list<array<string, mixed>>|null  $eventRows  emptied once written
+     */
+    private function flushCompletions(Progression $progression, array &$completions, ?array &$eventRows = null): void
+    {
+        if ($eventRows !== null && $eventRows !== []) {
+            DB::table('progression_events')->insert($eventRows);
+            $eventRows = [];
+        }
         if ($completions === []) {
             return;
         }
