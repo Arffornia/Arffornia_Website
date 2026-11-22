@@ -23,11 +23,12 @@ class ShopCratesPageTest extends TestCase
             ->assertSee('/icons/36/minecraft/diamond.png', false);
     }
 
-    public function test_a_crate_without_known_contents_says_so(): void
+    public function test_the_legendary_crate_lists_its_contents(): void
     {
         $this->withUnencryptedCookie('locale', 'fr')->get('/shop')
             ->assertOk()
             ->assertSee('Coffre légendaire')
-            ->assertSee('Contenu bientôt disponible.');
+            ->assertSee('Elytra')
+            ->assertDontSee('Contenu bientôt disponible.');
     }
 }
