@@ -20,6 +20,7 @@ export CACHE_STORE=array
 export QUEUE_CONNECTION=sync
 export LOG_CHANNEL=stderr
 export PROGRESSION_VIEWER=fixture
+export E2E_LOGIN=true
 
 php artisan migrate:fresh --force --seeder='Database\Seeders\E2ESeeder' --seed
 exec php artisan serve --host=127.0.0.1 --port="$PORT" --no-reload

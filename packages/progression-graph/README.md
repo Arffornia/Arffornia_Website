@@ -39,6 +39,14 @@ handle.focus('mekanism/mekanism_advanced_tank');
   down in the stage column. The selection is kept in the URL (`#m=<key>`) so a view can be shared.
 - With a player state, the panel lists the path still to do before the selected milestone.
 
+## Editing hooks
+
+The admin editor (spec 019) mounts the same component with `panel: false` (it shows its own panel),
+`onSelect`, `onPick` (every click, with the milestone, link, graph row and stage column under the
+pointer; return true to skip the selection), `draggable` and `onDrop` (drag a milestone in move mode),
+and `marks` (an `is-mark-<kind>` class per milestone, for diff highlights). `getView`/`setView` keep the
+pan and zoom when the editor mounts the graph again after a change, `showGraphs` filters the rows.
+
 ## Theme
 
 The host decides: `theme` at mount, `handle.setTheme()` afterwards, and `onThemeChange` when the

@@ -26,6 +26,7 @@
         <div class="contentContainer">
             <a href="{{ route('adminPanel') }}">{{ __('nav.admin_panel') }}</a>
             <a href="{{ route('launcherImages') }}">{{ __('nav.launcher_images') }}</a>
+            <a href="{{ route('admin.progression') }}">{{ __('nav.progression_editor') }}</a>
         </div>
 
         <x-themeToggle />

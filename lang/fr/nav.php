@@ -9,6 +9,7 @@ return [
     'stages' => 'Paliers',
     'progression' => 'Progression',
     'admin_panel' => 'Panel admin',
+    'progression_editor' => 'Éditeur de progression',
     'launcher_images' => 'Images du launcher',
     'profile' => 'Mon profil',
     'login' => 'Se connecter',

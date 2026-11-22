@@ -17,7 +17,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  // CHROME_PATH: a system Chrome where the bundled one cannot run (NixOS).
+  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], launchOptions: process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {} } }],
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
