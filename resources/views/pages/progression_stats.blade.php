@@ -25,7 +25,9 @@
                 $current = collect($stats['stages'])->firstWhere('number', $stats['open_stage']);
                 $playtimeTotal = collect($stats['stages'])->sum(fn ($stage) => $stage['playtime_seconds'] ?? 0);
                 $adventureSeconds = collect($stats['stages'])->sum(fn ($stage) => $stage['seconds'] ?? 0);
-                $maxDay = max(1, max(array_column($stats['playtime_days'], 'seconds')));
+                $peakDay = max(array_column($stats['playtime_days'], 'seconds'));
+                $axisStep = $peakDay > 7200 ? 7200 : 1200;
+                $maxDay = max($axisStep, (int) ceil($peakDay / $axisStep) * $axisStep);
                 $playtimeTracked = collect($stats['playtime_days'])->sum('seconds') > 0 || $playtimeTotal > 0;
                 $teamTotal = max(1, collect($stats['members'])->sum('completed'));
                 $ranked = max($stats['ranked'], $stats['rank']);
@@ -134,6 +136,12 @@
                 <section class="ps-card">
                     <h2>{{ __('progression_stats.playtime_title', ['days' => count($stats['playtime_days'])]) }}</h2>
                     @if ($playtimeTracked)
+                        <div class="ps-chart">
+                        <ul class="ps-chart__axis" aria-hidden="true">
+                            <li><x-duration :seconds="$maxDay" /></li>
+                            <li><x-duration :seconds="intdiv($maxDay, 2)" /></li>
+                            <li>0</li>
+                        </ul>
                         <ol class="ps-columns" aria-label="{{ __('progression_stats.playtime_title', ['days' => count($stats['playtime_days'])]) }}">
                             @foreach ($stats['playtime_days'] as $i => $day)
                                 @php($date = \Illuminate\Support\Carbon::parse($day['day'])->locale($locale))
@@ -144,6 +152,7 @@
                                 </li>
                             @endforeach
                         </ol>
+                        </div>
                     @else
                         <div class="ps-empty">
                             <svg class="ps-empty__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>

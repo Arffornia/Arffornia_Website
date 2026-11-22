@@ -12,7 +12,7 @@ return [
     'active_progressions' => 'Progressions actives',
     'playtime_players' => 'Joueurs avec du temps de jeu',
     'playtime_total' => 'Temps de jeu total',
-    'stages_title' => 'Stages et entonnoir',
+    'stages_title' => 'Joueurs par stage',
     'at_stage' => 'Actuellement à ce stage',
     'reached' => 'Atteint',
     'median_time' => 'Temps médian pour l’ouvrir',

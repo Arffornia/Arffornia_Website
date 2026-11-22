@@ -12,7 +12,7 @@ return [
     'active_progressions' => 'Active progressions',
     'playtime_players' => 'Players with playtime',
     'playtime_total' => 'Total playtime',
-    'stages_title' => 'Stages and funnel',
+    'stages_title' => 'Players per stage',
     'at_stage' => 'Now at this stage',
     'reached' => 'Reached',
     'median_time' => 'Median time to open',

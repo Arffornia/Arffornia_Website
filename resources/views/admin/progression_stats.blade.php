@@ -33,7 +33,8 @@
                     $activityDays[] = ['day' => $day, 'completed' => (int) ($activityByDay[$day] ?? 0)];
                 }
                 $activityTotal = array_sum(array_column($activityDays, 'completed'));
-                $activityMax = max(1, max(array_column($activityDays, 'completed')));
+                $activityPeak = max(array_column($activityDays, 'completed'));
+                $activityMax = max(2, (int) ceil($activityPeak / 2) * 2);
                 $hereMax = max(1, max(array_column($stats['stages'], 'progressions') ?: [0]));
                 $waitingMax = max(1, max(array_column($stats['stalls'], 'waiting') ?: [0]));
                 $activeRatio = $stats['progressions'] === 0 ? 0 : $stats['active_progressions'] / $stats['progressions'];
@@ -137,7 +138,13 @@
                             <p>{{ __('progression_stats.none') }}</p>
                         </div>
                     @else
-                        <p class="ps-meta">{{ __('progression_stats.activity_peak', ['count' => $activityMax]) }}</p>
+                        <p class="ps-meta">{{ __('progression_stats.activity_peak', ['count' => $activityPeak]) }}</p>
+                        <div class="ps-chart">
+                        <ul class="ps-chart__axis" aria-hidden="true">
+                            <li><x-number :value="$activityMax" /></li>
+                            <li><x-number :value="intdiv($activityMax, 2)" /></li>
+                            <li>0</li>
+                        </ul>
                         <ol class="ps-columns ps-columns--dense" aria-label="{{ __('progression_stats.activity_title') }}">
                             @foreach ($activityDays as $i => $day)
                                 @php($date = \Illuminate\Support\Carbon::parse($day['day'])->locale($locale))
@@ -148,6 +155,7 @@
                                 </li>
                             @endforeach
                         </ol>
+                        </div>
                     @endif
                 </section>
             </div>

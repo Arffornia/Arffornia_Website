@@ -270,6 +270,10 @@
     font-size: 13px;
 }
 
+.progression-stats .ps-kpis + .ps-grid {
+    margin-top: var(--arf-size-space-6);
+}
+
 /* Cards */
 .ps-grid {
     display: grid;
@@ -411,6 +415,40 @@
 .ps-dual__value small {
     color: var(--arf-text-muted);
     font-weight: 600;
+}
+
+/* Vertical columns (playtime, activity) with a value axis and gridlines at 0, half and max. */
+.ps-chart {
+    display: flex;
+    gap: var(--arf-size-space-2);
+}
+
+.ps-chart__axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 148px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--arf-text-muted);
+    font-size: 11px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.ps-chart__axis > li {
+    height: 0;
+    line-height: 0;
+}
+
+.ps-chart .ps-columns {
+    flex: 1;
+    min-width: 0;
+    background:
+        linear-gradient(var(--ps-track), var(--ps-track)) top / 100% 1px no-repeat,
+        linear-gradient(var(--ps-track), var(--ps-track)) 0 74px / 100% 1px no-repeat,
+        linear-gradient(var(--ps-track), var(--ps-track)) 0 147px / 100% 1px no-repeat;
 }
 
 /* Vertical columns (playtime, activity) */
