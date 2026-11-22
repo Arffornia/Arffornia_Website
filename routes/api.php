@@ -17,6 +17,7 @@ use App\Http\Controllers\ProgressionDraftController;
 use App\Http\Controllers\ProgressionModelController;
 use App\Http\Controllers\ProgressionStateController;
 use App\Http\Controllers\PlaytimeController;
+use App\Http\Controllers\ProgressionStatsController;
 
 Route::get('best_player_point/{size}', [UserController::class, 'bestPlayerByPointJson']);
 Route::get('best_player_vote/{size}', [VoteController::class, 'bestPlayerByVoteJson']);
@@ -38,6 +39,7 @@ Route::get('progression/{progression}', [ProgressionController::class, 'getProgr
 // Progression model and state (spec 017)
 Route::get('progressions/{progression}/state', [ProgressionStateController::class, 'show'])->whereNumber('progression');
 Route::get('players/{playerUuid}/progression/state', [ProgressionStateController::class, 'showForPlayer']);
+Route::get('progressions/{progression}/stats', [ProgressionStatsController::class, 'show'])->whereNumber('progression');
 Route::put('progressions/{progression}/visibility', [ProgressionStateController::class, 'visibility'])->whereNumber('progression')->middleware('auth:sanctum');
 
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);
