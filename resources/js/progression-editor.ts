@@ -705,13 +705,9 @@ class Editor {
   }
 
   milestonePanel(m: Milestone): HTMLElement[] {
-    const validation = m.validation;
-    const deliver = validation?.type === 'deliver' ? validation.items : [];
-    const simple = validation && validation.type !== 'deliver' ? validation : null;
+    const deliver = m.validation?.type === 'deliver' ? m.validation.items : [];
 
     const details = this.form('milestone', (form) => {
-      const type = formValue(form, 'validation_type');
-      const items = formValue(form, 'validation_items').split('\n').map((s) => s.trim()).filter(Boolean);
       const payload: Record<string, unknown> = {
         key: m.key,
         title: textPair(form, 'title'),
@@ -720,7 +716,6 @@ class Editor {
         graph: formValue(form, 'graph'),
         icon_type: formValue(form, 'icon_type'),
       };
-      if (type !== 'deliver') payload.validation = type === '' || items.length === 0 ? null : { type, items };
       void this.act('milestone.update', payload);
     },
       ...this.textFields('title', t('title'), m.title),
@@ -728,12 +723,7 @@ class Editor {
       field(t('graph'), select('graph', this.graphOptions(), m.graph)),
       field(t('stage'), select('stage', this.stageOptions(), String(m.stage))),
       field(t('icon_type'), select('icon_type', ['tech', 'pipe', 'magic', 'default'].map((v) => [v, v]), m.icon_type ?? 'tech')),
-      deliver.length
-        ? h('p', { class: 'pe-hint' }, t('validation_deliver'), input('validation_type', 'deliver', { type: 'hidden' }))
-        : h('div', {},
-          field(t('validation'), select('validation_type', [['', t('validation_none')], ['obtain', t('validation_obtain')], ['craft', t('validation_craft')]], simple?.type ?? '')),
-          field(t('validation_items'), textarea('validation_items', (simple?.items ?? []).join('\n'))),
-        ),
+      h('p', { class: 'pe-hint' }, t(deliver.length ? 'validation_deliver' : 'validation_none')),
       h('div', { class: 'pe-row' }, h('button', { type: 'submit' }, t('save')),
         button(t('delete_milestone'), () => {
           if (confirm(t('confirm_delete_milestone', { title: text(m.title) }))) void this.act('milestone.delete', { key: m.key });

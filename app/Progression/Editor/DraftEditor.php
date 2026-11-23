@@ -59,10 +59,6 @@ final class DraftEditor
             'milestone.create' => [...$text('title', true), ...$text('description', false), ...$milestone, 'stage' => ['required', 'integer', 'min:1'], 'graph' => ['required', 'string', 'max:64']],
             'milestone.update' => [
                 'key' => $key, ...$text('title', false), ...$text('description', false), ...$milestone,
-                'validation' => ['sometimes', 'nullable', 'array'],
-                'validation.type' => ['required_with:validation', 'in:obtain,craft'],
-                'validation.items' => ['required_with:validation', 'array', 'min:1'],
-                'validation.items.*' => ['required', ...$item],
             ],
             'milestone.move' => ['key' => $key, 'stage' => ['required', 'integer', 'min:1'], 'graph' => ['sometimes', 'string', 'max:64']],
             'link.create', 'link.delete' => ['from' => $key, 'to' => $key],
@@ -273,9 +269,6 @@ final class DraftEditor
         if (isset($p['icon_type'])) {
             $m['icon_type'] = $p['icon_type'];
         }
-        if (array_key_exists('validation', $p)) {
-            $m['validation'] = $p['validation'] === null ? null : ['type' => $p['validation']['type'], 'items' => array_values(array_unique($p['validation']['items']))];
-        }
         $doc['milestones'][$i] = $m;
 
         return $doc;
@@ -357,7 +350,7 @@ final class DraftEditor
         return $doc;
     }
 
-    /** Requirements are the items to deliver: adding one turns the validation into a delivery. */
+    /** Requirements are the items to deliver in the Space Elevator, the milestone's only validation (docs ADR 0017). */
     private function upsertRequirement(array $doc, array $p): array
     {
         $i = $this->milestoneIndex($doc, $p['key']);
