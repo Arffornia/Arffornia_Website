@@ -210,7 +210,7 @@ class ProgressionStateService
     }
 
     /** Rule 3 of spec 017: the milestone's stage is open and all its prerequisites are done. */
-    private static function isAvailable(array $milestone, array $done, int $open): bool
+    public static function isAvailable(array $milestone, array $done, int $open): bool
     {
         return $milestone['stage'] <= $open && array_all($milestone['requires'], fn (string $required) => isset($done[$required]));
     }

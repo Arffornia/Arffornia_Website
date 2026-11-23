@@ -156,11 +156,7 @@ return [
         'title' => 'Title',
         'unlink' => 'Remove link',
         'unlocks' => 'Unlocks',
-        'validation' => 'Validation',
-        'validation_craft' => 'Craft one of these items',
-        'validation_deliver' => 'Completed by delivering the requirements below.',
-        'validation_items' => 'Validation items (one id per line)',
-        'validation_none' => 'None',
-        'validation_obtain' => 'Obtain one of these items',
+        'validation_deliver' => 'Completed by delivering the requirements below in the Space Elevator.',
+        'validation_none' => 'Nothing to deliver yet: players cannot complete this milestone until it has requirements.',
     ],
 ];

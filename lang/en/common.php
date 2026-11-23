@@ -18,4 +18,17 @@ return [
     'cancel' => 'Cancel',
     'save' => 'Save',
     'home' => 'Home',
+    'number' => [
+        'decimal' => '.',
+        'thousands' => ',',
+        'percent' => ':value%',
+    ],
+    'duration' => [
+        'seconds' => ':s s',
+        'minutes' => ':m min',
+        'hours' => ':h h',
+        'hours_minutes' => ':h h :m',
+        'days' => ':d d',
+        'days_hours' => ':d d :h h',
+    ],
 ];

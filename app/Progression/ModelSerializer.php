@@ -156,7 +156,7 @@ class ModelSerializer
             'stage' => $stage,
             'title' => self::text($milestone->name, $milestone->name_fr),
             'requires' => $requires,
-            'validation' => $this->validation($milestone, array_column($unlocks, 'item')),
+            'validation' => $this->validation($milestone),
             'unlocks' => $unlocks,
             'effort' => $milestone->effort,
             'power' => $milestone->power ?: null,
@@ -173,21 +173,12 @@ class ModelSerializer
         return $entry;
     }
 
-    /** Requirements rows are the deliver list; otherwise the stored obtain/craft rule, else obtaining what it unlocks. */
-    private function validation(Milestone $milestone, array $unlockedItems): ?array
+    /** Delivering the requirements in the Space Elevator is the only way to complete a milestone (docs ADR 0017). */
+    private function validation(Milestone $milestone): ?array
     {
         $requirements = $milestone->requirements->sortBy('id')->filter(fn ($r) => preg_match(Keys::ITEM_PATTERN, (string) $r->item_id));
         if ($requirements->isNotEmpty()) {
             return ['type' => 'deliver', 'items' => $requirements->map(fn ($r) => ['item' => $r->item_id, 'count' => max(1, (int) $r->amount)])->values()->all()];
-        }
-        if (is_array($milestone->validation) && in_array($milestone->validation['type'] ?? null, ['obtain', 'craft'], true)) {
-            return ['type' => $milestone->validation['type'], 'items' => array_values($milestone->validation['items'] ?? [])];
-        }
-        if ($unlockedItems !== []) {
-            $items = array_values(array_unique($unlockedItems));
-            sort($items);
-
-            return ['type' => 'obtain', 'items' => $items];
         }
 
         return null;

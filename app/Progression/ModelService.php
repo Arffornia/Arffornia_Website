@@ -49,6 +49,7 @@ class ModelService
     /** @return array{applied: bool, findings: list<Finding>} */
     public function replaceDraft(array $document): array
     {
+        $document = RetiredValidations::strip($document);
         $schemaErrors = $this->validator->schemaErrors($document);
         if ($schemaErrors !== []) {
             return ['applied' => false, 'findings' => $schemaErrors];

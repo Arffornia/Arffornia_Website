@@ -10,6 +10,7 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\ProgressionViewController;
 use App\Http\Controllers\ProgressionEditorController;
+use App\Http\Controllers\ProgressionStatsController;
 use App\Http\Controllers\AdminPanelManager;
 use App\Http\Controllers\ShopItemsController;
 
@@ -44,6 +45,8 @@ Route::get('stages/{playerUuid}', [StagesController::class, 'loadPlayerStageView
 // Progression graph viewer (spec 018 item 3), 404 unless config('progression.viewer') is enabled
 Route::get('progression', [ProgressionViewController::class, 'catalogView'])->name('progression');
 Route::get('progression/{playerName}', [ProgressionViewController::class, 'playerView'])->name('progression.player');
+Route::get('progression/{playerName}/stats', [ProgressionStatsController::class, 'playerView'])->name('progression.player.stats');
+Route::get('progression/{playerName}/team', [ProgressionStatsController::class, 'teamView'])->name('progression.player.team');
 
 // News
 Route::get('news', [NewsController::class, 'allNewsView']);
@@ -72,6 +75,7 @@ Route::middleware(['auth', "anyRole:user"])->group(callback: function () {
 Route::middleware(['auth', "anyRole:admin"])->group(callback: function () {
     Route::get('/admin', [AdminPanelManager::class, 'adminPanelView'])->name("adminPanel");
     Route::get('/admin/progression', [ProgressionEditorController::class, 'editorView'])->name('admin.progression');
+    Route::get('/admin/progression/stats', [ProgressionStatsController::class, 'adminView'])->name('admin.progression.stats');
 
     Route::get('/admin/launcherImages', [AdminPanelManager::class, 'launcherImagesView'])->name("launcherImages");
     Route::post('/admin/launcherImages', [AdminPanelManager::class, 'uploadNewLauncherImage'])->name("launcherImages.upload");

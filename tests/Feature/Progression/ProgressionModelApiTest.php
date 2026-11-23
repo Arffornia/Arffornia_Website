@@ -94,6 +94,28 @@ class ProgressionModelApiTest extends ProgressionTestCase
         $this->assertSame('arffornia/basic_machines', Milestone::first()->key);
     }
 
+    public function test_a_milestone_is_validated_only_by_delivering_its_requirements(): void
+    {
+        $unlockOnly = $this->milestone(['name' => 'Unlock only']);
+        $unlockOnly->unlocks()->create(['item_id' => 'oritech:basic_generator_block', 'recipes_to_ban' => []]);
+        $this->milestone(['name' => 'Delivered'])->requirements()->create(['item_id' => 'minecraft:stone', 'display_name' => 'Stone', 'amount' => 64]);
+
+        $milestones = $this->asService('admin')->getJson('/api/progression/drafts/current')->assertOk()->json('document.milestones');
+
+        $this->assertSame([null, ['type' => 'deliver', 'items' => [['item' => 'minecraft:stone', 'count' => 64]]]], array_column($milestones, 'validation'));
+    }
+
+    public function test_a_snapshot_saved_with_a_retired_obtain_validation_can_still_be_put_back_as_the_draft(): void
+    {
+        $this->milestone();
+        $document = $this->asService('admin')->getJson('/api/progression/drafts/current')->json('document');
+        $document['milestones'][0]['validation'] = ['type' => 'obtain', 'items' => ['minecraft:stone']];
+
+        $this->asService('admin')->putJson('/api/progression/drafts/current', ['document' => $document])->assertOk();
+
+        $this->assertNull($this->asService('admin')->getJson('/api/progression/drafts/current')->json('document.milestones.0.validation'));
+    }
+
     public function test_snapshots_carry_no_shop_price(): void
     {
         $milestone = $this->milestone();

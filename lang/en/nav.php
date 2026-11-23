@@ -10,6 +10,7 @@ return [
     'progression' => 'Progression',
     'admin_panel' => 'Admin Panel',
     'progression_editor' => 'Progression editor',
+    'progression_stats' => 'Progression stats',
     'launcher_images' => 'Launcher Images',
     'profile' => 'My profile',
     'login' => 'Log in',

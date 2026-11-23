@@ -63,7 +63,7 @@ class ModelValidator
                 $findings[] = new Finding('error', 'unknown_graph', $key, "graph {$milestone['graph']} does not exist");
             }
             if ($milestone['validation'] === null) {
-                $findings[] = new Finding('warning', 'no_validation', $key, 'nothing completes this milestone');
+                $findings[] = new Finding('warning', 'no_validation', $key, 'nothing to deliver: no player can complete this milestone');
             }
             $description = $milestone['description']['en'] ?? '';
             if ($description === '' || $description === self::PLACEHOLDER_DESCRIPTION) {

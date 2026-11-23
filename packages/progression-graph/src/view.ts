@@ -1,7 +1,7 @@
 import { translator, type Translator } from './i18n.ts';
 import { dependents, lineage, moduleProgress, nodeStates, pathTo, splitLinks, stageProgress } from './state.ts';
 import { rank } from './search.ts';
-import type { Graph, GraphLayout, Locale, Milestone, NodeState, PlayerState, Point, Snapshot } from './types.ts';
+import type { Graph, GraphLayout, ItemCount, Locale, Milestone, NodeState, PlayerState, Point, Snapshot } from './types.ts';
 
 export interface ViewOptions {
   snapshot: Snapshot & { layout: GraphLayout };
@@ -104,6 +104,11 @@ function iconSvg(path: string): SVGSVGElement {
   const s = svg('svg', { viewBox: '0 0 24 24', 'aria-hidden': 'true', class: 'arf-pg__glyph' });
   svg('path', { d: path }, s);
   return s;
+}
+
+// Snapshots published before docs ADR 0017 may still carry obtain or craft validations: they complete nothing.
+function deliverItems(m: Milestone): ItemCount[] {
+  return m.validation?.type === 'deliver' ? m.validation.items : [];
 }
 
 export function humanItem(item: string): string {
@@ -423,7 +428,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
     svg('rect', { class: 'arf-pg__hit', x: 0, y: 0, width: N.width, height: N.height, rx: 10 }, g);
     svg('rect', { class: 'arf-pg__glow', x: tileX - 4, y: -4, width: N.tile + 8, height: N.tile + 8, rx: 13 }, g);
     svg('rect', { class: 'arf-pg__tile', x: tileX, y: 0, width: N.tile, height: N.tile, rx: 10 }, g);
-    const item = m.unlocks[0]?.item ?? (m.validation ? (typeof m.validation.items[0] === 'string' ? m.validation.items[0] : m.validation.items[0]?.item) : undefined);
+    const item = m.unlocks[0]?.item ?? deliverItems(m)[0]?.item;
     const src = item ? iconOf(item) : null;
     const initials = () => {
       const t = svg('text', { class: 'arf-pg__fallback', x: N.width / 2, y: N.tile / 2 + 5, 'text-anchor': 'middle' });
@@ -604,14 +609,11 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
       html('h4', '', panel, title);
       return html('ul', 'arf-pg__list', panel);
     };
-    const v = m.validation;
-    if (!v) html('p', 'arf-pg__hint', panel, tr.t('validate_none'));
+    const deliver = deliverItems(m);
+    if (deliver.length === 0) html('p', 'arf-pg__hint', panel, tr.t('validate_none'));
     else {
-      const list = section(tr.t(v.type === 'deliver' ? 'validate_deliver' : v.type === 'craft' ? 'validate_craft' : 'validate_obtain'));
-      for (const i of v.items) {
-        if (typeof i === 'string') itemRow(list, i);
-        else itemRow(list, i.item, `× ${tr.number(i.count)}`);
-      }
+      const list = section(tr.t('validate_deliver'));
+      for (const i of deliver) itemRow(list, i.item, `× ${tr.number(i.count)}`);
     }
     const unlocks = section(tr.t('unlocks'));
     if (m.unlocks.length === 0) html('li', 'arf-pg__none', unlocks, tr.t('nothing'));
@@ -913,7 +915,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
   }
   const itemHome = new Map<string, Milestone>();
   for (const m of snapshot.milestones) {
-    const items = [...m.unlocks.map((u) => u.item), ...(m.validation?.items ?? []).map((i) => (typeof i === 'string' ? i : i.item))];
+    const items = [...m.unlocks.map((u) => u.item), ...deliverItems(m).map((i) => i.item)];
     for (const item of items) {
       const known = itemHome.get(item);
       if (!item.startsWith('#') && (!known || m.stage < known.stage)) itemHome.set(item, m);
