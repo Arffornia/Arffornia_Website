@@ -64,4 +64,9 @@ return [
     'stalls_empty' => 'No milestone is waiting on active progressions.',
     'activity_empty_title' => 'Quiet month',
     'activity_peak' => 'Best day: :count milestones',
+    'team_link' => 'Who did what',
+    'team_eyebrow' => 'Team view: who did what',
+    'team_milestones' => ':count milestones',
+    'team_member_empty' => 'No milestone yet.',
+    'back_to_stats' => 'Back to the statistics',
 ];

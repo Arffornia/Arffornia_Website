@@ -3,6 +3,7 @@
 namespace App\Progression;
 
 use App\Models\Progression;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -75,17 +76,66 @@ class PlayerStatsService
      */
     private function recent(array $completed, Snapshot $snapshot): array
     {
-        return array_map(function (array $row) use ($snapshot) {
-            $milestone = $snapshot->milestones[$row['key']];
+        return array_map(
+            fn (array $row) => self::milestoneRow($snapshot, $row['key'], $row['completed_at']),
+            array_reverse(array_slice($completed, -self::RECENT_COMPLETIONS)),
+        );
+    }
 
-            return [
-                'key' => $row['key'],
-                'title' => self::localized($milestone['title'] ?? null) ?? $row['key'],
-                'stage' => (int) $milestone['stage'],
-                'completed_at' => $row['completed_at'],
-                'item' => self::iconItem($milestone),
-            ];
-        }, array_reverse(array_slice($completed, -self::RECENT_COMPLETIONS)));
+    /** @return array{key: string, title: string, stage: int, completed_at: string, item: ?string} */
+    private static function milestoneRow(Snapshot $snapshot, string $key, string $completedAt): array
+    {
+        $milestone = $snapshot->milestones[$key];
+
+        return [
+            'key' => $key,
+            'title' => self::localized($milestone['title'] ?? null) ?? $key,
+            'stage' => (int) $milestone['stage'],
+            'completed_at' => $completedAt,
+            'item' => self::iconItem($milestone),
+        ];
+    }
+
+    /**
+     * Spec 019 team view, who did what: every milestone of the progression under the member who completed it.
+     *
+     * @return array{team: ?string, members: list<array{name: ?string, milestones: list<array<string, mixed>>}>}|null
+     */
+    public function team(Progression $progression): ?array
+    {
+        $snapshot = $this->states->snapshot();
+        if ($snapshot === null || $this->states->state($progression) === null) {
+            return null;
+        }
+
+        $byUuid = User::query()->where('active_progression_id', $progression->id)->orderBy('name')->get(['name', 'uuid'])
+            ->mapWithKeys(fn (User $user) => [$user->uuid => ['name' => $user->name, 'milestones' => []]])->all();
+        // Former members and completions without an actor (legacy routes) share one group, as in members().
+        $others = [];
+        $rows = DB::table('progression_milestones')->where('progression_id', $progression->id)
+            ->orderByDesc('completed_at')->orderByDesc('id')->get(['milestone_key', 'completed_at', 'completed_by']);
+        foreach ($rows as $row) {
+            if (!isset($snapshot->milestones[$row->milestone_key])) {
+                continue;
+            }
+            $milestone = self::milestoneRow($snapshot, $row->milestone_key, Carbon::parse($row->completed_at)->toIso8601ZuluString());
+            if ($row->completed_by !== null && isset($byUuid[$row->completed_by])) {
+                $byUuid[$row->completed_by]['milestones'][] = $milestone;
+            } else {
+                $others[] = $milestone;
+            }
+        }
+
+        $result = array_values($byUuid);
+        usort($result, fn (array $a, array $b) => count($b['milestones']) <=> count($a['milestones']));
+        if ($others !== []) {
+            $result[] = ['name' => null, 'milestones' => $others];
+        }
+
+        return [
+            'team' => Team::query()->where('progression_id', $progression->id)->value('name'),
+            'members' => $result,
+        ];
     }
 
     /** Same pick as the graph viewer: the first unlocked item, else the first item to validate. Tags have no icon. */

@@ -46,6 +46,7 @@ Route::get('stages/{playerUuid}', [StagesController::class, 'loadPlayerStageView
 Route::get('progression', [ProgressionViewController::class, 'catalogView'])->name('progression');
 Route::get('progression/{playerName}', [ProgressionViewController::class, 'playerView'])->name('progression.player');
 Route::get('progression/{playerName}/stats', [ProgressionStatsController::class, 'playerView'])->name('progression.player.stats');
+Route::get('progression/{playerName}/team', [ProgressionStatsController::class, 'teamView'])->name('progression.player.team');
 
 // News
 Route::get('news', [NewsController::class, 'allNewsView']);

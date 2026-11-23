@@ -774,3 +774,14 @@
         transition: none;
     }
 }
+
+/* Team view: one card per member */
+.ps-member {
+    display: flex;
+    align-items: center;
+    gap: var(--arf-size-space-3);
+}
+
+.ps-member .ps-ranking__name {
+    flex: 1;
+}

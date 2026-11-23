@@ -37,6 +37,7 @@ class ProgressionViewController extends Controller
             'playerName' => $player?->name,
             'mode' => $mode,
             'privacy' => $this->privacy($player),
+            'statsUrl' => $this->statsUrl($player),
             'config' => [
                 'mode' => $mode,
                 'modelUrl' => $mode === 'api' ? url('/api/progression/model') : "{$fixture}/model.json",
@@ -63,6 +64,17 @@ class ProgressionViewController extends Controller
                 },
             ],
         ]);
+    }
+
+    /** Hidden where the stats page would answer 404, so the link never leads to one. */
+    private function statsUrl(?User $player): ?string
+    {
+        $progression = $player?->activeProgression;
+        if ($progression === null || !app(ProgressionVisibility::class)->canSee($progression)) {
+            return null;
+        }
+
+        return route('progression.player.stats', ['playerName' => $player->name]);
     }
 
     /**

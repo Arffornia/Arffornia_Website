@@ -18,4 +18,5 @@ return [
     'privacy_public' => 'Public progress',
     'privacy_hint' => 'Anyone can see this progress. Turn it off to show it only to your team.',
     'privacy_failed' => 'The setting could not be saved. Try again.',
+    'stats_link' => 'Statistics',
 ];
