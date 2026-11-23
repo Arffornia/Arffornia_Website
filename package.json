@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "test": "node --test 'packages/progression-graph/test/*.test.ts'",
+        "test": "node --test 'packages/progression-graph/test/*.test.ts' 'resources/js/test/*.test.ts'",
         "typecheck": "tsc -p packages/progression-graph",
         "build:progression-graph": "vite build -c packages/progression-graph/vite.config.ts"
     },

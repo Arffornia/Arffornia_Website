@@ -4,6 +4,7 @@ import type { GraphLayout, PlayerState, Snapshot } from '../../packages/progress
 export interface ApiState {
   open_stage: number;
   target?: string | null;
+  player?: { name: string };
   completed: { key: string }[];
   stages: { number: number; module: { item: string; delivered: number }[] }[];
 }
@@ -25,6 +26,7 @@ export async function getJson<T>(url: string, headers: Record<string, string> = 
 export function fromApi(state: ApiState): PlayerState {
   const open = state.stages.find((s) => s.number === state.open_stage);
   return {
+    ...(state.player ? { player: { name: state.player.name } } : {}),
     done: state.completed.map((c) => c.key),
     open_stage: state.open_stage,
     deliveries: (open?.module ?? []).map((m) => ({ item: m.item, delivered: m.delivered })),

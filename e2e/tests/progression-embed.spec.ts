@@ -14,6 +14,7 @@ function apiState(target: string | null) {
   return {
     open_stage: demo.open_stage,
     target,
+    player: { name: 'Alex' },
     completed: demo.done.map((key) => ({ key })),
     stages: [{ number: demo.open_stage, module: demo.deliveries.map((d) => ({ item: d.item, delivered: d.delivered })) }],
   };
@@ -132,4 +133,26 @@ test('without a target there is no centre tool and T does nothing', async ({ pag
 
   await expect(page.locator('.arf-pg__tool--target')).toHaveCount(0);
   await expect(page.locator('.arf-pg__panel')).toBeHidden();
+});
+
+test('the in-game viewer names the player whose token opened it', async ({ page }) => {
+  await stubGame(page);
+  await page.goto('/embed/progression?locale=en');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+
+  await expect(page.locator('.arf-pg__brand span')).toHaveText('Alex');
+});
+
+// The mod zooms the page by half the GUI scale but always leaves it at least 1280x720 CSS px.
+test('at the smallest in-game size the legend and the map fit on screen', async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await stubGame(page);
+  await page.goto('/embed/progression?locale=en');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+
+  const legend = (await page.locator('.arf-pg__legend').boundingBox())!;
+  const canvas = (await page.locator('.arf-pg__canvas').boundingBox())!;
+  await testInfo.attach('1280x720', { body: await page.screenshot(), contentType: 'image/png' });
+  expect(legend.y + legend.height).toBeLessThanOrEqual(720);
+  expect(canvas.height).toBeGreaterThanOrEqual(360);
 });
