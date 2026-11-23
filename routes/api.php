@@ -138,7 +138,6 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,team_editor'])->group(function
 });
 
 Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(function () {
-    Route::post('/progression/add', [ProgressionController::class, 'addMilestone']);
     Route::post('/progression/remove', [ProgressionController::class, 'removeMilestone']);
     Route::post('/progression/list', [ProgressionController::class, 'listMilestones']);
 

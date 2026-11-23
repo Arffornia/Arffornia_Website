@@ -233,20 +233,6 @@ class ProgressionStateService
         $completions = [];
     }
 
-    /** Old `/progression/add` path: same storage, so the new state and the old list never disagree. */
-    public function recordLegacyCompletion(Progression $progression, int $milestoneId, ?string $actor): void
-    {
-        $snapshot = $this->snapshots->current();
-        $key = Milestone::whereKey($milestoneId)->value('key');
-        $now = Carbon::now();
-        if ($key !== null && $this->complete($progression->id, $key, $now, $actor)) {
-            DB::table('progression_events')->insert($this->eventRow($progression->id, self::EVENT_MILESTONE, null, $key, null, null, $actor, $now, $snapshot?->version));
-        }
-        if ($snapshot !== null) {
-            $this->evaluate($progression, $snapshot);
-        }
-    }
-
     public function removeLegacyCompletion(Progression $progression, int $milestoneId): void
     {
         $key = Milestone::whereKey($milestoneId)->value('key');

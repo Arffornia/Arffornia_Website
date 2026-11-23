@@ -179,19 +179,6 @@ class ProgressionStateApiTest extends ProgressionTestCase
             ->assertForbidden();
     }
 
-    public function test_the_old_add_route_writes_the_same_state(): void
-    {
-        $this->fiveMilestoneModel();
-        $player = $this->player();
-        $milestone = \App\Models\Milestone::where('key', 'arffornia/c')->first();
-
-        $this->asService('progression_editor')->postJson('/api/progression/add', ['player_uuid' => $player->uuid, 'milestone_id' => $milestone->id])->assertOk();
-
-        $this->getJson("/api/progressions/{$player->active_progression_id}/state")
-            ->assertOk()
-            ->assertJsonPath('completed.0.key', 'arffornia/c');
-    }
-
     public function test_the_player_route_returns_the_active_progression_state(): void
     {
         $this->fiveMilestoneModel();

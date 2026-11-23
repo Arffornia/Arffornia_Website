@@ -25,7 +25,6 @@ class ProtectedEndpointsContractTest extends ApiTestCase
         $progression = ['admin', 'progression_editor'];
 
         return [
-            'progression/add' => ['POST', '/api/progression/add', $progression],
             'progression/remove' => ['POST', '/api/progression/remove', $progression],
             'progression/list' => ['POST', '/api/progression/list', $progression],
             'progression/set-target' => ['POST', '/api/progression/set-target', $progression],
@@ -95,14 +94,13 @@ class ProtectedEndpointsContractTest extends ApiTestCase
             ->assertJsonStructure(['errors' => ['uuid']]);
     }
 
-    public function test_progression_add_list_remove_round_trip(): void
+    public function test_progression_list_remove_round_trip(): void
     {
         $player = $this->player();
         $milestone = $this->milestone();
         $body = ['player_uuid' => $player->uuid, 'milestone_id' => $milestone->id];
 
-        $this->asService('progression_editor')->postJson('/api/progression/add', $body)
-            ->assertOk()->assertJsonStructure(['message']);
+        $player->activeProgression->update(['completed_milestones' => [$milestone->id]]);
 
         $this->asService('progression_editor')->postJson('/api/progression/list', ['player_uuid' => $player->uuid])
             ->assertOk()
@@ -113,25 +111,6 @@ class ProtectedEndpointsContractTest extends ApiTestCase
         $this->asService('progression_editor')->postJson('/api/progression/list', ['player_uuid' => $player->uuid])
             ->assertOk()
             ->assertExactJson(['completed_milestones' => []]);
-    }
-
-    public function test_progression_add_for_unknown_player_is_404(): void
-    {
-        $milestone = $this->milestone();
-
-        $this->asService('progression_editor')
-            ->postJson('/api/progression/add', ['player_uuid' => str_repeat('0', 32), 'milestone_id' => $milestone->id])
-            ->assertNotFound()
-            ->assertJsonStructure(['message']);
-    }
-
-    public function test_progression_add_with_unknown_milestone_is_422(): void
-    {
-        $player = $this->player();
-
-        $this->asService('progression_editor')
-            ->postJson('/api/progression/add', ['player_uuid' => $player->uuid, 'milestone_id' => 999999])
-            ->assertUnprocessable();
     }
 
     public function test_set_target_updates_the_active_progression(): void
