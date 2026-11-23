@@ -14,6 +14,7 @@ use App\Http\Controllers\MigrationController;
 use App\Http\Controllers\ShopItemsController;
 use App\Http\Controllers\ProgressionController;
 use App\Http\Controllers\ProgressionDraftController;
+use App\Http\Controllers\ProgressionEmbedController;
 use App\Http\Controllers\ProgressionModelController;
 use App\Http\Controllers\ProgressionStateController;
 use App\Http\Controllers\PlaytimeController;
@@ -40,6 +41,7 @@ Route::get('progression/{progression}', [ProgressionController::class, 'getProgr
 Route::get('progressions/{progression}/state', [ProgressionStateController::class, 'show'])->whereNumber('progression');
 Route::get('players/{playerUuid}/progression/state', [ProgressionStateController::class, 'showForPlayer']);
 Route::get('progressions/{progression}/stats', [ProgressionStatsController::class, 'show'])->whereNumber('progression');
+Route::get('embed/progression/state', [ProgressionEmbedController::class, 'state'])->middleware('throttle:progression-embed');
 Route::put('progressions/{progression}/visibility', [ProgressionStateController::class, 'visibility'])->whereNumber('progression')->middleware('auth:sanctum');
 
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);
@@ -142,6 +144,7 @@ Route::middleware(['auth:sanctum', 'anyRole:admin,progression_editor'])->group(f
     Route::post('/progression/list', [ProgressionController::class, 'listMilestones']);
 
     Route::post('/progression/set-target', [ProgressionController::class, 'setTargetMilestone']);
+    Route::post('progression/embed-tokens', [ProgressionEmbedController::class, 'issue']);
 
     Route::post('milestones/{milestone}/add-unlock-from-game', [StagesController::class, 'storeUnlockFromGame']);
 

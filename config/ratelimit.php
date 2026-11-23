@@ -26,4 +26,7 @@ return [
 
     // GET /api/progression/datapack (anonymous, per IP; game servers poll it)
     'recipe_datapack' => (int) env('RATE_LIMIT_RECIPE_DATAPACK', 30),
+
+    // GET /api/embed/progression/state (in-game viewer, per IP)
+    'progression_embed' => (int) env('RATE_LIMIT_PROGRESSION_EMBED', 60),
 ];

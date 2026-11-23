@@ -11,5 +11,8 @@ return [
 
     // Base URL of the item renders written by the Item Icon Exporter (public/images/item_textures, not in git).
     // Staging, which has no renders, points it at the production site.
+    // Lifetime in seconds of the read-only tokens of the in-game viewer (GET /embed/progression).
+    'embed_token_ttl' => (int) env('PROGRESSION_EMBED_TOKEN_TTL', 900),
+
     'icon_base' => env('PROGRESSION_ICON_BASE', '/images/item_textures/'),
 ];

@@ -9,6 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\StagesController;
 use App\Http\Controllers\ProgressionViewController;
+use App\Http\Controllers\ProgressionEmbedController;
 use App\Http\Controllers\ProgressionEditorController;
 use App\Http\Controllers\ProgressionStatsController;
 use App\Http\Controllers\AdminPanelManager;
@@ -47,6 +48,8 @@ Route::get('progression', [ProgressionViewController::class, 'catalogView'])->na
 Route::get('progression/{playerName}', [ProgressionViewController::class, 'playerView'])->name('progression.player');
 Route::get('progression/{playerName}/stats', [ProgressionStatsController::class, 'playerView'])->name('progression.player.stats');
 Route::get('progression/{playerName}/team', [ProgressionStatsController::class, 'teamView'])->name('progression.player.team');
+// The same viewer in the game's embedded browser (spec 018 D2 a), without site chrome
+Route::get('embed/progression', [ProgressionEmbedController::class, 'page'])->name('embed.progression');
 
 // News
 Route::get('news', [NewsController::class, 'allNewsView']);

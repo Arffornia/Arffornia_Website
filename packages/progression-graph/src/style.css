@@ -140,6 +140,7 @@
 .arf-pg__node { transition: opacity var(--arf-motion-fast, 120ms); }
 .arf-pg__node.is-active .arf-pg__glow { stroke: var(--pg-text); stroke-opacity: .55; stroke-width: 2.5; }
 .arf-pg__node.is-selected .arf-pg__glow { stroke: var(--pg-text); stroke-opacity: .9; stroke-width: 2.5; }
+.arf-pg__node.is-mark-target .arf-pg__glow { stroke: var(--pg-orange); stroke-opacity: 1; stroke-width: 3.5; }
 .arf-pg__node.is-upstream .arf-pg__tile { stroke: var(--pg-in); }
 .arf-pg__node.is-downstream .arf-pg__tile { stroke: var(--pg-out); }
 .has-focus .arf-pg__node:not(.is-active):not(.is-upstream):not(.is-downstream) { opacity: .35; }

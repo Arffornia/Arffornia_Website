@@ -35,6 +35,7 @@ return [
         'milestone_removed' => 'Jalon retiré.',
         'target_updated' => 'Jalon ciblé mis à jour.',
         'target_update_failed' => 'Impossible de mettre à jour le jalon ciblé.',
+        'target_refused' => 'Cette milestone ne peut pas être ciblée : elle est faite, inconnue ou pas encore disponible.',
         'not_found' => 'Progression introuvable.',
         'retired' => "Cette progression appartient à une équipe qui n'existe plus.",
         'no_model' => "Aucun modèle de progression n'est encore publié.",

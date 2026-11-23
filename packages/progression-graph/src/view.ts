@@ -29,7 +29,9 @@ export interface ViewOptions {
   /** When it returns true, dragging a milestone moves it instead of panning; onDrop gets where it was dropped. */
   draggable?: () => boolean;
   onDrop?: (key: string, hit: PickHit) => void;
-  /** Extra class per milestone key, drawn as `is-mark-<value>` (diff highlights). */
+  /** Extra element under the detail panel head, for host actions such as the in-game target button. */
+  panelAction?: (key: string, state: NodeState) => HTMLElement | null;
+  /** Extra class per milestone key, drawn as `is-mark-<value>` (diff highlights, the targeted milestone). */
   marks?: Record<string, string>;
 }
 
@@ -596,6 +598,8 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
     html('h3', '', titles, tr.text(m.title));
     html('p', 'arf-pg__meta', titles, `${tr.text(graphByKey.get(m.graph)?.name)} · ${tr.t('stage_of', { n: m.stage })}`);
     if (st !== 'neutral') html('span', `arf-pg__state is-${st}`, titles, tr.t(st));
+    const action = options.panelAction?.(m.key, st);
+    if (action) panel.append(action);
     if (m.description) html('p', 'arf-pg__desc', panel, tr.text(m.description));
 
     const errors = backwardOf.get(m.key);

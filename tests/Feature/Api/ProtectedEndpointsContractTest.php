@@ -28,6 +28,7 @@ class ProtectedEndpointsContractTest extends ApiTestCase
             'progression/remove' => ['POST', '/api/progression/remove', $progression],
             'progression/list' => ['POST', '/api/progression/list', $progression],
             'progression/set-target' => ['POST', '/api/progression/set-target', $progression],
+            'progression/embed-tokens' => ['POST', '/api/progression/embed-tokens', $progression],
             'migration/items-to-migrate' => ['GET', '/api/migration/items-to-migrate', $progression],
             'migration/submit-batch-recipes' => ['POST', '/api/migration/submit-batch-recipes', $progression],
             'milestone-items/move' => ['POST', '/api/milestone-items/move', $progression],

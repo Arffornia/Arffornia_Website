@@ -12,5 +12,5 @@
     "erasableSyntaxOnly": true,
     "skipLibCheck": true
   },
-  "include": ["src", "scripts", "test", "vite.config.ts", "../../resources/js/progression.ts"]
+  "include": ["src", "scripts", "test", "vite.config.ts", "../../resources/js/progression.ts", "../../resources/js/progression-embed.ts"]
 }
