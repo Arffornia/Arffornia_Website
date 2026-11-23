@@ -53,13 +53,6 @@ class ProgressionService
     }
 
     /**
-     * Sets the currently targeted milestone for a user's active progression after validation.
-     *
-     * @param User $user The user to update.
-     * @param int|null $milestoneId The ID of the new target milestone, or null to clear it.
-     * @return bool True on success.
-     */
-    /**
      * Targets a milestone by key (spec 017 rule 3): it must be in the published snapshot, not done yet,
      * its stage open and every prerequisite done. Same rule as the Space Elevator delivery, so a
      * target can always be delivered.
@@ -76,8 +69,7 @@ class ProgressionService
         if ($snapshot === null) {
             return 'no_model';
         }
-        $milestone = $snapshot->milestones[$key] ?? null;
-        $milestoneId = $milestone === null ? null : Milestone::where('key', $key)->value('id');
+        $milestoneId = isset($snapshot->milestones[$key]) ? Milestone::where('key', $key)->value('id') : null;
         if ($milestoneId === null) {
             return 'unknown_milestone';
         }
@@ -91,6 +83,13 @@ class ProgressionService
         return 'ok';
     }
 
+    /**
+     * Sets the currently targeted milestone for a user's active progression after validation.
+     *
+     * @param User $user The user to update.
+     * @param int|null $milestoneId The ID of the new target milestone, or null to clear it.
+     * @return bool True on success.
+     */
     public function setTargetMilestone(User $user, ?int $milestoneId): bool
     {
         $progression = $user->activeProgression;
