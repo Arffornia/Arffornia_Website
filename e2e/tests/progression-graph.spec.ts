@@ -146,3 +146,24 @@ test('a visitor sees no privacy switch on another player page', async ({ page })
 
   await expect(page.locator('[data-privacy-switch]')).toHaveCount(0);
 });
+
+test('the player page rings the targeted milestone and centres on it', async ({ page }) => {
+  await page.route('**/progression-fixture/state-demo.json', async (route) => {
+    const response = await route.fetch();
+    await route.fulfill({ response, json: { ...(await response.json()), target: 'mekanism/mekanism_advanced_tank' } });
+  });
+  await page.goto('/progression/E2E_Gold');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('.arf-pg__node[data-key="mekanism/mekanism_advanced_tank"]')).toHaveClass(/is-mark-target/);
+
+  await page.locator('.arf-pg__tool--target').click();
+
+  await expect(page.locator('.arf-pg__panel h3')).toHaveText('Mekanism: Advanced Tank');
+});
+
+test('the player page has no centre tool when nothing is targeted', async ({ page }) => {
+  await page.goto('/progression/E2E_Gold');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+
+  await expect(page.locator('.arf-pg__tool--target')).toHaveCount(0);
+});

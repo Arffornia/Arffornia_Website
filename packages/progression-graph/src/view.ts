@@ -1,5 +1,5 @@
 import { translator, type Translator } from './i18n.ts';
-import { dependents, lineage, moduleProgress, nodeStates, pathTo, splitLinks, stageProgress } from './state.ts';
+import { dependents, lineage, moduleProgress, nodeStates, pathTo, splitLinks, stageProgress, targetKey } from './state.ts';
 import { rank } from './search.ts';
 import type { Graph, GraphLayout, ItemCount, Locale, Milestone, NodeState, PlayerState, Point, Snapshot } from './types.ts';
 
@@ -31,8 +31,10 @@ export interface ViewOptions {
   onDrop?: (key: string, hit: PickHit) => void;
   /** Extra element under the detail panel head, for host actions such as the in-game target button. */
   panelAction?: (key: string, state: NodeState) => HTMLElement | null;
-  /** Extra class per milestone key, drawn as `is-mark-<value>` (diff highlights, the targeted milestone). */
+  /** Extra class per milestone key, drawn as `is-mark-<value>` (diff highlights). */
   marks?: Record<string, string>;
+  /** The milestone the player targets: orange ring, and a map tool (key T) that flies to it. */
+  target?: string | null;
 }
 
 /** What is under the pointer: a milestone or a link, and the graph row and stage column of that point. */
@@ -86,6 +88,11 @@ function html<K extends keyof HTMLElementTagNameMap>(tag: K, className = '', par
   return node;
 }
 
+function isTyping(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  return !!el && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName));
+}
+
 /** A missing render must not show a broken image: swap in the fallback (initials) or nothing. */
 function onMissing(img: HTMLImageElement | SVGImageElement, fallback?: () => Node) {
   img.addEventListener('error', () => img.replaceWith(...(fallback ? [fallback()] : [])), { once: true });
@@ -99,6 +106,7 @@ const ICONS = {
   moon: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
   close: 'M6 6l12 12M18 6 6 18',
   search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20 20l-4-4',
+  target: 'M12 19a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM12 2v4M12 18v4M2 12h4M18 12h4M12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
   check: 'M5 12.5l4.5 4.5L19 7.5',
 };
 
@@ -168,6 +176,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
   const byKey = new Map(snapshot.milestones.map((m) => [m.key, m]));
   const graphByKey = new Map(snapshot.graphs.map((g) => [g.key, g]));
   const states = nodeStates(snapshot, state);
+  const targeted = targetKey(snapshot, options.target);
   const links = splitLinks(snapshot);
   const children = dependents(snapshot);
   const family = lineage(snapshot);
@@ -266,6 +275,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
   tool(ICONS.plus, tr.t('zoom_in'), () => zoomBy(1.25));
   tool(ICONS.minus, tr.t('zoom_out'), () => zoomBy(1 / 1.25));
   tool(ICONS.fit, tr.t('fit'), () => fit());
+  if (targeted) tool(ICONS.target, tr.t('center_target'), () => focus(targeted)).classList.add('arf-pg__tool--target');
   const themeButton = tool(ICONS.sun, '', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
   themeButton.classList.add('arf-pg__tool--theme');
   syncThemeButton();
@@ -423,7 +433,7 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
 
   function drawNode(m: Milestone, x: number, y: number): SVGGElement {
     const st: NodeState = states.get(m.key) ?? 'neutral';
-    const mark = options.marks?.[m.key];
+    const mark = options.marks?.[m.key] ?? (m.key === targeted ? 'target' : undefined);
     const g = svg('g', { class: `arf-pg__node is-${st}${mark ? ` is-mark-${mark}` : ''}`, transform: `translate(${x} ${y})`, tabindex: 0, role: 'button' });
     g.dataset.key = m.key;
     g.setAttribute('aria-label', tr.text(m.title));
@@ -893,6 +903,9 @@ export function mountProgressionGraph(container: HTMLElement, options: ViewOptio
       e.preventDefault();
       if (palette.hidden) openPalette();
       else closePalette();
+    } else if (targeted && e.key.toLowerCase() === 't' && !e.ctrlKey && !e.metaKey && !e.altKey && root.isConnected && palette.hidden && !isTyping(e.target)) {
+      e.preventDefault();
+      focus(targeted);
     }
   };
   canvas.addEventListener('pointerdown', onPointerDown);

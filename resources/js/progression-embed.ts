@@ -149,7 +149,7 @@ async function main() {
       icon,
       deepLink: false,
       notice: query ? null : { text: config!.messages.no_session },
-      marks: target ? { [target]: 'target' } : {},
+      target,
       panelAction: targetButton,
       onSelect: (key) => {
         selected = key;

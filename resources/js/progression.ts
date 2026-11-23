@@ -34,14 +34,14 @@ function showMessage(root: HTMLElement, text: string) {
   }
 }
 
-async function loadState(config: PageConfig): Promise<{ state: PlayerState | null; hidden: boolean }> {
-  if (!config.stateUrl) return { state: null, hidden: false };
+async function loadState(config: PageConfig): Promise<{ state: PlayerState | null; target: string | null; hidden: boolean }> {
+  if (!config.stateUrl) return { state: null, target: null, hidden: false };
   try {
-    const raw = await getJson<ApiState | PlayerState>(config.stateUrl);
-    return { state: config.mode === 'api' ? fromApi(raw as ApiState) : (raw as PlayerState), hidden: false };
+    const raw = await getJson<(ApiState | PlayerState) & { target?: string | null }>(config.stateUrl);
+    return { state: config.mode === 'api' ? fromApi(raw as ApiState) : (raw as PlayerState), target: raw.target ?? null, hidden: false };
   } catch (error) {
     // A private progression answers exactly like a missing one: show the tree without a player.
-    if (error instanceof HttpError && error.status === 404) return { state: null, hidden: true };
+    if (error instanceof HttpError && error.status === 404) return { state: null, target: null, hidden: true };
     throw error;
   }
 }
@@ -129,6 +129,7 @@ async function main() {
     const handle = mountProgressionGraph(root, {
       snapshot: laidOut,
       state: player.state,
+      target: player.target,
       locale: config.locale,
       title: player.hidden ? `${config.title ?? ''} · ${config.messages.private}` : (config.title ?? undefined),
       theme: siteTheme()?.get() ?? (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'),
