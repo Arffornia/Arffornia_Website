@@ -29,6 +29,9 @@
                     </label>
                     <p class="progression-privacy__hint" data-privacy-hint>{{ __('progression.privacy_hint') }}</p>
                 @endif
+                @if ($statsUrl)
+                    <a class="progression-stats-link" href="{{ $statsUrl }}" data-stats-link>{{ __('progression.stats_link') }}</a>
+                @endif
                 <div data-next hidden>
                     <h2>{{ __('progression.next_title') }}</h2>
                     <ol></ol>

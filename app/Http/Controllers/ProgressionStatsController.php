@@ -40,6 +40,19 @@ class ProgressionStatsController extends Controller
         ]);
     }
 
+    /** Same visibility as the stats page: a private team is 404 to anyone outside it but admins. */
+    public function teamView(string $playerName): View
+    {
+        $player = $this->users->getUserByName($playerName);
+        $progression = $player?->activeProgression;
+        abort_if($progression === null || !$this->visibility->canSee($progression), 404);
+
+        return view('pages.progression_team', [
+            'playerName' => $player->name,
+            'team' => $this->playerStats->team($progression),
+        ]);
+    }
+
     public function show(string $progression): JsonResponse
     {
         $found = Progression::find($progression);

@@ -18,4 +18,5 @@ return [
     'privacy_public' => 'Progression publique',
     'privacy_hint' => 'Tout le monde peut voir cette progression. Désactive-la pour la montrer seulement à ton équipe.',
     'privacy_failed' => 'Le réglage n’a pas pu être enregistré. Réessaie.',
+    'stats_link' => 'Statistiques',
 ];

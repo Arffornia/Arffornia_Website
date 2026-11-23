@@ -114,8 +114,15 @@ body > footer {
     font: 13px var(--arf-font-body, Montserrat, sans-serif);
 }
 
-.progression-side:not(:has(label, [data-next]:not([hidden]))) {
+.progression-side:not(:has(label, a, [data-next]:not([hidden]))) {
     display: none;
+}
+
+.progression-stats-link {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: var(--arf-color-brand-orange);
+    font-weight: 600;
 }
 
 .progression-privacy {

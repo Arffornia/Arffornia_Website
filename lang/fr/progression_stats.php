@@ -64,4 +64,9 @@ return [
     'stalls_empty' => 'Aucune milestone n’attend de progression active.',
     'activity_empty_title' => 'Mois calme',
     'activity_peak' => 'Meilleur jour : :count milestones',
+    'team_link' => 'Qui a fait quoi',
+    'team_eyebrow' => 'Vue d’équipe : qui a fait quoi',
+    'team_milestones' => ':count milestones',
+    'team_member_empty' => 'Aucune milestone pour l’instant.',
+    'back_to_stats' => 'Retour aux statistiques',
 ];

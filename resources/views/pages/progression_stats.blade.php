@@ -195,6 +195,7 @@
 
                 <section class="ps-card ps-card--wide">
                     <h2>{{ __('progression_stats.team_title') }}</h2>
+                    <p><a class="ps-button" href="{{ route('progression.player.team', ['playerName' => $playerName]) }}" data-team-link>{{ __('progression_stats.team_link') }}</a></p>
                     <ul class="ps-ranking">
                         @foreach ($stats['members'] as $member)
                             <li>
