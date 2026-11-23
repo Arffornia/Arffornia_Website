@@ -209,6 +209,18 @@ class ProgressionStateService
         return ['id' => $id, 'status' => 'applied'];
     }
 
+    /** Not done yet and available (rule 3) for this progression. */
+    public function isTargetable(Progression $progression, Snapshot $snapshot, string $key): bool
+    {
+        $milestone = $snapshot->milestones[$key] ?? null;
+        if ($milestone === null) {
+            return false;
+        }
+        $done = array_flip(DB::table('progression_milestones')->where('progression_id', $progression->id)->pluck('milestone_key')->all());
+
+        return !isset($done[$key]) && self::isAvailable($milestone, $done, $this->openStage($progression, $snapshot));
+    }
+
     /** Rule 3 of spec 017: the milestone's stage is open and all its prerequisites are done. */
     public static function isAvailable(array $milestone, array $done, int $open): bool
     {

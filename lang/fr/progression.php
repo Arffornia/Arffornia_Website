@@ -19,4 +19,13 @@ return [
     'privacy_hint' => 'Tout le monde peut voir cette progression. Désactive-la pour la montrer seulement à ton équipe.',
     'privacy_failed' => 'Le réglage n’a pas pu être enregistré. Réessaie.',
     'stats_link' => 'Statistiques',
+    'embed' => [
+        'no_session' => 'Ouvre cette page depuis le jeu pour voir ta progression.',
+        'target_set' => 'Cibler cette milestone',
+        'target_clear' => 'Ciblée : clique pour retirer',
+        'target_done' => 'Déjà faite',
+        'target_locked' => 'Pas encore disponible',
+        'target_pending' => 'Envoi…',
+        'target_refused' => 'Le serveur a refusé la cible. Réessaie.',
+    ],
 ];

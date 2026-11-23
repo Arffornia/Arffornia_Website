@@ -1,0 +1,48 @@
+/* In-game page (/embed/progression): the viewer fills the browser, no site header or footer. */
+html,
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--arf-bg, #09070a);
+    color: var(--arf-text, #f4f0f8);
+    font-family: var(--arf-font-body, Montserrat, sans-serif);
+}
+
+#progression-root {
+    height: 100%;
+}
+
+#progression-root > p {
+    padding: 24px;
+}
+
+.embed-target {
+    width: 100%;
+    margin-top: 12px;
+    padding: 9px 12px;
+    border: 1px solid var(--arf-color-brand-orange, #ff7300);
+    border-radius: 8px;
+    background: var(--arf-color-brand-orange, #ff7300);
+    color: #fff;
+    font: 600 13px var(--arf-font-body, Montserrat, sans-serif);
+    cursor: pointer;
+}
+
+.embed-target.is-on {
+    background: transparent;
+    color: var(--arf-color-brand-orange, #ff7300);
+}
+
+.embed-target:disabled {
+    border-color: var(--arf-border, #3d2f4e);
+    background: transparent;
+    color: var(--arf-text-muted, #b3a7c2);
+    cursor: default;
+}
+
+.embed-target__refused {
+    margin: 6px 0 0;
+    color: #ff6b6b;
+    font-size: 12px;
+}

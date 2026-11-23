@@ -8,6 +8,7 @@ use App\Services\UserService;
 use App\Models\Progression;
 use Illuminate\Http\JsonResponse;
 use App\Services\ProgressionService;
+use App\Progression\Keys;
 use App\Progression\ProgressionVisibility;
 use App\Repositories\TeamRepository;
 use Illuminate\Support\Facades\Validator;
@@ -95,11 +96,20 @@ class ProgressionController extends Controller
         $validated = $request->validate([
             // The milestone_id can be nullable to allow clearing the target
             'milestone_id' => 'nullable|integer|exists:milestones,id',
+            'milestone_key' => ['sometimes', 'nullable', 'string', 'max:128', 'regex:' . Keys::MILESTONE_PATTERN],
         ]);
 
         $user = $this->getUserFromRequest($request);
-        if (!$user) {
+        if (!$user instanceof User) {
             return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
+        }
+
+        if (isset($validated['milestone_key'])) {
+            $outcome = $this->progressionService->setTargetMilestoneByKey($user, $validated['milestone_key']);
+
+            return $outcome === 'ok'
+                ? response()->json(['message' => __('api.progression.target_updated'), 'target' => $validated['milestone_key']])
+                : response()->json(['message' => __('api.progression.target_refused'), 'reason' => $outcome], Response::HTTP_CONFLICT);
         }
 
         $success = $this->progressionService->setTargetMilestone($user, $validated['milestone_id'] ?? null);

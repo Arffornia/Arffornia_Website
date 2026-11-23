@@ -38,6 +38,7 @@ return [
         'milestone_removed' => 'Milestone removed successfully.',
         'target_updated' => 'Target milestone updated successfully.',
         'target_update_failed' => 'Failed to update target milestone.',
+        'target_refused' => 'The milestone cannot be targeted: it is done, unknown or not available yet.',
         'not_found' => 'Progression not found.',
         'retired' => 'This progression belongs to a team that no longer exists.',
         'no_model' => 'No progression model is published yet.',

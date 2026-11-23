@@ -19,4 +19,13 @@ return [
     'privacy_hint' => 'Anyone can see this progress. Turn it off to show it only to your team.',
     'privacy_failed' => 'The setting could not be saved. Try again.',
     'stats_link' => 'Statistics',
+    'embed' => [
+        'no_session' => 'Open this page from the game to see your own progress.',
+        'target_set' => 'Target this milestone',
+        'target_clear' => 'Targeted: click to clear',
+        'target_done' => 'Already done',
+        'target_locked' => 'Not available yet',
+        'target_pending' => 'Sending…',
+        'target_refused' => 'The server refused the target. Try again.',
+    ],
 ];

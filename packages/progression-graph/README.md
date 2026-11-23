@@ -44,7 +44,8 @@ handle.focus('mekanism/mekanism_advanced_tank');
 The admin editor (spec 019) mounts the same component with `panel: false` (it shows its own panel),
 `onSelect`, `onPick` (every click, with the milestone, link, graph row and stage column under the
 pointer; return true to skip the selection), `draggable` and `onDrop` (drag a milestone in move mode),
-and `marks` (an `is-mark-<kind>` class per milestone, for diff highlights). `getView`/`setView` keep the
+and `marks` (an `is-mark-<kind>` class per milestone, for diff highlights; `target` rings the targeted
+milestone). `panelAction` adds a host element under the panel head: the in-game page puts its target button there. `getView`/`setView` keep the
 pan and zoom when the editor mounts the graph again after a change, `showGraphs` filters the rows.
 
 ## Theme

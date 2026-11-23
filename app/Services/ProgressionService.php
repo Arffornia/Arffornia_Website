@@ -53,6 +53,37 @@ class ProgressionService
     }
 
     /**
+     * Targets a milestone by key (spec 017 rule 3): it must be in the published snapshot, not done yet,
+     * its stage open and every prerequisite done. Same rule as the Space Elevator delivery, so a
+     * target can always be delivered.
+     *
+     * @return 'ok'|'no_progression'|'no_model'|'unknown_milestone'|'milestone_unavailable'
+     */
+    public function setTargetMilestoneByKey(User $user, string $key): string
+    {
+        $progression = $user->activeProgression;
+        if (!$progression) {
+            return 'no_progression';
+        }
+        $snapshot = $this->states->snapshot();
+        if ($snapshot === null) {
+            return 'no_model';
+        }
+        $milestoneId = isset($snapshot->milestones[$key]) ? Milestone::where('key', $key)->value('id') : null;
+        if ($milestoneId === null) {
+            return 'unknown_milestone';
+        }
+        if (!$this->states->isTargetable($progression, $snapshot, $key)) {
+            return 'milestone_unavailable';
+        }
+
+        $progression->current_milestone_id = $milestoneId;
+        $progression->save();
+
+        return 'ok';
+    }
+
+    /**
      * Sets the currently targeted milestone for a user's active progression after validation.
      *
      * @param User $user The user to update.

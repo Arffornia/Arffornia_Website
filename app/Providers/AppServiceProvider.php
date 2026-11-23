@@ -64,6 +64,10 @@ class AppServiceProvider extends ServiceProvider
                 ->by('vote-verify|' . ($request->user()?->getAuthIdentifier() ?: $request->ip()));
         });
 
+        RateLimiter::for('progression-embed', function (Request $request) {
+            return Limit::perMinute(config('ratelimit.progression_embed'))->by('progression-embed|' . $request->ip());
+        });
+
         RateLimiter::for('recipe-datapack', function (Request $request) {
             return Limit::perMinute(config('ratelimit.recipe_datapack'))->by('recipe-datapack|' . $request->ip());
         });
