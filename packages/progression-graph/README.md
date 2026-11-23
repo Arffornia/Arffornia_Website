@@ -33,6 +33,8 @@ handle.focus('mekanism/mekanism_advanced_tank');
   the milestone is hovered or selected.
 - Header: progress of the open stage against its threshold, and the Space Elevator module deliveries.
 - Graph filter chips, pan, wheel zoom, fit, sun/moon theme switch bottom right, Escape to close.
+- `target` (the milestone the player targets): orange ring, and a map tool (key T) that flies to it and
+  opens it. No tool without a target, or when the snapshot no longer has that milestone.
 - Ctrl+K (Cmd+K): command palette over milestones, items, mods and stages; Enter flies to the result
   (no animation with `prefers-reduced-motion`).
 - Arrow keys walk the graph from the selection: left to a requirement, right to a dependent, up and

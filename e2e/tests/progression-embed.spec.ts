@@ -19,8 +19,8 @@ function apiState(target: string | null) {
   };
 }
 
-async function stubGame(page: Page) {
-  let target: string | null = null;
+async function stubGame(page: Page, initialTarget: string | null = null) {
+  let target: string | null = initialTarget;
   const bearers: (string | undefined)[] = [];
   await page.route('**/api/embed/progression/state', async (route) => {
     bearers.push(route.request().headers()['authorization']);
@@ -49,6 +49,14 @@ async function openMilestone(page: Page, key: string) {
   await page.locator('.arf-pg__chip', { hasText: /^(All|Tout)$/ }).click();
   await page.locator(`.arf-pg__chip[data-graph="${key.split('/')[0]}"]`).click();
   await page.locator(`.arf-pg__node[data-key="${key}"]`).click();
+}
+
+// Distance in px between the milestone tile and the centre of the free part of the map (the detail panel takes 380 px).
+async function offCentre(page: Page, key: string): Promise<number> {
+  const canvas = (await page.locator('.arf-pg__canvas').boundingBox())!;
+  const tile = (await page.locator(`.arf-pg__node[data-key="${key}"] .arf-pg__tile`).boundingBox())!;
+  const panelSpace = canvas.width > 900 ? 380 : 0;
+  return Math.hypot(tile.x + tile.width / 2 - (canvas.x + (canvas.width - panelSpace) / 2), tile.y + tile.height / 2 - (canvas.y + canvas.height / 2));
 }
 
 test.beforeEach(async ({ page }) => {
@@ -92,4 +100,36 @@ test('outside the game the page shows the catalog and says where to open it', as
 
   await expect(page.locator('.arf-pg__notice')).toContainText('Open this page from the game');
   await expect(page.locator('.arf-pg__node.is-available')).toHaveCount(0);
+});
+
+test('the centre tool and the T key fly to the targeted milestone', async ({ page }) => {
+  const targeted = 'mekanism/mekanism_advanced_tank';
+  await stubGame(page, targeted);
+  await page.goto('/embed/progression?locale=en');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+  const node = page.locator(`.arf-pg__node[data-key="${targeted}"]`);
+  await expect(node).toHaveClass(/is-mark-target/);
+  await page.locator('.arf-pg__tool[aria-label="Fit to screen"]').click();
+
+  await page.locator('.arf-pg__tool--target').click();
+
+  await expect(page.locator('.arf-pg__panel h3')).toHaveText('Mekanism: Advanced Tank');
+  await expect.poll(() => offCentre(page, targeted)).toBeLessThan(40);
+
+  await page.keyboard.press('Escape');
+  await page.locator('.arf-pg__tool[aria-label="Fit to screen"]').click();
+  await page.keyboard.press('t');
+  await expect(page.locator('.arf-pg__panel h3')).toHaveText('Mekanism: Advanced Tank');
+  await expect.poll(() => offCentre(page, targeted)).toBeLessThan(40);
+});
+
+test('without a target there is no centre tool and T does nothing', async ({ page }) => {
+  await stubGame(page);
+  await page.goto('/embed/progression?locale=en');
+  await expect(page.locator('#progression-root')).toHaveAttribute('data-ready', 'true');
+
+  await page.keyboard.press('t');
+
+  await expect(page.locator('.arf-pg__tool--target')).toHaveCount(0);
+  await expect(page.locator('.arf-pg__panel')).toBeHidden();
 });

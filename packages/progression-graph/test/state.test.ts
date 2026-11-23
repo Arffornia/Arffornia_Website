@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lineage, moduleProgress, nodeStates, pathTo, splitLinks, stageProgress } from '../src/state.ts';
+import { lineage, moduleProgress, nodeStates, pathTo, splitLinks, stageProgress, targetKey } from '../src/state.ts';
 import { milestone, snapshot } from './fixtures.ts';
 
 const tree = snapshot([milestone('a', 1), milestone('b', 1, ['a']), milestone('c', 2, ['b']), milestone('d', 1, ['c'])]);
@@ -60,4 +60,16 @@ test('the path to a milestone lists only what is not done, earliest first', () =
   const chain = snapshot([milestone('a', 1), milestone('b', 1, ['a']), milestone('c', 2, ['b'])]);
 
   assert.deepEqual(pathTo(chain, { done: ['tech/a'], open_stage: 1 }, 'tech/c').map((m) => m.key), ['tech/b']);
+});
+
+test('a target that is a milestone of the snapshot is kept', () => {
+  assert.equal(targetKey(tree, 'tech/b'), 'tech/b');
+});
+
+test('a target the snapshot no longer has is dropped, so nothing offers to fly to it', () => {
+  assert.equal(targetKey(tree, 'tech/removed'), null);
+});
+
+test('no target gives no target', () => {
+  assert.equal(targetKey(tree, null), null);
 });

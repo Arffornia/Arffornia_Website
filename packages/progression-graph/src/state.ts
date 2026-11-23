@@ -129,3 +129,7 @@ export function pathTo(snapshot: Snapshot, state: PlayerState, key: string): Mil
   };
   return todo.sort((a, b) => a.stage - b.stage || depthOf(a) - depthOf(b) || a.key.localeCompare(b.key));
 }
+
+export function targetKey(snapshot: Snapshot, target: string | null | undefined): string | null {
+  return target && snapshot.milestones.some((m) => m.key === target) ? target : null;
+}

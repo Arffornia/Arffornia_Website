@@ -176,6 +176,7 @@
 .arf-pg__tools { position: absolute; right: 12px; bottom: 12px; display: flex; gap: 4px; padding: 4px; background: var(--pg-glass); border: 1px solid var(--pg-line-soft); border-radius: 12px; backdrop-filter: blur(6px); }
 .arf-pg__tool { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 8px; background: transparent; color: var(--pg-text); cursor: pointer; }
 .arf-pg__tool:hover { background: var(--pg-line-soft); }
+.arf-pg__tool--target { color: var(--pg-orange); }
 .arf-pg__tool--theme { border-left: 1px solid var(--pg-line-soft); border-radius: 0 8px 8px 0; }
 .arf-pg__glyph { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
