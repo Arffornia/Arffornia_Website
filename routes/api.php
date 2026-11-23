@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\RecipeController;
 use App\Http\Controllers\RecipeDatapackController;
@@ -43,6 +44,8 @@ Route::get('players/{playerUuid}/progression/state', [ProgressionStateController
 Route::get('progressions/{progression}/stats', [ProgressionStatsController::class, 'show'])->whereNumber('progression');
 Route::get('embed/progression/state', [ProgressionEmbedController::class, 'state'])->middleware('throttle:progression-embed');
 Route::put('progressions/{progression}/visibility', [ProgressionStateController::class, 'visibility'])->whereNumber('progression')->middleware('auth:sanctum');
+
+Route::get('news/latest', [NewsController::class, 'latestJson']);
 
 Route::get('launcherImages', [LauncherController::class, 'getLauncherImages']);
 
