@@ -55,8 +55,20 @@ class ProgressionEmbedTest extends ProgressionTestCase
         $response = $this->asService('progression_editor')->postJson('/api/progression/embed-tokens', ['player_uuid' => $this->player->uuid]);
 
         $response->assertOk()->assertJsonStructure(['token', 'expires_at', 'url'])->assertHeader('Cache-Control', 'no-store, private');
-        $this->assertSame(url('/embed/progression'), $response->json('url'));
+        $this->assertSame(rtrim(config('app.url'), '/').'/embed/progression', $response->json('url'));
         $this->assertEqualsWithDelta(now()->getTimestamp() + 900, $response->json('expires_at'), 5);
+    }
+
+    public function test_the_page_url_uses_the_public_site_address_when_the_game_server_calls_an_internal_host(): void
+    {
+        config(['app.url' => 'https://staging.arffornia.com']);
+
+        $response = $this->asService('progression_editor')->postJson(
+            'http://arffornia-website-chart.arffornia-staging.svc.cluster.local/api/progression/embed-tokens',
+            ['player_uuid' => $this->player->uuid],
+        );
+
+        $this->assertSame('https://staging.arffornia.com/embed/progression', $response->assertOk()->json('url'));
     }
 
     public function test_minting_a_token_for_an_unknown_or_malformed_player_fails(): void

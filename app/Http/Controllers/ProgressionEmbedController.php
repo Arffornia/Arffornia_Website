@@ -31,8 +31,14 @@ class ProgressionEmbedController extends Controller
             return response()->json(['message' => __('api.player.not_found')], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json([...$this->tokens->issue($user), 'url' => route('embed.progression')])
+        return response()->json([...$this->tokens->issue($user), 'url' => $this->publicUrl()])
             ->header('Cache-Control', 'no-store');
+    }
+
+    // The game server calls the API on its in-cluster address, which the player's browser cannot resolve.
+    private function publicUrl(): string
+    {
+        return rtrim(config('app.url'), '/').route('embed.progression', [], false);
     }
 
     public function page(Request $request): View
