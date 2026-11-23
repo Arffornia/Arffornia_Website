@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\Milestone;
 use App\Models\MilestoneUnlock;
 use App\Models\Recipe;
 use App\Services\RecipeDatapackService;
+use Illuminate\Support\Facades\DB;
 use ZipArchive;
 
 /**
@@ -139,8 +139,7 @@ class RecipeDatapackTest extends ApiTestCase
 
         $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
 
-        $this->assertEqualsCanonicalizing(['pack.mcmeta', 'data/minecraft/recipe/stick.json'],
-            array_values(array_filter(array_keys($entries), fn (string $path) => ! str_contains($path, '/advancement/'))));
+        $this->assertEqualsCanonicalizing(['pack.mcmeta', 'data/minecraft/recipe/stick.json'], array_keys($entries));
     }
 
     public function test_recipe_with_an_invalid_ingredient_is_skipped_rather_than_published_cheaper(): void
@@ -197,70 +196,16 @@ class RecipeDatapackTest extends ApiTestCase
         $this->assertArrayNotHasKey('data/arffornia/recipe/ambiguous.json', $entries);
     }
 
-    public function test_obtain_milestone_becomes_a_hidden_advancement_completed_by_any_key_item(): void
+    public function test_datapack_holds_no_milestone_advancements_because_milestones_complete_in_the_space_elevator(): void
     {
-        $this->milestone(['key' => 'mekanism/ore_x3', 'validation' => ['type' => 'obtain', 'items' => ['mekanism:raw_osmium', '#c:ores/osmium']]]);
-
-        $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
-
-        $this->assertSame([
-            'criteria' => [
-                'obtained_0' => ['trigger' => 'minecraft:inventory_changed', 'conditions' => ['items' => [['items' => 'mekanism:raw_osmium']]]],
-                'obtained_1' => ['trigger' => 'minecraft:inventory_changed', 'conditions' => ['items' => [['items' => '#c:ores/osmium']]]],
-            ],
-            'requirements' => [['obtained_0', 'obtained_1']],
-        ], $entries['data/arffornia/advancement/milestone/mekanism/ore_x3.json']);
-    }
-
-    public function test_milestone_without_a_stored_validation_is_obtained_by_getting_what_it_unlocks(): void
-    {
-        $milestone = $this->milestone(['key' => 'oritech/the_beginning', 'validation' => null]);
+        $milestone = $this->milestone(['key' => 'oritech/the_beginning']);
         MilestoneUnlock::factory()->create(['milestone_id' => $milestone->id, 'item_id' => 'oritech:basic_generator_block', 'recipes_to_ban' => []]);
+        $milestone->requirements()->create(['item_id' => 'minecraft:stone', 'display_name' => 'Stone', 'amount' => 64]);
+        $legacy = $this->milestone(['key' => 'mekanism/ore']);
+        DB::table('milestones')->where('id', $legacy->id)->update(['validation' => json_encode(['type' => 'obtain', 'items' => ['mekanism:raw_osmium']])]);
 
         $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
 
-        $this->assertSame([
-            'criteria' => [
-                'obtained_0' => ['trigger' => 'minecraft:inventory_changed', 'conditions' => ['items' => [['items' => 'oritech:basic_generator_block']]]],
-            ],
-            'requirements' => [['obtained_0']],
-        ], $entries['data/arffornia/advancement/milestone/oritech/the_beginning.json']);
-    }
-
-    public function test_craft_milestone_becomes_a_hidden_item_crafted_advancement(): void
-    {
-        $this->milestone(['key' => 'mekanism/metallurgic_infuser', 'validation' => ['type' => 'craft', 'items' => ['mekanism:metallurgic_infuser']]]);
-
-        $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
-
-        $this->assertSame([
-            'criteria' => ['crafted' => [
-                'trigger' => 'arffornia:item_crafted',
-                'conditions' => ['items' => [['items' => 'mekanism:metallurgic_infuser']]],
-            ]],
-        ], $entries['data/arffornia/advancement/milestone/mekanism/metallurgic_infuser.json']);
-    }
-
-    public function test_deliver_unvalidated_and_unusable_milestones_get_no_advancement(): void
-    {
-        $this->milestone(['key' => 'arffornia/deliver', 'validation' => ['type' => 'deliver', 'items' => [['item' => 'minecraft:stone', 'count' => 64]]]]);
-        $this->milestone(['key' => 'arffornia/none', 'validation' => null]);
-        $this->milestone(['key' => '7', 'validation' => ['type' => 'obtain', 'items' => ['minecraft:stone']]]);
-        $this->milestone(['key' => 'arffornia/bad_items', 'validation' => ['type' => 'obtain', 'items' => ['Not An Id', 'minecraft:../x']]]);
-
-        $entries = $this->entries($this->get('/api/progression/datapack')->getContent());
-
-        $this->assertSame(['pack.mcmeta'], array_keys($entries));
-    }
-
-    public function test_etag_changes_when_a_milestone_validation_changes(): void
-    {
-        $milestone = $this->milestone(['key' => 'mekanism/ore', 'validation' => ['type' => 'obtain', 'items' => ['mekanism:raw_osmium']]]);
-        $initial = $this->get('/api/progression/datapack')->headers->get('ETag');
-
-        Milestone::whereKey($milestone->id)->update(['validation' => json_encode(['type' => 'craft', 'items' => ['mekanism:raw_osmium']])]);
-        $after = $this->get('/api/progression/datapack')->headers->get('ETag');
-
-        $this->assertNotSame($initial, $after);
+        $this->assertSame([], array_values(array_filter(array_keys($entries), fn (string $path) => str_contains($path, '/advancement/'))));
     }
 }

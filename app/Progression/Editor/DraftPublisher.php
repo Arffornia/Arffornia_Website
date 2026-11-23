@@ -7,6 +7,7 @@ use App\Progression\Finding;
 use App\Progression\ModelDiff;
 use App\Progression\ModelService;
 use App\Progression\ModelValidator;
+use App\Progression\RetiredValidations;
 use App\Progression\SnapshotStore;
 use Illuminate\Support\Facades\DB;
 
@@ -30,7 +31,7 @@ class DraftPublisher
     /** @return list<Finding> errors first, then warnings, then notes */
     public function findings(ProgressionDraft $draft): array
     {
-        $findings = $this->validator->validate($draft->document);
+        $findings = $this->validator->validate(RetiredValidations::strip($draft->document));
         if ($draft->isOpen() && $this->drafts->tablesHash() !== $draft->base_hash) {
             $findings[] = new Finding('warning', 'tables_changed', 'tables', 'the live tables changed since this draft was opened (in-game commands or the graph tool); publishing replaces those changes');
         }

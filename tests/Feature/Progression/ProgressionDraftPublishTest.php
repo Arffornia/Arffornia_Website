@@ -40,7 +40,7 @@ class ProgressionDraftPublishTest extends ProgressionTestCase
     /** One complete milestone on stage 1, so the draft has neither errors nor warnings. */
     private function cleanTree(): void
     {
-        $this->milestone(['name' => 'First', 'validation' => ['type' => 'obtain', 'items' => ['minecraft:stone']]]);
+        $this->milestone(['name' => 'First'])->requirements()->create(['item_id' => 'minecraft:stone', 'display_name' => 'Stone', 'amount' => 1]);
     }
 
     public static function routes(): array
@@ -121,7 +121,7 @@ class ProgressionDraftPublishTest extends ProgressionTestCase
     {
         $this->cleanTree();
         $draft = $this->openDraft();
-        $this->milestone(['name' => 'Written in game', 'validation' => ['type' => 'obtain', 'items' => ['minecraft:dirt']]]);
+        $this->milestone(['name' => 'Written in game'])->requirements()->create(['item_id' => 'minecraft:dirt', 'display_name' => 'Dirt', 'amount' => 1]);
 
         $this->actingAs($this->admin, 'sanctum')->postJson("/api/progression/drafts/{$draft['id']}/validate")
             ->assertOk()->assertJsonPath('valid', true)->assertJsonPath('findings.0.code', 'tables_changed');

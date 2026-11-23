@@ -26,9 +26,7 @@ export interface Graph {
   icon_item?: string;
 }
 
-export type Validation =
-  | { type: 'obtain' | 'craft'; items: string[] }
-  | { type: 'deliver'; items: ItemCount[] };
+export type Validation = { type: 'deliver'; items: ItemCount[] };
 
 export interface Unlock {
   item: string;

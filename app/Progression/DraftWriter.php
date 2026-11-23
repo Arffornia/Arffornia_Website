@@ -108,7 +108,6 @@ class DraftWriter
         $ids = [];
         foreach ($milestones as $milestone) {
             $row = Milestone::firstOrNew(['key' => $milestone['key']]);
-            $validation = $milestone['validation'];
             $row->fill([
                 'name' => $milestone['title']['en'],
                 'name_fr' => $milestone['title']['fr'] ?? null,
@@ -119,7 +118,6 @@ class DraftWriter
                 'icon_type' => $milestone['icon_type'] ?? ($row->icon_type ?? 'tech'),
                 'x' => $milestone['layout']['x'] ?? ($row->x ?? 0),
                 'y' => $milestone['layout']['y'] ?? ($row->y ?? 0),
-                'validation' => $validation !== null && $validation['type'] !== 'deliver' ? $validation : null,
                 'effort' => $milestone['effort'] ?? null,
                 'power' => $milestone['power'] ?? null,
                 'source' => $milestone['source'],
@@ -128,7 +126,7 @@ class DraftWriter
             $row->save();
             $ids[$milestone['key']] = $row->id;
 
-            $this->requirements($row, $validation !== null && $validation['type'] === 'deliver' ? $validation['items'] : []);
+            $this->requirements($row, $milestone['validation']['items'] ?? []);
             $this->unlocks($row, $milestone['unlocks']);
         }
 

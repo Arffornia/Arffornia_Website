@@ -53,7 +53,6 @@ class Milestone extends Model
         'y',
         'graph_id',
         'key',
-        'validation',
         'effort',
         'power',
         'source',
@@ -62,7 +61,6 @@ class Milestone extends Model
     ];
 
     protected $casts = [
-        'validation' => 'array',
         'power' => 'array',
     ];
 

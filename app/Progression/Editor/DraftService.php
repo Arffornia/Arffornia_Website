@@ -6,6 +6,7 @@ use App\Models\ProgressionDraft;
 use App\Models\ProgressionDraftEntry;
 use App\Progression\ModelSerializer;
 use App\Progression\ModelValidator;
+use App\Progression\RetiredValidations;
 use App\Progression\SnapshotStore;
 use Illuminate\Support\Facades\DB;
 
@@ -41,7 +42,7 @@ class DraftService
             }
             if ($fromVersion !== null) {
                 $snapshot = $this->snapshots->find($fromVersion) ?? throw new DraftActionRefused('unknown_version', ['version' => $fromVersion]);
-                $document = json_decode($snapshot->document, true, 512, JSON_THROW_ON_ERROR);
+                $document = RetiredValidations::strip(json_decode($snapshot->document, true, 512, JSON_THROW_ON_ERROR));
             } else {
                 $document = $this->serializer->draft()[0];
             }
@@ -147,6 +148,7 @@ class DraftService
      */
     public function import(ProgressionDraft $draft, int $revision, ?int $userId, array $document): array
     {
+        $document = RetiredValidations::strip($document);
         $errors = $this->validator->schemaErrors($document);
         if ($errors !== []) {
             throw new DraftActionRefused('import_invalid', ['detail' => $errors[0]->subject . ': ' . $errors[0]->message]);

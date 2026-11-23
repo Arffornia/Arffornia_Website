@@ -44,7 +44,7 @@ const titleCase = (s: string) => s.split('_').map((w) => w.charAt(0).toUpperCase
 const wanted = new Set<string>([
   ...model.graphs.map((g) => g.icon_item ?? ''),
   ...model.stages.flatMap((s) => s.module.map((x) => x.item)),
-  ...model.milestones.flatMap((m) => [...m.unlocks.map((u) => u.item), ...(m.validation?.items ?? []).map((i) => (typeof i === 'string' ? i : i.item))]),
+  ...model.milestones.flatMap((m) => [...m.unlocks.map((u) => u.item), ...(m.validation?.items ?? []).map((i) => i.item)]),
 ]);
 const ALIASES: Record<string, string> = { 'minecraft:redstone': 'minecraft/Redstone Dust_128x128.png' };
 for (const item of wanted) {

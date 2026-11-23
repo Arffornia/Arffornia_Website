@@ -156,11 +156,7 @@ return [
         'title' => 'Titre',
         'unlink' => 'Retirer le lien',
         'unlocks' => 'Déblocages',
-        'validation' => 'Validation',
-        'validation_craft' => 'Fabriquer un de ces objets',
-        'validation_deliver' => 'Validé en livrant les prérequis ci-dessous.',
-        'validation_items' => 'Objets de validation (un id par ligne)',
-        'validation_none' => 'Aucune',
-        'validation_obtain' => 'Obtenir un de ces objets',
+        'validation_deliver' => "Validé en livrant les prérequis ci-dessous dans l'ascenseur spatial.",
+        'validation_none' => 'Rien à livrer : les joueurs ne peuvent pas valider ce jalon sans prérequis.',
     ],
 ];

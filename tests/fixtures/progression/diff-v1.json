@@ -48,9 +48,12 @@
       },
       "requires": [],
       "validation": {
-        "type": "obtain",
+        "type": "deliver",
         "items": [
-          "minecraft:stone"
+          {
+            "item": "minecraft:stone",
+            "count": 1
+          }
         ]
       },
       "unlocks": [],
@@ -69,9 +72,12 @@
         "arffornia/a"
       ],
       "validation": {
-        "type": "obtain",
+        "type": "deliver",
         "items": [
-          "minecraft:stone"
+          {
+            "item": "minecraft:stone",
+            "count": 1
+          }
         ]
       },
       "unlocks": [
@@ -96,9 +102,12 @@
         "arffornia/b"
       ],
       "validation": {
-        "type": "obtain",
+        "type": "deliver",
         "items": [
-          "minecraft:stone"
+          {
+            "item": "minecraft:stone",
+            "count": 1
+          }
         ]
       },
       "unlocks": [],
@@ -115,9 +124,12 @@
       },
       "requires": [],
       "validation": {
-        "type": "obtain",
+        "type": "deliver",
         "items": [
-          "minecraft:stone"
+          {
+            "item": "minecraft:stone",
+            "count": 1
+          }
         ]
       },
       "unlocks": [],
