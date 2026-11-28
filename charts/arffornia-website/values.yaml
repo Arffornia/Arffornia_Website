@@ -27,6 +27,16 @@ syncServiceAccounts:
 migrations:
   enabled: false
 
+# Runs the tasks of routes/console.php (token and vote IP pruning). Keep replicaCount at 1 or the tasks run once per replica.
+scheduler:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 48Mi
+    limits:
+      memory: 128Mi
+
 # DANGER: if enabled, every pod start runs `php artisan migrate:fresh --seed --force`, which DROPS ALL
 # TABLES and reseeds demo data. Only for throwaway environments. Never enable it in production.
 # (Seeding needs dev dependencies, which production images do not ship.)

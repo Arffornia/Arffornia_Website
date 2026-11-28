@@ -102,6 +102,29 @@ spec:
             {{- end }}
           {{- end }}
 
+        {{- if .Values.scheduler.enabled }}
+        - name: {{ .Chart.Name }}-scheduler
+          {{- with (merge (deepCopy .Values.securityContext) .Values.backendSecurityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          command: ["php", "artisan", "schedule:work"]
+          {{- with .Values.scheduler.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+
+        {{- end }}
         - name: {{ .Chart.Name }}-frontend
           {{- with (merge (deepCopy .Values.securityContext) .Values.frontendSecurityContext) }}
           securityContext:
